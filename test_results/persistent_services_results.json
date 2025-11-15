@@ -1,0 +1,161 @@
+{
+  "test_suite": "Persistent Services Tests",
+  "execution_time": "2025-10-27T01:22:52.603670",
+  "initialization": {
+    "initialization": {},
+    "status": {},
+    "summary": {
+      "initialization_successful": false,
+      "all_services_ready": false,
+      "initialization_time": 0.0
+    },
+    "issues": [
+      "Initialization error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+    ]
+  },
+  "prewarming": {
+    "prewarm_tests": [],
+    "summary": {
+      "total_tests": 0,
+      "effective_prewarming": 0,
+      "avg_latency_reduction": 0.0,
+      "prewarm_scheduling_works": false
+    },
+    "issues": [
+      "Pre-warming error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+    ]
+  },
+  "caching": {
+    "cache_tests": [
+      {
+        "test_type": "intent_classification",
+        "total_queries": 5,
+        "cache_hits": 2,
+        "cache_misses": 3,
+        "hit_rate": 0.4,
+        "avg_first_call_time": 0.10175164540608723,
+        "avg_cached_call_time": 0.011594176292419434,
+        "speedup_factor": 8.77609955548244
+      }
+    ],
+    "summary": {
+      "intent_cache_hit_rate": 0.4,
+      "rag_cache_hit_rate": 0.3333333333333333,
+      "cache_speedup_factor": 8.77609955548244,
+      "cache_working": true
+    },
+    "issues": []
+  },
+  "benchmarks": {
+    "benchmark_tests": [
+      {
+        "operation": "intent_fast",
+        "target_time": 0.1,
+        "avg_time": 0.050637316703796384,
+        "min_time": 0.05001235008239746,
+        "max_time": 0.05117440223693848,
+        "p95_time": 0.05117440223693848,
+        "target_met": true,
+        "iterations": 10
+      },
+      {
+        "operation": "intent_gemini",
+        "target_time": 1.5,
+        "avg_time": 0.8005610942840576,
+        "min_time": 0.8000221252441406,
+        "max_time": 0.8008971214294434,
+        "p95_time": 0.8008971214294434,
+        "target_met": true,
+        "iterations": 10
+      },
+      {
+        "operation": "rag_cold",
+        "target_time": 2.0,
+        "avg_time": 1.5005757570266725,
+        "min_time": 1.5000371932983398,
+        "max_time": 1.501300573348999,
+        "p95_time": 1.501300573348999,
+        "target_met": true,
+        "iterations": 10
+      },
+      {
+        "operation": "rag_warm",
+        "target_time": 1.2,
+        "avg_time": 0.900739049911499,
+        "min_time": 0.9001696109771729,
+        "max_time": 0.9014005661010742,
+        "p95_time": 0.9014005661010742,
+        "target_met": true,
+        "iterations": 10
+      },
+      {
+        "operation": "rag_cached",
+        "target_time": 0.05,
+        "avg_time": 0.020843148231506348,
+        "min_time": 0.020198583602905273,
+        "max_time": 0.021394014358520508,
+        "p95_time": 0.021394014358520508,
+        "target_met": true,
+        "iterations": 10
+      }
+    ],
+    "summary": {
+      "targets_met": 5,
+      "total_targets": 5,
+      "avg_times": {
+        "intent_fast": 0.050637316703796384,
+        "intent_gemini": 0.8005610942840576,
+        "rag_cold": 1.5005757570266725,
+        "rag_warm": 0.900739049911499,
+        "rag_cached": 0.020843148231506348
+      },
+      "all_targets_met": true
+    },
+    "issues": []
+  },
+  "concurrency": {
+    "concurrency_tests": [
+      {
+        "test_type": "concurrent_requests",
+        "total_requests": 20,
+        "successful_requests": 20,
+        "failed_requests": 0,
+        "total_time": 0.10183024406433105,
+        "throughput_rps": 196.40530358903038,
+        "target_met": true
+      }
+    ],
+    "summary": {
+      "max_concurrent_requests": 20,
+      "throughput_rps": 196.40530358903038,
+      "concurrent_handling_works": true,
+      "no_race_conditions": true
+    },
+    "issues": []
+  },
+  "summary": {
+    "initialization_time": 0.0,
+    "all_services_ready": false,
+    "prewarming_effective": 0,
+    "cache_hit_rate": 0.4,
+    "performance_targets_met": 1.0,
+    "concurrent_handling": true,
+    "overall_performance": "good"
+  },
+  "issues": [
+    "Initialization error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>",
+    "Pre-warming error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+  ],
+  "recommendations": [
+    {
+      "priority": "critical",
+      "category": "initialization",
+      "recommendation": "Fix service initialization issues - not all services are ready"
+    },
+    {
+      "priority": "high",
+      "category": "prewarming",
+      "recommendation": "Improve pre-warming effectiveness - less than 50% of tests show improvement"
+    }
+  ]
+}

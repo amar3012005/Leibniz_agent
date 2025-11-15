@@ -1,0 +1,65 @@
+﻿"""
+Leibniz Bidirectional VAD Integration Module
+
+This module provides voice activity detection (VAD) and speech capture functionality
+for the Leibniz agent, adapted from SINDH's robust bidirectional VAD architecture.
+
+Key Features:
+- Persistent Gemini Live sessions with pooling and smart warmup
+- Conversation state tracking (listening, speaking, barge-in detection)
+- Dynamic timeout configuration based on conversation context
+- Streaming transcript callbacks for real-time processing
+- English-only support with language validation
+- Integration with Leibniz persistent services for prewarm
+- Comprehensive performance metrics and diagnostics
+
+Architecture:
+- LeibnizPersistentSession: Singleton session manager with event loop tracking
+- LeibnizBidirectionalVAD: Main VAD class with capture logic
+- Helper functions: API surface matching leibniz_pro.py expectations
+
+Usage:
+    from leibniz_agent.leibniz_vad import capture_leibniz_speech, set_leibniz_agent_speaking
+    
+    # Capture user speech with streaming callback
+    temp_file, transcript = await capture_leibniz_speech(
+        streaming_callback=lambda text, final: print(f"Fragment: {text}"),
+        context={"conversation_context": "greeting", "attempt_count": 0}
+    )
+    
+    # Set agent speaking state for barge-in detection
+    await set_leibniz_agent_speaking(True, context="TTS playback")
+"""
+
+import os
+import asyncio
+import time
+import uuid
+import logging
+import threading
+from typing import Optional, Callable, Dict, Any, Tuple
+from dataclasses import dataclass
+
+import numpy as np
+import sounddevice as sd
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Gemini SDK imports with error handling
+try:
+    import google.generativeai as genai
+except ImportError as e:
+    raise ImportError(
+        "google-generativeai package is required. "
+        "Install with: pip install google-generativeai"
+    ) from e
+
+# Leibniz imports
+from leibniz_agent.leibniz_config import get_leibniz_config
+from leibniz_agent.leibniz_persistent_services import trigger_prewarm_on_speech_detection
+from leibniz_agent.leibniz_stt import normalize_english_transcript
+
+# Logger setup
+logger = logging.getLogger(__name__)

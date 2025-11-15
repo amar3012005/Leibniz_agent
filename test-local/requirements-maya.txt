@@ -1,0 +1,19 @@
+# Maya1 Voice AI Requirements
+# High-quality emotional speech synthesis
+
+# Core ML framework
+torch>=2.0.0
+transformers>=4.35.0
+accelerate>=0.25.0
+
+# Audio processing
+snac
+soundfile>=0.12.1
+numpy>=1.24.0
+
+# Optional but recommended
+scipy>=1.11.0
+librosa>=0.10.0
+
+# HuggingFace utilities
+huggingface-hub>=0.19.0

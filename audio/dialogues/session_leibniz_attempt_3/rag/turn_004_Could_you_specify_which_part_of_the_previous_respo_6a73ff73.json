@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_3",
+  "turn_number": 4,
+  "dialogue_type": "rag",
+  "text": "Could you specify which part of the previous response was unclear? Knowing the topic will help me clarify it better for you right now. Feel free to ask about admissions, programs, campus facilities, or anything else!",
+  "audio_file": "turn_004_Could_you_specify_which_part_of_the_previous_respo_6a73ff73.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_3_4_k0k5s3gb.wav",
+  "timestamp": 1763231163.0835164,
+  "text_length": 216,
+  "text_hash": "6a73ff73"
+}

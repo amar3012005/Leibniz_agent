@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_0",
+  "turn_number": 1,
+  "dialogue_type": "rag",
+  "text": "I'm Tara, an AI assistant here to help Leibniz students with university info. Think of me as your digital guide for navigating services and resources. What can I help you find right now?",
+  "audio_file": "turn_001_Im_Tara_an_AI_assistant_here_to_help_Leibniz_stu_6fb60391.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_0_1_1ozsypod.wav",
+  "timestamp": 1763227082.00278,
+  "text_length": 186,
+  "text_hash": "6fb60391"
+}

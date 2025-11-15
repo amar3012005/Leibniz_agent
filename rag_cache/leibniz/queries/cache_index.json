@@ -1,0 +1,26 @@
+{
+  "8c2fb212c6b9b6a1731f8bcb1b090301": {
+    "key": "8c2fb212c6b9b6a1731f8bcb1b090301",
+    "filename": "8c2fb212c6b9b6a1731f8bcb1b090301.entry",
+    "created_at": "2025-11-12T08:30:22.113661",
+    "last_accessed": "2025-11-12T08:30:22.113661",
+    "access_count": 0,
+    "ttl_seconds": 3600
+  },
+  "16482f3cb9c07ecd9e917b1c6237ce60": {
+    "key": "16482f3cb9c07ecd9e917b1c6237ce60",
+    "filename": "16482f3cb9c07ecd9e917b1c6237ce60.entry",
+    "created_at": "2025-11-12T08:30:22.116710",
+    "last_accessed": "2025-11-12T08:30:22.116710",
+    "access_count": 0,
+    "ttl_seconds": 3600
+  },
+  "e7885e31d8636fb1e0bd41d9723ad3e9": {
+    "key": "e7885e31d8636fb1e0bd41d9723ad3e9",
+    "filename": "e7885e31d8636fb1e0bd41d9723ad3e9.entry",
+    "created_at": "2025-11-15T09:33:48.545262",
+    "last_accessed": "2025-11-15T09:33:48.545262",
+    "access_count": 0,
+    "ttl_seconds": 3600
+  }
+}

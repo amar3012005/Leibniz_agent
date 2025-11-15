@@ -1,0 +1,235 @@
+{
+  "test_suite": "Knowledge Base Coverage Tests",
+  "execution_time": "2025-10-27T01:23:04.103472",
+  "structure_verification": {
+    "structure_check": {},
+    "document_inventory": {
+      "01_university_overview": {
+        "expected": 3,
+        "found": 3,
+        "files": [
+          "general_information.md",
+          "history_mission.md",
+          "rankings_accreditation.md"
+        ],
+        "complete": true
+      },
+      "02_faculties_departments": {
+        "expected": 12,
+        "found": 12,
+        "files": [
+          "administrative_departments.md",
+          "faculty_architecture_landscape.md",
+          "faculty_civil_engineering.md",
+          "faculty_economics.md",
+          "faculty_electrical_cs.md",
+          "faculty_humanities.md",
+          "faculty_law.md",
+          "faculty_math_physics.md",
+          "faculty_mechanical.md",
+          "faculty_natural_sciences.md",
+          "research_institutes.md",
+          "special_schools.md"
+        ],
+        "complete": true
+      },
+      "03_admission_enrollment": {
+        "expected": 6,
+        "found": 6,
+        "files": [
+          "application_process.md",
+          "bachelors_admission.md",
+          "deadlines_dates.md",
+          "enrollment_procedures.md",
+          "masters_admission.md",
+          "phd_admission.md"
+        ],
+        "complete": true
+      },
+      "04_academic_programs": {
+        "expected": 5,
+        "found": 5,
+        "files": [
+          "bachelors_programs.md",
+          "course_catalog.md",
+          "exchange_programs.md",
+          "masters_programs.md",
+          "phd_programs.md"
+        ],
+        "complete": true
+      },
+      "05_student_services": {
+        "expected": 7,
+        "found": 7,
+        "files": [
+          "academic_advising.md",
+          "career_services.md",
+          "counseling_mental_health.md",
+          "disability_services.md",
+          "financial_aid_scholarships.md",
+          "international_student_support.md",
+          "student_housing.md"
+        ],
+        "complete": true
+      },
+      "06_campus_facilities": {
+        "expected": 5,
+        "found": 5,
+        "files": [
+          "cafeteria_dining.md",
+          "computer_labs.md",
+          "library_resources.md",
+          "sports_facilities.md",
+          "study_spaces.md"
+        ],
+        "complete": true
+      },
+      "07_academic_policies": {
+        "expected": 5,
+        "found": 5,
+        "files": [
+          "academic_calendar.md",
+          "attendance_policies.md",
+          "examination_regulations.md",
+          "grading_system.md",
+          "leave_of_absence.md"
+        ],
+        "complete": true
+      },
+      "08_administrative_procedures": {
+        "expected": 4,
+        "found": 5,
+        "files": [
+          "appointment_scheduling_complete.md",
+          "certificate_requests.md",
+          "change_of_program.md",
+          "registration_procedures.md",
+          "transcript_requests.md"
+        ],
+        "complete": true
+      },
+      "09_research_opportunities": {
+        "expected": 4,
+        "found": 4,
+        "files": [
+          "graduate_research.md",
+          "research_centers.md",
+          "research_facilities.md",
+          "undergraduate_research.md"
+        ],
+        "complete": true
+      },
+      "10_campus_life": {
+        "expected": 4,
+        "found": 4,
+        "files": [
+          "cultural_programs.md",
+          "events_activities.md",
+          "sports_clubs.md",
+          "student_organizations.md"
+        ],
+        "complete": true
+      },
+      "11_location_transportation": {
+        "expected": 4,
+        "found": 4,
+        "files": [
+          "campus_locations.md",
+          "hannover_city_guide.md",
+          "parking_information.md",
+          "public_transportation.md"
+        ],
+        "complete": true
+      },
+      "12_contact_information": {
+        "expected": 4,
+        "found": 4,
+        "files": [
+          "department_contacts.md",
+          "emergency_contacts.md",
+          "faq_contacts.md",
+          "office_hours.md"
+        ],
+        "complete": true
+      }
+    },
+    "summary": {
+      "total_categories": 12,
+      "total_documents": 64,
+      "missing_categories": [],
+      "missing_documents": [],
+      "structure_valid": true
+    },
+    "issues": []
+  },
+  "vector_store_coverage": {
+    "vector_store_stats": {},
+    "summary": {
+      "vector_store_exists": false,
+      "total_chunks": 0,
+      "categories_represented": 0,
+      "coverage_complete": false
+    },
+    "issues": [
+      "Vector store coverage error: 'charmap' codec can't encode character '\\U0001f4c2' in position 0: character maps to <undefined>"
+    ]
+  },
+  "category_retrieval": {
+    "category_tests": [],
+    "summary": {
+      "total_categories": 12,
+      "categories_passed": 0,
+      "avg_retrieval_quality": 0.0,
+      "all_categories_covered": false
+    },
+    "issues": [
+      "Category retrieval error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+    ]
+  },
+  "cross_category_retrieval": {
+    "cross_category_tests": [],
+    "summary": {
+      "total_tests": 3,
+      "multi_category_success": 0,
+      "avg_categories_per_query": 0.0
+    },
+    "issues": [
+      "Cross-category error: 'charmap' codec can't encode character '\\U0001f4c2' in position 0: character maps to <undefined>"
+    ]
+  },
+  "summary": {
+    "knowledge_base_complete": true,
+    "vector_store_ready": false,
+    "category_coverage": 0.0,
+    "retrieval_quality": 0.0,
+    "multi_category_success": 0.0,
+    "overall_coverage": "needs_improvement"
+  },
+  "issues": [
+    "Vector store coverage error: 'charmap' codec can't encode character '\\U0001f4c2' in position 0: character maps to <undefined>",
+    "Category retrieval error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>",
+    "Cross-category error: 'charmap' codec can't encode character '\\U0001f4c2' in position 0: character maps to <undefined>"
+  ],
+  "recommendations": [
+    {
+      "priority": "critical",
+      "category": "vector_store",
+      "recommendation": "Fix vector store - not properly loaded or empty"
+    },
+    {
+      "priority": "high",
+      "category": "retrieval",
+      "recommendation": "Improve category retrieval - only 0.0% categories passing"
+    },
+    {
+      "priority": "high",
+      "category": "quality",
+      "recommendation": "Improve retrieval quality - average 0.00 below threshold 0.7"
+    },
+    {
+      "priority": "medium",
+      "category": "cross_category",
+      "recommendation": "Improve cross-category retrieval - only 0.0% success rate"
+    }
+  ]
+}

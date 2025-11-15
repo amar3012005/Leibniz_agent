@@ -1,0 +1,397 @@
+{
+  "test_suite": "Friendly Tone Validation Tests",
+  "execution_time": "2025-10-27T01:23:11.993745",
+  "rag_tone": {
+    "rag_tone_tests": [],
+    "summary": {
+      "total_tests": 0,
+      "friendly_responses": 0,
+      "formal_violations": 0,
+      "avg_tone_score": 0.0,
+      "tone_consistent": false
+    },
+    "issues": [
+      "RAG tone testing error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+    ]
+  },
+  "fsm_tone": {
+    "fsm_tone_tests": [
+      {
+        "state": "INIT",
+        "description": "Initialization prompt",
+        "input": "",
+        "response": "Great! I'd be happy to help you schedule an appointment. I'll need to collect a few details from you. This should only take a couple of minutes.\n\nI'll ask for your name, contact info, which department...",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.029411764705882353,
+          "friendly_count": 2,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.03 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": true,
+        "formal_violations": [],
+        "passed": false
+      },
+      {
+        "state": "COLLECT_NAME",
+        "description": "Name collection response",
+        "input": "John Smith",
+        "response": "Thanks, John! Now, what's your email address? I'll send the appointment confirmation there.",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.0,
+          "friendly_count": 0,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "No friendly indicators in substantial text",
+            "Tone score 0.00 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": true,
+        "formal_violations": [],
+        "passed": false
+      },
+      {
+        "state": "COLLECT_EMAIL",
+        "description": "Email collection response",
+        "input": "john@uni-hannover.de",
+        "response": "Perfect! And what's your phone number? Include the country code if you're calling from outside Germany.",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.0625,
+          "friendly_count": 1,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.06 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": true,
+        "formal_violations": [],
+        "passed": false
+      },
+      {
+        "state": "COLLECT_PHONE",
+        "description": "Phone collection response",
+        "input": "+49 511 762 2020",
+        "response": "Great! Now, which department would you like to schedule an appointment with? Here are your options:\n\n1. Academic Advising\n2. Faculty Appointments\n3. Examination Office\n4. International Student Office\n...",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.017241379310344827,
+          "friendly_count": 1,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.02 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": true,
+        "formal_violations": [],
+        "passed": false
+      },
+      {
+        "state": "COLLECT_DEPARTMENT",
+        "description": "Department selection response",
+        "input": "admissions",
+        "response": "Perfect! For Admissions Office, what type of appointment do you need?\n\n1. Application Questions\n2. Admission Status\n3. Document Verification\n4. Transfer Credits\n\nYou can say the number or the appointm...",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.0625,
+          "friendly_count": 2,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.06 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": true,
+        "formal_violations": [],
+        "passed": false
+      },
+      {
+        "state": "COLLECT_APPOINTMENT_TYPE",
+        "description": "Appointment type response",
+        "input": "application questions",
+        "response": "Got it! When would you like to schedule this appointment? You can say something like 'next Tuesday at 2pm' or 'tomorrow morning'.",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.09090909090909091,
+          "friendly_count": 2,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.09 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": false,
+        "formal_violations": [],
+        "passed": false
+      },
+      {
+        "state": "COLLECT_DATETIME",
+        "description": "DateTime collection response",
+        "input": "next Tuesday at 2pm",
+        "response": "Perfect! Admissions appointments should be booked 1-2 weeks in advance. Last question: what's the main reason for this appointment? Just a brief description is fine.",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.08,
+          "friendly_count": 2,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.08 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": true,
+        "formal_violations": [],
+        "passed": false
+      },
+      {
+        "state": "COLLECT_PURPOSE",
+        "description": "Purpose collection response",
+        "input": "I have questions about my application",
+        "response": "Great! Let me confirm the details:\n\nName: John Smith\nEmail: john@uni-hannover.de\nPhone: +495117622020\nDepartment: Admissions Office\nAppointment Type: Application Questions\nPreferred Date/Time: Tuesday...",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.02040816326530612,
+          "friendly_count": 1,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.02 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": true,
+        "formal_violations": [],
+        "passed": false
+      },
+      {
+        "state": "CONFIRM",
+        "description": "Confirmation response",
+        "input": "yes",
+        "response": "Awesome! Your appointment is all set. Here's what happens next:\n\n1. You'll receive a confirmation email at john@uni-hannover.de within 24 hours\n2. The email will include a calendar invite and any prep...",
+        "tone_analysis": {
+          "tone_classification": "friendly_casual",
+          "score": 0.17142857142857143,
+          "friendly_count": 5,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 1,
+          "issues": [],
+          "valid": true
+        },
+        "has_personalization": true,
+        "has_positive_reinforcement": true,
+        "formal_violations": [],
+        "passed": true
+      }
+    ],
+    "summary": {
+      "total_prompts": 9,
+      "friendly_prompts": 1,
+      "formal_violations": 0,
+      "avg_tone_score": 0.05937766329102175,
+      "personalization_present": 9
+    },
+    "issues": [
+      "Tone score 0.03 below threshold 0.1",
+      "No friendly indicators in substantial text",
+      "Tone score 0.00 below threshold 0.1",
+      "Tone score 0.06 below threshold 0.1",
+      "Tone score 0.02 below threshold 0.1",
+      "Tone score 0.06 below threshold 0.1",
+      "Tone score 0.09 below threshold 0.1",
+      "Tone score 0.08 below threshold 0.1",
+      "Tone score 0.02 below threshold 0.1"
+    ]
+  },
+  "error_tone": {
+    "error_tone_tests": [
+      {
+        "scenario": "Invalid email",
+        "response": "That doesn't look like a valid email address. Could you try again?",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.0,
+          "friendly_count": 0,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "No friendly indicators in substantial text",
+            "Tone score 0.00 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_apology": false,
+        "has_suggestion": true,
+        "has_harsh_language": false,
+        "is_friendly": true,
+        "passed": true
+      },
+      {
+        "scenario": "Invalid phone",
+        "response": "I couldn't understand that phone number. Could you try again?",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.0,
+          "friendly_count": 0,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.00 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_apology": false,
+        "has_suggestion": true,
+        "has_harsh_language": false,
+        "is_friendly": true,
+        "passed": true
+      },
+      {
+        "scenario": "No speech captured",
+        "response": "I didn't catch that. Could you please repeat?",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.0,
+          "friendly_count": 0,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.00 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_apology": false,
+        "has_suggestion": true,
+        "has_harsh_language": false,
+        "is_friendly": true,
+        "passed": true
+      },
+      {
+        "scenario": "RAG query failed",
+        "response": "I'm sorry, I couldn't find information about that. Could you rephrase your question?",
+        "tone_analysis": {
+          "tone_classification": "friendly_casual",
+          "score": 0.15384615384615385,
+          "friendly_count": 2,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [],
+          "valid": true
+        },
+        "has_apology": true,
+        "has_suggestion": true,
+        "has_harsh_language": false,
+        "is_friendly": true,
+        "passed": true
+      },
+      {
+        "scenario": "Unclear intent",
+        "response": "I didn't quite catch that. Could you rephrase your question?",
+        "tone_analysis": {
+          "tone_classification": "neutral",
+          "score": 0.0,
+          "friendly_count": 0,
+          "formal_count": 0,
+          "starter_count": 0,
+          "ending_count": 0,
+          "issues": [
+            "Tone score 0.00 below threshold 0.1"
+          ],
+          "valid": false
+        },
+        "has_apology": false,
+        "has_suggestion": true,
+        "has_harsh_language": false,
+        "is_friendly": true,
+        "passed": true
+      }
+    ],
+    "summary": {
+      "total_errors": 5,
+      "friendly_errors": 5,
+      "harsh_errors": 0,
+      "avg_tone_score": 0.03076923076923077
+    },
+    "issues": []
+  },
+  "consistency": {
+    "consistency_tests": [],
+    "summary": {
+      "total_responses": 13,
+      "consistent_tone": true,
+      "tone_std_dev": 0.13609320550182602,
+      "personality_consistent": false
+    },
+    "issues": [
+      "Personality inconsistency - score range 0.27 too wide"
+    ]
+  },
+  "summary": {
+    "overall_tone_score": 0.045073447030126265,
+    "rag_friendly_rate": 0,
+    "fsm_friendly_rate": 0.1111111111111111,
+    "error_friendly_rate": 1.0,
+    "tone_consistent": true,
+    "formal_violations_total": 0,
+    "overall_assessment": "needs_improvement"
+  },
+  "issues": [
+    "RAG tone testing error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>",
+    "Tone score 0.03 below threshold 0.1",
+    "No friendly indicators in substantial text",
+    "Tone score 0.00 below threshold 0.1",
+    "Tone score 0.06 below threshold 0.1",
+    "Tone score 0.02 below threshold 0.1",
+    "Tone score 0.06 below threshold 0.1",
+    "Tone score 0.09 below threshold 0.1",
+    "Tone score 0.08 below threshold 0.1",
+    "Tone score 0.02 below threshold 0.1",
+    "Personality inconsistency - score range 0.27 too wide"
+  ],
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "rag_tone",
+      "recommendation": "Improve RAG response tone - only 0.0% friendly"
+    },
+    {
+      "priority": "high",
+      "category": "fsm_tone",
+      "recommendation": "Improve FSM prompt tone - only 11.1% friendly"
+    }
+  ]
+}

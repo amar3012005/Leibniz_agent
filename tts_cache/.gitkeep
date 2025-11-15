@@ -1,0 +1,12 @@
+# TTS Cache Directory
+# This directory stores cached TTS audio files with MD5-based filenames
+# Structure:
+#   tts_cache/
+#   ├── cache_index.json      # Cache metadata and index
+#   ├── <md5_hash_1>.wav     # Cached audio file 1
+#   ├── <md5_hash_2>.wav     # Cached audio file 2
+#   └── ...                   # More cached files
+#
+# Managed by TTSCache class in leibniz_tts.py with LRU cleanup
+# Default max size: 500 entries
+# Default TTL: 30 days

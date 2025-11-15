@@ -1,0 +1,10 @@
+# Test Results Directory
+
+This directory contains test results from the Leibniz agent testing suite:
+- JSON result files from each test script
+- Markdown reports with detailed analysis
+- CSV files with performance metrics
+- Issue documentation
+- Performance benchmarks
+
+The .gitkeep file ensures the directory structure is preserved even when empty.

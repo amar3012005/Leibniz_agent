@@ -1,0 +1,19 @@
+# Intent Classification Service Dependencies
+# Phase 3 - Cloud Transformation
+
+# Web framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.5.0
+
+# Gemini API for LLM fallback
+google-generativeai>=0.8.0
+
+# Redis for distributed caching
+redis[asyncio]>=5.0.0
+
+# HTTP client for health checks
+httpx>=0.27.0
+
+# Environment variables
+python-dotenv>=1.0.0

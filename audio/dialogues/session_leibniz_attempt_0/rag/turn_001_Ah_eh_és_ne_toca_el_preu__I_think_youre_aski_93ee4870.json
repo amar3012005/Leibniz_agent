@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_0",
+  "turn_number": 1,
+  "dialogue_type": "rag",
+  "text": "Ah, \"eh, és ne toca el preu\" – I think you're asking if the price includes something, or perhaps if there's a specific fee associated with something? Could you clarify what \"preu\" (price) you are referring to? Knowing the context, like if it's about tuition, a service fee, or something else, will help me give you the right information.",
+  "audio_file": "turn_001_Ah_eh_és_ne_toca_el_preu__I_think_youre_aski_93ee4870.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\leibniz_tts_1763124675181_fccwlsb7.wav",
+  "timestamp": 1763124675.2083163,
+  "text_length": 337,
+  "text_hash": "93ee4870"
+}

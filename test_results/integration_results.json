@@ -1,0 +1,157 @@
+{
+  "test_suite": "Integration Tests",
+  "execution_time": "2025-10-27T01:23:29.437949",
+  "component_integration": {
+    "integration_tests": [],
+    "summary": {
+      "total_tests": 0,
+      "passed_tests": 0,
+      "integration_success_rate": 0.0,
+      "all_integrations_working": false
+    },
+    "issues": [
+      "Component integration error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+    ]
+  },
+  "error_propagation": {
+    "error_tests": [
+      {
+        "scenario": "Empty input to intent parser",
+        "input": "",
+        "expected_behavior": "Returns UNCLEAR intent gracefully",
+        "handled_gracefully": false,
+        "error_details": [
+          "Component crashed: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+        ],
+        "passed": false
+      },
+      {
+        "scenario": "Invalid characters in input",
+        "input": "!@#$%^&*()",
+        "expected_behavior": "Handles gracefully, returns UNCLEAR",
+        "handled_gracefully": false,
+        "error_details": [
+          "Component crashed: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+        ],
+        "passed": false
+      },
+      {
+        "scenario": "Very long input",
+        "input": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "expected_behavior": "Processes without crashing",
+        "handled_gracefully": false,
+        "error_details": [
+          "Component crashed: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+        ],
+        "passed": false
+      },
+      {
+        "scenario": "Non-English characters",
+        "input": "\u3053\u3093\u306b\u3061\u306f",
+        "expected_behavior": "Handles gracefully, may return UNCLEAR",
+        "handled_gracefully": false,
+        "error_details": [
+          "Component crashed: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+        ],
+        "passed": false
+      }
+    ],
+    "summary": {
+      "total_error_scenarios": 4,
+      "handled_gracefully": 0,
+      "error_handling_rate": 0.0,
+      "system_stability": false
+    },
+    "issues": []
+  },
+  "state_management": {
+    "state_tests": [
+      {
+        "test_name": "FSM State Persistence",
+        "state_progression_correct": false,
+        "final_state": "cancelled",
+        "passed": false
+      },
+      {
+        "test_name": "Service State Isolation",
+        "states_isolated": false,
+        "data_isolated": true,
+        "isolation_working": false,
+        "passed": false
+      }
+    ],
+    "summary": {
+      "total_state_tests": 2,
+      "state_tests_passed": 0,
+      "state_persistence_working": false,
+      "state_isolation_working": false
+    },
+    "issues": [
+      "State management error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+    ]
+  },
+  "concurrent_operations": {
+    "concurrency_tests": [
+      {
+        "test_name": "Concurrent Intent Classifications",
+        "total_requests": 5,
+        "successful": 0,
+        "failed": 5,
+        "total_time": 0.0015039443969726562,
+        "concurrent_success": false,
+        "performance_good": true,
+        "passed": false
+      },
+      {
+        "test_name": "Mixed Concurrent Operations",
+        "total_operations": 5,
+        "successful": 0,
+        "failed": 5,
+        "total_time": 0.0,
+        "concurrent_success": false,
+        "performance_good": true,
+        "passed": false
+      }
+    ],
+    "summary": {
+      "total_concurrent_tests": 2,
+      "concurrent_success": 0,
+      "no_race_conditions": false,
+      "concurrent_performance_good": true
+    },
+    "issues": []
+  },
+  "summary": {
+    "component_integration_rate": 0.0,
+    "error_handling_rate": 0.0,
+    "state_persistence_working": false,
+    "concurrent_operations_working": false,
+    "overall_integration_health": "needs_improvement"
+  },
+  "issues": [
+    "Component integration error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>",
+    "State management error: 'charmap' codec can't encode character '\\U0001f393' in position 0: character maps to <undefined>"
+  ],
+  "recommendations": [
+    {
+      "priority": "critical",
+      "category": "component_integration",
+      "recommendation": "Fix component integration - only 0.0% success rate"
+    },
+    {
+      "priority": "high",
+      "category": "error_handling",
+      "recommendation": "Improve error handling - only 0.0% of errors handled gracefully"
+    },
+    {
+      "priority": "high",
+      "category": "state_management",
+      "recommendation": "Fix state persistence issues - state not maintained correctly"
+    },
+    {
+      "priority": "critical",
+      "category": "concurrency",
+      "recommendation": "Fix race conditions - concurrent operations are interfering"
+    }
+  ]
+}

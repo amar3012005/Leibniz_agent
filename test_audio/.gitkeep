@@ -1,0 +1,9 @@
+# Test Audio Directory
+
+This directory contains test audio samples:
+- Sample English audio files for STT testing
+- Generated TTS audio files for quality validation
+- Round-trip test audio files
+- Edge case audio samples (noisy, accented, etc.)
+
+The .gitkeep file ensures the directory structure is preserved.

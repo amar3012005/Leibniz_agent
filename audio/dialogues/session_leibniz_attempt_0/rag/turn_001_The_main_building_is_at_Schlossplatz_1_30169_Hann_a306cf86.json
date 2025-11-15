@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_0",
+  "turn_number": 1,
+  "dialogue_type": "rag",
+  "text": "The main building is at Schlossplatz 1, 30169 Hannover. That's the central administration location you're looking for.",
+  "audio_file": "turn_001_The_main_building_is_at_Schlossplatz_1_30169_Hann_a306cf86.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_0_1_wlld3k4z.wav",
+  "timestamp": 1763231027.9353042,
+  "text_length": 118,
+  "text_hash": "a306cf86"
+}

@@ -1,0 +1,1292 @@
+[
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 2,
+    "priority": 5
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 3,
+    "priority": 3
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 4,
+    "priority": 11
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 5,
+    "priority": 3
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 6,
+    "priority": 3
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 7,
+    "priority": 5
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 8,
+    "priority": 3
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 9,
+    "priority": 3
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 10,
+    "priority": 9
+  },
+  {
+    "source": "general_information.md",
+    "category": "01_university_overview",
+    "chunk_id": 11,
+    "priority": 9
+  },
+  {
+    "source": "history_mission.md",
+    "category": "01_university_overview",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "history_mission.md",
+    "category": "01_university_overview",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "history_mission.md",
+    "category": "01_university_overview",
+    "chunk_id": 2,
+    "priority": 5
+  },
+  {
+    "source": "rankings_accreditation.md",
+    "category": "01_university_overview",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "rankings_accreditation.md",
+    "category": "01_university_overview",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "rankings_accreditation.md",
+    "category": "01_university_overview",
+    "chunk_id": 2,
+    "priority": 7
+  },
+  {
+    "source": "administrative_departments.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 11
+  },
+  {
+    "source": "faculty_architecture_landscape.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 11
+  },
+  {
+    "source": "faculty_architecture_landscape.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 9
+  },
+  {
+    "source": "faculty_civil_engineering.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 7
+  },
+  {
+    "source": "faculty_civil_engineering.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "faculty_economics.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 9
+  },
+  {
+    "source": "faculty_economics.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 11
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 2,
+    "priority": 5
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 3,
+    "priority": 5
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 4,
+    "priority": 5
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 5,
+    "priority": 7
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 6,
+    "priority": 7
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 7,
+    "priority": 1
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 8,
+    "priority": 3
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 9,
+    "priority": 3
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 10,
+    "priority": 3
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 11,
+    "priority": 3
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 12,
+    "priority": 1
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 13,
+    "priority": 5
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 14,
+    "priority": 7
+  },
+  {
+    "source": "faculty_electrical_cs.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 15,
+    "priority": 7
+  },
+  {
+    "source": "faculty_humanities.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 9
+  },
+  {
+    "source": "faculty_humanities.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "faculty_law.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 9
+  },
+  {
+    "source": "faculty_law.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "faculty_math_physics.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 11
+  },
+  {
+    "source": "faculty_math_physics.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "faculty_mechanical.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 9
+  },
+  {
+    "source": "faculty_mechanical.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "faculty_natural_sciences.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 11
+  },
+  {
+    "source": "faculty_natural_sciences.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "research_institutes.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 5
+  },
+  {
+    "source": "research_institutes.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 1,
+    "priority": 1
+  },
+  {
+    "source": "special_schools.md",
+    "category": "02_faculties_departments",
+    "chunk_id": 0,
+    "priority": 13
+  },
+  {
+    "source": "application_process.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 0,
+    "priority": 19
+  },
+  {
+    "source": "application_process.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 1,
+    "priority": 15
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 0,
+    "priority": 19
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 1,
+    "priority": 13
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 2,
+    "priority": 13
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 3,
+    "priority": 11
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 4,
+    "priority": 15
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 5,
+    "priority": 15
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 6,
+    "priority": 13
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 7,
+    "priority": 17
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 8,
+    "priority": 13
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 9,
+    "priority": 15
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 10,
+    "priority": 17
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 11,
+    "priority": 23
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 12,
+    "priority": 19
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 13,
+    "priority": 11
+  },
+  {
+    "source": "bachelors_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 14,
+    "priority": 21
+  },
+  {
+    "source": "deadlines_dates.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 0,
+    "priority": 7
+  },
+  {
+    "source": "deadlines_dates.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 1,
+    "priority": 11
+  },
+  {
+    "source": "enrollment_procedures.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 0,
+    "priority": 15
+  },
+  {
+    "source": "enrollment_procedures.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 1,
+    "priority": 17
+  },
+  {
+    "source": "masters_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 0,
+    "priority": 17
+  },
+  {
+    "source": "masters_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 1,
+    "priority": 17
+  },
+  {
+    "source": "phd_admission.md",
+    "category": "03_admission_enrollment",
+    "chunk_id": 0,
+    "priority": 19
+  },
+  {
+    "source": "bachelors_programs.md",
+    "category": "04_academic_programs",
+    "chunk_id": 0,
+    "priority": 19
+  },
+  {
+    "source": "course_catalog.md",
+    "category": "04_academic_programs",
+    "chunk_id": 0,
+    "priority": 11
+  },
+  {
+    "source": "course_catalog.md",
+    "category": "04_academic_programs",
+    "chunk_id": 1,
+    "priority": 11
+  },
+  {
+    "source": "exchange_programs.md",
+    "category": "04_academic_programs",
+    "chunk_id": 0,
+    "priority": 13
+  },
+  {
+    "source": "exchange_programs.md",
+    "category": "04_academic_programs",
+    "chunk_id": 1,
+    "priority": 15
+  },
+  {
+    "source": "masters_programs.md",
+    "category": "04_academic_programs",
+    "chunk_id": 0,
+    "priority": 17
+  },
+  {
+    "source": "phd_programs.md",
+    "category": "04_academic_programs",
+    "chunk_id": 0,
+    "priority": 13
+  },
+  {
+    "source": "phd_programs.md",
+    "category": "04_academic_programs",
+    "chunk_id": 1,
+    "priority": 17
+  },
+  {
+    "source": "academic_advising.md",
+    "category": "05_student_services",
+    "chunk_id": 0,
+    "priority": 7
+  },
+  {
+    "source": "academic_advising.md",
+    "category": "05_student_services",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "career_services.md",
+    "category": "05_student_services",
+    "chunk_id": 0,
+    "priority": 1
+  },
+  {
+    "source": "career_services.md",
+    "category": "05_student_services",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "counseling_mental_health.md",
+    "category": "05_student_services",
+    "chunk_id": 0,
+    "priority": 1
+  },
+  {
+    "source": "counseling_mental_health.md",
+    "category": "05_student_services",
+    "chunk_id": 1,
+    "priority": 1
+  },
+  {
+    "source": "disability_services.md",
+    "category": "05_student_services",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "disability_services.md",
+    "category": "05_student_services",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "financial_aid_scholarships.md",
+    "category": "05_student_services",
+    "chunk_id": 0,
+    "priority": 9
+  },
+  {
+    "source": "financial_aid_scholarships.md",
+    "category": "05_student_services",
+    "chunk_id": 1,
+    "priority": 11
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 0,
+    "priority": 7
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 2,
+    "priority": 3
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 3,
+    "priority": 7
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 4,
+    "priority": 5
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 5,
+    "priority": 3
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 6,
+    "priority": 7
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 7,
+    "priority": 5
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 8,
+    "priority": 5
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 9,
+    "priority": 5
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 10,
+    "priority": 1
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 11,
+    "priority": 1
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 12,
+    "priority": 1
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 13,
+    "priority": 1
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 14,
+    "priority": 9
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 15,
+    "priority": 1
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 16,
+    "priority": 5
+  },
+  {
+    "source": "international_student_support.md",
+    "category": "05_student_services",
+    "chunk_id": 17,
+    "priority": 7
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 2,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 3,
+    "priority": 5
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 4,
+    "priority": 1
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 5,
+    "priority": 1
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 6,
+    "priority": 7
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 7,
+    "priority": 1
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 8,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 9,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 10,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 11,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 12,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 13,
+    "priority": 9
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 14,
+    "priority": 1
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 15,
+    "priority": 1
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 16,
+    "priority": 1
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 17,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 18,
+    "priority": 3
+  },
+  {
+    "source": "student_housing.md",
+    "category": "05_student_services",
+    "chunk_id": 19,
+    "priority": 7
+  },
+  {
+    "source": "cafeteria_dining.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "cafeteria_dining.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "computer_labs.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 0,
+    "priority": 5
+  },
+  {
+    "source": "computer_labs.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "library_resources.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 0,
+    "priority": 9
+  },
+  {
+    "source": "library_resources.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "sports_facilities.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 0,
+    "priority": 7
+  },
+  {
+    "source": "sports_facilities.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "study_spaces.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 0,
+    "priority": 5
+  },
+  {
+    "source": "study_spaces.md",
+    "category": "06_campus_facilities",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "academic_calendar.md",
+    "category": "07_academic_policies",
+    "chunk_id": 0,
+    "priority": 1
+  },
+  {
+    "source": "academic_calendar.md",
+    "category": "07_academic_policies",
+    "chunk_id": 1,
+    "priority": 9
+  },
+  {
+    "source": "attendance_policies.md",
+    "category": "07_academic_policies",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "attendance_policies.md",
+    "category": "07_academic_policies",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "examination_regulations.md",
+    "category": "07_academic_policies",
+    "chunk_id": 0,
+    "priority": 1
+  },
+  {
+    "source": "examination_regulations.md",
+    "category": "07_academic_policies",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "grading_system.md",
+    "category": "07_academic_policies",
+    "chunk_id": 0,
+    "priority": 1
+  },
+  {
+    "source": "grading_system.md",
+    "category": "07_academic_policies",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "leave_of_absence.md",
+    "category": "07_academic_policies",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "leave_of_absence.md",
+    "category": "07_academic_policies",
+    "chunk_id": 1,
+    "priority": 11
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 0,
+    "priority": 9
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 2,
+    "priority": 9
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 3,
+    "priority": 3
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 4,
+    "priority": 5
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 5,
+    "priority": 7
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 6,
+    "priority": 3
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 7,
+    "priority": 5
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 8,
+    "priority": 3
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 9,
+    "priority": 3
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 10,
+    "priority": 5
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 11,
+    "priority": 5
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 12,
+    "priority": 3
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 13,
+    "priority": 3
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 14,
+    "priority": 3
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 15,
+    "priority": 5
+  },
+  {
+    "source": "appointment_scheduling_complete.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 16,
+    "priority": 3
+  },
+  {
+    "source": "certificate_requests.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "certificate_requests.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 1,
+    "priority": 9
+  },
+  {
+    "source": "change_of_program.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 0,
+    "priority": 13
+  },
+  {
+    "source": "change_of_program.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 1,
+    "priority": 17
+  },
+  {
+    "source": "registration_procedures.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 0,
+    "priority": 7
+  },
+  {
+    "source": "registration_procedures.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 1,
+    "priority": 11
+  },
+  {
+    "source": "transcript_requests.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 0,
+    "priority": 5
+  },
+  {
+    "source": "transcript_requests.md",
+    "category": "08_administrative_procedures",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "graduate_research.md",
+    "category": "09_research_opportunities",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "graduate_research.md",
+    "category": "09_research_opportunities",
+    "chunk_id": 1,
+    "priority": 11
+  },
+  {
+    "source": "research_centers.md",
+    "category": "09_research_opportunities",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "research_centers.md",
+    "category": "09_research_opportunities",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "research_facilities.md",
+    "category": "09_research_opportunities",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "research_facilities.md",
+    "category": "09_research_opportunities",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "undergraduate_research.md",
+    "category": "09_research_opportunities",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "undergraduate_research.md",
+    "category": "09_research_opportunities",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "cultural_programs.md",
+    "category": "10_campus_life",
+    "chunk_id": 0,
+    "priority": 11
+  },
+  {
+    "source": "cultural_programs.md",
+    "category": "10_campus_life",
+    "chunk_id": 1,
+    "priority": 11
+  },
+  {
+    "source": "events_activities.md",
+    "category": "10_campus_life",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "events_activities.md",
+    "category": "10_campus_life",
+    "chunk_id": 1,
+    "priority": 9
+  },
+  {
+    "source": "sports_clubs.md",
+    "category": "10_campus_life",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "sports_clubs.md",
+    "category": "10_campus_life",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "student_organizations.md",
+    "category": "10_campus_life",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "student_organizations.md",
+    "category": "10_campus_life",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "campus_locations.md",
+    "category": "11_location_transportation",
+    "chunk_id": 0,
+    "priority": 5
+  },
+  {
+    "source": "campus_locations.md",
+    "category": "11_location_transportation",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "hannover_city_guide.md",
+    "category": "11_location_transportation",
+    "chunk_id": 0,
+    "priority": 1
+  },
+  {
+    "source": "hannover_city_guide.md",
+    "category": "11_location_transportation",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "hannover_city_guide.md",
+    "category": "11_location_transportation",
+    "chunk_id": 2,
+    "priority": 5
+  },
+  {
+    "source": "parking_information.md",
+    "category": "11_location_transportation",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "parking_information.md",
+    "category": "11_location_transportation",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "public_transportation.md",
+    "category": "11_location_transportation",
+    "chunk_id": 0,
+    "priority": 1
+  },
+  {
+    "source": "public_transportation.md",
+    "category": "11_location_transportation",
+    "chunk_id": 1,
+    "priority": 5
+  },
+  {
+    "source": "department_contacts.md",
+    "category": "12_contact_information",
+    "chunk_id": 0,
+    "priority": 7
+  },
+  {
+    "source": "department_contacts.md",
+    "category": "12_contact_information",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "department_contacts.md",
+    "category": "12_contact_information",
+    "chunk_id": 2,
+    "priority": 9
+  },
+  {
+    "source": "emergency_contacts.md",
+    "category": "12_contact_information",
+    "chunk_id": 0,
+    "priority": 3
+  },
+  {
+    "source": "emergency_contacts.md",
+    "category": "12_contact_information",
+    "chunk_id": 1,
+    "priority": 3
+  },
+  {
+    "source": "emergency_contacts.md",
+    "category": "12_contact_information",
+    "chunk_id": 2,
+    "priority": 5
+  },
+  {
+    "source": "faq_contacts.md",
+    "category": "12_contact_information",
+    "chunk_id": 0,
+    "priority": 31
+  },
+  {
+    "source": "office_hours.md",
+    "category": "12_contact_information",
+    "chunk_id": 0,
+    "priority": 5
+  },
+  {
+    "source": "office_hours.md",
+    "category": "12_contact_information",
+    "chunk_id": 1,
+    "priority": 7
+  },
+  {
+    "source": "office_hours.md",
+    "category": "12_contact_information",
+    "chunk_id": 2,
+    "priority": 5
+  },
+  {
+    "source": "office_hours.md",
+    "category": "12_contact_information",
+    "chunk_id": 3,
+    "priority": 7
+  }
+]

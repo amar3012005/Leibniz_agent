@@ -1,0 +1,2352 @@
+{
+  "b89374b398f756747c20092fdc774550": {
+    "text": "Hello! This is a test of the ElevenLabs text to speech system.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761583134.5570593,
+    "last_accessed": 1761583134.5570593,
+    "file_size": 180602
+  },
+  "b15ff3cf81250d9b69ab96b808648292": {
+    "text": "Testing helpful emotion with ElevenLabs.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761583135.4232621,
+    "last_accessed": 1761583135.4232621,
+    "file_size": 111500
+  },
+  "8f1c3eb7ad7aa4edfa3b175da9198f7d": {
+    "text": "Testing excited emotion with ElevenLabs.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "excited",
+    "created": 1761583136.4180233,
+    "last_accessed": 1761583136.4180233,
+    "file_size": 113730
+  },
+  "c35cff1b6c30df461458cc755539ed8a": {
+    "text": "Testing calm emotion with ElevenLabs.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "calm",
+    "created": 1761583137.324036,
+    "last_accessed": 1761583137.324036,
+    "file_size": 111500
+  },
+  "8a205e958526da0fabf63caecf9d90a0": {
+    "text": "Testing professional emotion with ElevenLabs.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "professional",
+    "created": 1761583138.3396218,
+    "last_accessed": 1761583138.3396218,
+    "file_size": 115958
+  },
+  "b9a6262794620790bf9a4d7ce6a2cb89": {
+    "text": "This phrase will be cached for faster playback.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761583139.4473026,
+    "last_accessed": 1761583139.4473026,
+    "file_size": 138250
+  },
+  "a03f86c145f0c78c62b7f32254ea0b20": {
+    "text": "Hello! I'm TARA, the receptionist at Leibniz University. Welcome! How may I assist you today?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761583965.8243227,
+    "last_accessed": 1761659305.248271,
+    "file_size": 307662
+  },
+  "944a78ec12b254654a9bd6e526bc783f": {
+    "text": "Hello there",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761658661.1392128,
+    "last_accessed": 1761659209.2370243,
+    "file_size": 40168
+  },
+  "9bed55205687e5d03b613bcea90ded94": {
+    "text": "I didn't catch that. Could you please repeat?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "calm",
+    "created": 1761665672.5544004,
+    "last_accessed": 1762088257.3567588,
+    "file_size": 111500
+  },
+  "c3086f54e05771bfed61d3aa2493da7b": {
+    "text": "I'm having trouble hearing you. Let me try again - please speak clearly.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "calm",
+    "created": 1761665680.715011,
+    "last_accessed": 1761735630.0523868,
+    "file_size": 176144
+  },
+  "5534630ef1d37430d9bd227f3282e308": {
+    "text": "I'm still not getting any input. If you need help, please try speaking louder or check your micropho",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "calm",
+    "created": 1761665694.0242548,
+    "last_accessed": 1761735642.4567225,
+    "file_size": 267538
+  },
+  "b85a3da724797ba34282da20f30e4014": {
+    "text": "I haven't been able to hear you after several tries. Let's try again later when your microphone is w",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "professional",
+    "created": 1761665716.0598962,
+    "last_accessed": 1761665716.0598962,
+    "file_size": 312120
+  },
+  "329427e132d86823b9c46df0ac1a8dd8": {
+    "text": "I'm having trouble hearing you. Can you hear me? Please say yes or no.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "calm",
+    "created": 1761738636.3959742,
+    "last_accessed": 1762088260.4354787,
+    "file_size": 182832
+  },
+  "ceea6dd0474e54176f2b90a4a5a50c60": {
+    "text": "I didn't quite catch that. Could you tell me your full name? For example, 'John Smith' or 'Maria Gar",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761762768.704538,
+    "last_accessed": 1762034635.5758274,
+    "file_size": 367848
+  },
+  "3651768077e11ade158945f80364b009": {
+    "text": "I didn't catch an email address in that. Could you say it again? For example, 'john.smith@uni-hannov",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761762809.2729814,
+    "last_accessed": 1762071237.5001185,
+    "file_size": 410202
+  },
+  "6d29dff0323faa332a131b6fea36ef83": {
+    "text": "Perfect! And what's your phone number? Include the country code if you're calling from outside Germa",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761762825.8361077,
+    "last_accessed": 1762086382.233868,
+    "file_size": 260850
+  },
+  "a2e15d3000fe5aa1caad9cc5880b6a1b": {
+    "text": "Could you give me your full name (first and last)? Could you tell me your full name? For example, 'J",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761765484.0745802,
+    "last_accessed": 1761851359.385883,
+    "file_size": 425806
+  },
+  "7afc2ddc61dfa9b50e0e8065b0e1148f": {
+    "text": "rag_1761770278625_3160893501840",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761770287.790417,
+    "last_accessed": 1761770287.790417,
+    "file_size": 396826
+  },
+  "984ce53f9905b58ca2361fd54a09076d": {
+    "text": "rag_1761804120449_2598262256256",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761804124.446547,
+    "last_accessed": 1761804124.446547,
+    "file_size": 501596
+  },
+  "3c63c5c2a32e20bea94c9bff4d6f3897": {
+    "text": "rag_1761851289535_2695691425536.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761851292.7914107,
+    "last_accessed": 1761851292.7914107,
+    "file_size": 356702
+  },
+  "02ffa8535f61e205260779801c72ce24": {
+    "text": "That name seems a bit short. Could you tell me your full name? For example, 'John Smith' or 'Maria G",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761851342.70223,
+    "last_accessed": 1762034649.6589282,
+    "file_size": 325496
+  },
+  "cf1bf4a844965c949e38e825c7b1047d": {
+    "text": "I didn't catch a phone number. Could you say it again? For example, '+49 511 762 2020' or '0511 762 ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761851455.3233511,
+    "last_accessed": 1761851455.3233511,
+    "file_size": 561782
+  },
+  "e8b36b51c6ba085ca4298548e2e39d74": {
+    "text": "I didn't catch that. Is the information correct? Please say 'yes' to confirm or 'no' to make changes",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761851749.1757076,
+    "last_accessed": 1761851832.6959639,
+    "file_size": 283142
+  },
+  "581f54c4403c04c8433bf93e3a7d73fd": {
+    "text": "rag_1761851915824_2695629307120.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761851917.795582,
+    "last_accessed": 1761851917.795582,
+    "file_size": 370078
+  },
+  "0d0a14c973be8a0e36eadcdcfa1852b9": {
+    "text": "rag_1761864628382_2669147656112.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761864631.3990057,
+    "last_accessed": 1761864631.3990057,
+    "file_size": 358932
+  },
+  "2a5bae9fd54ee0b7ed4219d89ff98159": {
+    "text": "Thanks for chatting! Have a great day, and feel free to reach out anytime you need help.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "calm",
+    "created": 1761864648.6368222,
+    "last_accessed": 1762077051.7799034,
+    "file_size": 202894
+  },
+  "0bca23ae504fdf7de473de4ffbfe1329": {
+    "text": "rag_1761865006125_2669147656240.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761865009.0243998,
+    "last_accessed": 1761867481.7284188,
+    "file_size": 238560
+  },
+  "9f355dfbdf8b2cf8cff5036ed1f9f5b4": {
+    "text": "rag_1761865132697_1608307922992.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761865138.163821,
+    "last_accessed": 1761865144.591531,
+    "file_size": 292058
+  },
+  "f44f64b58f157c88693872356877d8ce": {
+    "text": "I'm having trouble accessing that information right now. Could you try asking in a different way?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761865769.2599084,
+    "last_accessed": 1761865774.4882305,
+    "file_size": 236330
+  },
+  "2f721863b4ee08fb112f1743630f97b1": {
+    "text": "So you're looking for info about sports at Leibniz University?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761867937.936558,
+    "last_accessed": 1761867937.936558,
+    "file_size": 171686
+  },
+  "10efbd94b32e031ddcadc326bad1cbd8": {
+    "text": "It offers a ton of different courses and activities.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761867950.7182214,
+    "last_accessed": 1761867950.7182214,
+    "file_size": 138250
+  },
+  "ff4b59834561a7b07ea431833ca61c5a": {
+    "text": "To join in, you'll need to register for the courses.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761867962.1380892,
+    "last_accessed": 1761867962.1380892,
+    "file_size": 136020
+  },
+  "9fadc0e2dabd13cc247e065434d3b61a": {
+    "text": "The Hochschulsport program can give you the details on fees and semesters....",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761867967.0715375,
+    "last_accessed": 1761867967.0715375,
+    "file_size": 196206
+  },
+  "770e8c2e2d35789b414ceb9f95cef74d": {
+    "text": "Let me know if you'd like more details!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761867972.4648564,
+    "last_accessed": 1761910154.1805913,
+    "file_size": 89208
+  },
+  "1d604fa7a7c7f4270275edddc79a9ecb": {
+    "text": "Let me know if you need more details!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896527.1662452,
+    "last_accessed": 1761896563.9733155,
+    "file_size": 91438
+  },
+  "81c870935a4bc722fc4886d19e702b3c": {
+    "text": "Deadlines you'll want to note: absolutely!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896539.1175678,
+    "last_accessed": 1761896539.1175678,
+    "file_size": 129334
+  },
+  "e78318427afc4a5e5642b0db48833dcf": {
+    "text": "Leibniz University was founded in 1831.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896543.131937,
+    "last_accessed": 1761954617.643073,
+    "file_size": 131562
+  },
+  "b070f1205c9299f548c8b39e4211c69a": {
+    "text": "If you're interested in learning more about the key milestones in the university's development from ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896551.5040734,
+    "last_accessed": 1761896551.5040734,
+    "file_size": 425806
+  },
+  "c3e9fc1ee7c568e43966cfb3bba131b9": {
+    "text": "Set a reminder so you don't miss it!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896561.7416618,
+    "last_accessed": 1761896561.7416618,
+    "file_size": 89208
+  },
+  "f1227b55007b409e464809b707e61d79": {
+    "text": "Absolutely!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896578.3322985,
+    "last_accessed": 1761896578.3322985,
+    "file_size": 46856
+  },
+  "41b60ff314b3a594a901cb9feef453d5": {
+    "text": "I can tell you about the Computer Science program here at Leibniz University.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896580.7478068,
+    "last_accessed": 1761896580.7478068,
+    "file_size": 193978
+  },
+  "7c8dc1532de38b17d2b17b4a24901b46": {
+    "text": "Here's the deal: Computer Science is one of those programs where admission is usually guaranteed if ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896586.8146307,
+    "last_accessed": 1761896586.8146307,
+    "file_size": 439180
+  },
+  "d3f88506ac1e7208ec84d881d10b3dc8": {
+    "text": "Well, the Faculty of Mathematics and Physics here at Leibniz University is a great place to start!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896625.227887,
+    "last_accessed": 1761896625.227887,
+    "file_size": 238560
+  },
+  "75237a554b635178c7c51871d35b6e83": {
+    "text": "We offer programs in both pure and applied mathematics, as well as theoretical and experimental phys",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896632.3358514,
+    "last_accessed": 1761896632.3358514,
+    "file_size": 325496
+  },
+  "4a515c2366f2541d003e8b1ffc6960ac": {
+    "text": "Okay, great question!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896652.3712,
+    "last_accessed": 1761896652.3712,
+    "file_size": 69146
+  },
+  "7b3c2aeaf375597638f5fb7188499b80": {
+    "text": "I can definitely give you some general information about studying physics and mathematics here, and ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896655.548103,
+    "last_accessed": 1761896655.548103,
+    "file_size": 352244
+  },
+  "e9e809485f93e308c890dc8dfbedaffd": {
+    "text": "So basically, both physics and mathematics are studied through a combination of lectures, tutorials,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761896664.7709773,
+    "last_accessed": 1761896664.7709773,
+    "file_size": 367848
+  },
+  "a618a1555a9965bf337e6982f6b8ee18": {
+    "text": "I'm Lexi, and I'm a university assistant here at Leibniz University Institute.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761897147.4232726,
+    "last_accessed": 1761897147.4232726,
+    "file_size": 225186
+  },
+  "66c8be9e014aa88f30a54476cdf34785": {
+    "text": "How can I help you today?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761898858.9561787,
+    "last_accessed": 1761898858.9561787,
+    "file_size": 66918
+  },
+  "fa8f69982610aea2debd7c2e8dcaa082": {
+    "text": "Okay, I can help with that.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761907665.7296307,
+    "last_accessed": 1761978686.0568821,
+    "file_size": 66918
+  },
+  "e998251900160402f7a2db822039ca18": {
+    "text": "Opening hours vary depending on which academic section you need.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761907665.9902453,
+    "last_accessed": 1761907665.9902453,
+    "file_size": 176144
+  },
+  "98bbdee37b6a828beee266c1b1f2ee45": {
+    "text": "Appointments are required for most services.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761907668.4307017,
+    "last_accessed": 1761907668.4307017,
+    "file_size": 120416
+  },
+  "4b7e2a84ca5b35c50d91fb51490de244": {
+    "text": "*   **International Office:** Walk-in hours are Tuesday and Thursday 10:00-12:00, and Wednesday 14:0",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761907670.1208668,
+    "last_accessed": 1761907670.1208668,
+    "file_size": 452554
+  },
+  "a3c5762577ebfb2f8d91163c6559754a": {
+    "text": "For example, are you looking for the opening hours of the Enrollment Office, the Examinations Office",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910030.428895,
+    "last_accessed": 1761910030.428895,
+    "file_size": 309892
+  },
+  "abdbae964e28e7b6215f3d88877587d8": {
+    "text": "You can also email info@uni-hannover.de for general questions.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910039.8100176,
+    "last_accessed": 1761910039.8100176,
+    "file_size": 200664
+  },
+  "96470e68e1403df88ebc0c48064b5b03": {
+    "text": "Okay, I can help with that!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910150.4905627,
+    "last_accessed": 1761978644.0090902,
+    "file_size": 71376
+  },
+  "fb50982b2c14231b918678f193d1727e": {
+    "text": "To give you the most accurate information about opening hours for a specific academic section, I nee",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910151.5687592,
+    "last_accessed": 1761910151.5687592,
+    "file_size": 394598
+  },
+  "14822a245bb27a7ee842874498027ad8": {
+    "text": "If it's a general inquiry, the Central Information Desk at the main building (Welfenschloss) is open",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910154.1795914,
+    "last_accessed": 1761910154.1795914,
+    "file_size": 461472
+  },
+  "b8fd98bfe3673347b1e517d40f1f808e": {
+    "text": "Okay, sure.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910163.4756956,
+    "last_accessed": 1761910163.4756956,
+    "file_size": 46856
+  },
+  "49e912851a193e18cf7b4239343c066f": {
+    "text": "The Faculty of Mathematics and Physics, also known as F05, is located on the Schneiderberg Campus.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910166.2589953,
+    "last_accessed": 1761910166.2589953,
+    "file_size": 345558
+  },
+  "9235ded702ffa9a58147339546638cd7": {
+    "text": "They offer programs in mathematics, both pure and applied, as well as theoretical and experimental p",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910166.487224,
+    "last_accessed": 1761910166.487224,
+    "file_size": 323266
+  },
+  "3f98a643bcd323f2f226de00e3be7f4e": {
+    "text": "I don't have a list of the specific departments or student numbers right now, but that might be avai",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761910175.4729164,
+    "last_accessed": 1761910175.4729164,
+    "file_size": 316578
+  },
+  "0035553f7acb29dbaff698cc43c82e11": {
+    "text": "You can find them in the main building (Welfenschloss) or reach them by phone at +49 511 762-0.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761917255.7485452,
+    "last_accessed": 1761917285.0122397,
+    "file_size": 399056
+  },
+  "cf1e4e86bd7cc6a7baf9d91209ba3ed8": {
+    "text": "You can also email a general inquiry to info@uni-hannover.de.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761917265.7856083,
+    "last_accessed": 1761917293.7482429,
+    "file_size": 180602
+  },
+  "d78403336046940b66cb4b1012d03d1c": {
+    "text": "Hi.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761923066.425262,
+    "last_accessed": 1761923066.425262,
+    "file_size": 26794
+  },
+  "14716aea5fc446d095980387ee5705eb": {
+    "text": "I'm not sure what you mean by \"working house for academic section.\" Could you clarify what you're lo",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761923066.935957,
+    "last_accessed": 1761923066.935957,
+    "file_size": 271996
+  },
+  "34a6881dbe603ab869b7e08278fd21f2": {
+    "text": "If you're trying to find study spaces, I can tell you about those.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761923068.0910594,
+    "last_accessed": 1761923068.0910594,
+    "file_size": 173916
+  },
+  "18ab1b54e32d65171a85f3522bc31ea5": {
+    "text": "We have study spaces at the Main Campus (Welfenschloss), Schneiderberg Campus, and Appelstra\u00dfe Campu",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761923073.836808,
+    "last_accessed": 1761923073.836808,
+    "file_size": 321036
+  },
+  "8a999c884dc0f417958e7a71e9ea36bd": {
+    "text": "You can also reserve study rooms online.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761923076.5341194,
+    "last_accessed": 1761923076.5341194,
+    "file_size": 111500
+  },
+  "eda1a9c216ba80673e98382241b8ad32": {
+    "text": "If you're looking for a specific department, take a look at the contact information in the [Departme",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761923082.3892403,
+    "last_accessed": 1761923082.3892403,
+    "file_size": 550636
+  },
+  "1a3368df13b114754d01398b9354a8a5": {
+    "text": "You can also find office hours in the [Office Hours](../12_contact_information/office_hours.md) docu",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761923084.0070794,
+    "last_accessed": 1761923084.0070794,
+    "file_size": 381224
+  },
+  "89909840e8043c2fe5df18b90d10c75c": {
+    "text": "Let me check the office hours for you.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761927508.497049,
+    "last_accessed": 1761943789.5277262,
+    "file_size": 95896
+  },
+  "1644711458553d4113abec4a3e50d775": {
+    "text": "I can help you with that contact information.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761927509.436684,
+    "last_accessed": 1761928809.5346684,
+    "file_size": 102584
+  },
+  "38bbccb86af7b09827246ab790b62604": {
+    "text": "I'll look up the admission requirements.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761927510.5487936,
+    "last_accessed": 1761928809.5402033,
+    "file_size": 98126
+  },
+  "6a13e5062254b5e2e00bc7b137d5fe7d": {
+    "text": "Let me help you schedule that appointment.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761927511.4950094,
+    "last_accessed": 1761928809.547423,
+    "file_size": 98126
+  },
+  "2e47dd518482d4a599cc534109dc202d": {
+    "text": "Let me find the tuition information for you.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761927512.4336627,
+    "last_accessed": 1761928809.552509,
+    "file_size": 109272
+  },
+  "21e1af56d0aed7ce26f603b55bf52a99": {
+    "text": "I'll check the academic calendar.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761927513.3145595,
+    "last_accessed": 1761928809.5577738,
+    "file_size": 98126
+  },
+  "5163a6769205eca968d9980e310232ea": {
+    "text": "One moment please.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761927514.152175,
+    "last_accessed": 1761954044.659216,
+    "file_size": 53544
+  },
+  "cd98d7fd7a95e24a8c0f776442577de5": {
+    "text": "Leibniz University Hannover is a well-regarded university with a rich history.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761950270.9092298,
+    "last_accessed": 1761950270.9092298,
+    "file_size": 214040
+  },
+  "0d0bcd6a1099f7d9219c322792a786af": {
+    "text": "It's named after Gottfried Wilhelm Leibniz and is part of the TU9,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761950271.1607404,
+    "last_accessed": 1761950271.1607404,
+    "file_size": 211810
+  },
+  "1b1edc7fc80ed51ad5b382cb31e67048": {
+    "text": "a group of leading German Institutes of Technology.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761950275.7534144,
+    "last_accessed": 1761950275.7534144,
+    "file_size": 140478
+  },
+  "b2643a372d86795862e518622bdcc555": {
+    "text": "We offer a wide range of programs and are known for our research.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761950279.1074922,
+    "last_accessed": 1761950279.1074922,
+    "file_size": 189520
+  },
+  "ab0b3e94e333ef8dacb9669b4eca5817": {
+    "text": "If you have specific questions about rankings, history, or anything else, just let me know.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761950281.783722,
+    "last_accessed": 1761950281.783722,
+    "file_size": 245248
+  },
+  "f4aba86b4be2ba2392027dbf08bfd6c0": {
+    "text": "Or you can email info@uni-hannover.de for general university questions.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761950284.8767786,
+    "last_accessed": 1761950284.8767786,
+    "file_size": 222956
+  },
+  "9bbb76425bcaffc3fb4014f26c1845ca": {
+    "text": "I understand you're looking for information on university issues,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761951999.111125,
+    "last_accessed": 1761951999.111125,
+    "file_size": 164998
+  },
+  "a329f1a39268dc1f617956298c0e99c0": {
+    "text": "Okay,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761951999.3970506,
+    "last_accessed": 1761951999.3970506,
+    "file_size": 33482
+  },
+  "09e46599e5d4fe6d5cd107fa1c62f354": {
+    "text": "problems,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952000.9913325,
+    "last_accessed": 1761952000.9913325,
+    "file_size": 44626
+  },
+  "252b7d4b34792d7cc7c9886e73fb6020": {
+    "text": "challenges,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952004.4749582,
+    "last_accessed": 1761952004.4749582,
+    "file_size": 53544
+  },
+  "4e93c49d0391b424db71716e429c6c40": {
+    "text": "or concerns.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952005.3199935,
+    "last_accessed": 1761952005.3199935,
+    "file_size": 49084
+  },
+  "a0c3e3d8087ba15fe4e88b58e51267b3": {
+    "text": "To help me point you in the right direction, could you be a bit more specific about what you're inte",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952007.024568,
+    "last_accessed": 1761952007.024568,
+    "file_size": 267538
+  },
+  "be61a83bcad2cc12c02c4221434234ef": {
+    "text": "For example, are you concerned about academic issues, housing, student life, or something else.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952008.5790987,
+    "last_accessed": 1761952008.5790987,
+    "file_size": 243018
+  },
+  "f220250f190e8213a53fc96ce89230f0": {
+    "text": "Once I have a better idea, I can try to provide relevant information or suggest where you can find i",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952014.3401022,
+    "last_accessed": 1761952014.3401022,
+    "file_size": 278684
+  },
+  "6a42641478d329c6a7edac06b21557aa": {
+    "text": "We have a comprehensive sports program called Hochschulsport,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952055.6413674,
+    "last_accessed": 1761952055.6413674,
+    "file_size": 171686
+  },
+  "27b7b56f215d01cdcf58efece86218ed": {
+    "text": "Okay, here's some information about sports activities at Leibniz University.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952055.776117,
+    "last_accessed": 1761952055.776117,
+    "file_size": 220726
+  },
+  "5aad69a37ce8befe01638b0d1577d3f3": {
+    "text": "which offers a wide range of courses and activities,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952062.589962,
+    "last_accessed": 1761952062.589962,
+    "file_size": 144936
+  },
+  "344e1335f0e976d1e71282ea814b7324": {
+    "text": "from team sports to fitness classes.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952066.1233666,
+    "last_accessed": 1761952066.1233666,
+    "file_size": 113730
+  },
+  "eadb48e38b485afbbb00e7e4210b67eb": {
+    "text": "We also have various sports facilities, including a fitness center, sports halls for basketball and ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952070.1761456,
+    "last_accessed": 1761952070.1761456,
+    "file_size": 465930
+  },
+  "946a167a7915ae890f0d63d7e02f92ec": {
+    "text": "You can find information on how to register, course offerings, schedules, and costs on the universit",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761952073.0362558,
+    "last_accessed": 1761952073.0362558,
+    "file_size": 519428
+  },
+  "a6ea98f24187cb93b100a1e958e82711": {
+    "text": "It sounds like you're looking for information about the Faculty of Risk and Mathematics.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761953482.9613829,
+    "last_accessed": 1761953482.9613829,
+    "file_size": 207352
+  },
+  "a9862068a6c977dfed5956235cb117c1": {
+    "text": "We don't have a specific \"Faculty of Risk and Mathematics.\" However, the Faculty of Mathematics and ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761953485.6097758,
+    "last_accessed": 1761953485.6097758,
+    "file_size": 637572
+  },
+  "5ba3ac7775196cd9de6f633058cfd759": {
+    "text": "You can find them on the Schneiderberg Campus.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761953489.3656704,
+    "last_accessed": 1761953489.3656704,
+    "file_size": 107042
+  },
+  "5d1c794c7b9c07cede51d4932570d9c4": {
+    "text": "The Faculty of Economics and Management (F09) also covers finance, which might be relevant to your i",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761953503.7528627,
+    "last_accessed": 1761953503.7528627,
+    "file_size": 358932
+  },
+  "64e157649d4194edb6009d827d2da107": {
+    "text": "Is there anything specific about those faculties I can help you with?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761953505.2271378,
+    "last_accessed": 1761953505.2271378,
+    "file_size": 178374
+  },
+  "eff1bef04b91f3004508299a19a46a60": {
+    "text": "Just a moment.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761953517.1291778,
+    "last_accessed": 1761953518.4385161,
+    "file_size": 37940
+  },
+  "879111b0aca529fe8482136f3356cc8b": {
+    "text": "Are you looking for information about a specific service within the Internal Service Building, or ju",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761953707.6435146,
+    "last_accessed": 1761953707.6435146,
+    "file_size": 361162
+  },
+  "4e51761a8d26d3e1005db1526ba3a4cd": {
+    "text": "Knowing what you need will help me find the right information for you.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761953709.4678004,
+    "last_accessed": 1761953709.4678004,
+    "file_size": 158312
+  },
+  "e79e5442897960c82d6c851cfc927393": {
+    "text": "Okay, I think you're asking about the dates for the Winter Semester 2025/26.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954018.3436615,
+    "last_accessed": 1761954018.3436615,
+    "file_size": 258622
+  },
+  "cf36906a16b61ca173d09a2ae05e8a37": {
+    "text": "Lectures run from October 14, 2025, to February 6, 2026.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954018.3649309,
+    "last_accessed": 1761954018.3649309,
+    "file_size": 278684
+  },
+  "5c55d4f52b68c19657448422ed7d4818": {
+    "text": "The exam period is February 9 to March 6, 2026, and the Christmas break is December 20, 2025, to Jan",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954027.2188687,
+    "last_accessed": 1761954027.2188687,
+    "file_size": 477076
+  },
+  "ef079c25f49393c6da453c5b0959c3b6": {
+    "text": "Does that answer your question?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954031.536649,
+    "last_accessed": 1761954031.536649,
+    "file_size": 71376
+  },
+  "e505d1027b9ed0b21d5a1948edda4a79": {
+    "text": "Okay, I can give you a brief overview of the university's history.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954618.8733726,
+    "last_accessed": 1761954618.8733726,
+    "file_size": 178374
+  },
+  "31ef291b3eca3b1118c74c294fd37ad0": {
+    "text": "It's named after Gottfried Wilhelm Leibniz, a prominent philosopher and scientist.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954623.9159858,
+    "last_accessed": 1761954623.9159858,
+    "file_size": 249706
+  },
+  "a0cc1e0321849975acb1326b46d1d468": {
+    "text": "Unfortunately, the knowledge base doesn't have a detailed timeline of its evolution.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954626.542417,
+    "last_accessed": 1761954626.542417,
+    "file_size": 216268
+  },
+  "dbaf9a7ea02fb6e8680dfb531c9c1c5a": {
+    "text": "You might find more information on the university's official website or in the university library.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954631.8268938,
+    "last_accessed": 1761954631.8268938,
+    "file_size": 254164
+  },
+  "077e19dc4631a3356f786127699e5cc3": {
+    "text": "Let me check that for you.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761954642.2756948,
+    "last_accessed": 1761954644.100855,
+    "file_size": 62460
+  },
+  "79606d1b02cb1d70626260705c0560c3": {
+    "text": "It sounds like you're asking if a service center will be opening.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978175.7845867,
+    "last_accessed": 1761978175.7845867,
+    "file_size": 149396
+  },
+  "b7f8e687264f680e7057e4ebb65d9161": {
+    "text": "To give you the most accurate information, could you clarify which service center you're referring t",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978176.1054456,
+    "last_accessed": 1761978176.1054456,
+    "file_size": 265310
+  },
+  "c65bfe3a51523aa8787671e84b1cfeeb": {
+    "text": "If you're looking for general information or directions to a specific department, you can reach out ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978181.4215314,
+    "last_accessed": 1761978181.4215314,
+    "file_size": 365620
+  },
+  "a92e77d576eb289ca727c3b276a6d3c3": {
+    "text": "If you mean the Central Information Desk, it's located in the main building (Welfenschloss) and is o",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978186.9591432,
+    "last_accessed": 1761978186.9591432,
+    "file_size": 376764
+  },
+  "ca2ebdaed598002032cd2e5dd06185de": {
+    "text": "You can also call them at +49 511 762-0.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978194.1902916,
+    "last_accessed": 1761978664.660472,
+    "file_size": 200664
+  },
+  "9b51b073a94774f4a2332319e52167d7": {
+    "text": "\"The sports complex located...\" Ah, you're asking about the sports facilities!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978215.6589324,
+    "last_accessed": 1761978215.6589324,
+    "file_size": 187290
+  },
+  "4a2905a12c532a8d7458dde743ec9825": {
+    "text": "We have a fitness center with gym equipment, sports halls for things like basketball and volleyball,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978216.141715,
+    "last_accessed": 1761978216.141715,
+    "file_size": 461472
+  },
+  "94a017f15560b59a4781d31e01f9543f": {
+    "text": "You can find more detailed information about each of these, including how to access them, in the Spo",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978221.8344972,
+    "last_accessed": 1761978221.8344972,
+    "file_size": 372306
+  },
+  "d33ae212378c0c3f13c8ea1195f3bfe0": {
+    "text": "that houses the History Department?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978251.3257034,
+    "last_accessed": 1761978251.3257034,
+    "file_size": 91438
+  },
+  "9fc3b87cefa0602a491b2f0366f659eb": {
+    "text": "Okay, when you say \"history main building,\" are you looking for the address or location of the build",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978251.8465996,
+    "last_accessed": 1761978251.8465996,
+    "file_size": 285372
+  },
+  "57663a59d24f815da3152fff84a6c366": {
+    "text": "If so, that would be on the **Welfenschloss Campus (Main Campus)** at **Welfengarten 1, 30167 Hannov",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978259.354453,
+    "last_accessed": 1761978259.354453,
+    "file_size": 385682
+  },
+  "5859746c1f2690cb9f16352273bcc4b4": {
+    "text": "The tram stop is **Schneiderberg/Wilhelm-Busch-Museum**.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978261.0139055,
+    "last_accessed": 1761978261.0139055,
+    "file_size": 231872
+  },
+  "8e4262af81ab25233b41f5610d7c7d18": {
+    "text": "Is there anything else I can help you with regarding the History Department or the main building?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978268.949747,
+    "last_accessed": 1761978268.949747,
+    "file_size": 207352
+  },
+  "5f22f9782746ac45b81facf0478618a0": {
+    "text": "30167 Hannover.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978285.8112693,
+    "last_accessed": 1761978285.8112693,
+    "file_size": 80292
+  },
+  "b52774ec36aafa1b03f75d14bc0853cb": {
+    "text": "Okay, the main building is located on the Welfenschloss Campus at Welfengarten 1,",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978286.0104675,
+    "last_accessed": 1761978286.0104675,
+    "file_size": 211810
+  },
+  "59fdfe141dab53962234c135597308d8": {
+    "text": "You can reach it by taking the tram to the Schneiderberg/Wilhelm-Busch-Museum stop.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978292.6899257,
+    "last_accessed": 1761978292.6899257,
+    "file_size": 216268
+  },
+  "0e36514ecf7d1ee2865177391c2e8b8b": {
+    "text": "Inside, you'll find administration offices, the library, and some faculty departments.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978294.314971,
+    "last_accessed": 1761978294.314971,
+    "file_size": 227414
+  },
+  "40e20eb399aaf385037d6b9eb6600421": {
+    "text": "There's also a building directory and campus maps available if you need help finding something speci",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978298.9034882,
+    "last_accessed": 1761978298.9034882,
+    "file_size": 256392
+  },
+  "5ac1ecde44122e0cafd18c756b84f94d": {
+    "text": "To find a specific building, you can try a couple of things:\n\n1.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978645.0863545,
+    "last_accessed": 1761978645.0863545,
+    "file_size": 173916
+  },
+  "7d0b7660f056b6b90d4b32a19dd1ea5c": {
+    "text": "Check the online campus map on the university website.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978646.6347873,
+    "last_accessed": 1761978646.6347873,
+    "file_size": 151624
+  },
+  "5c4e4b38104e1d7c3b5c45390d3f5558": {
+    "text": "It's usually the easiest way to locate buildings.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978651.0804784,
+    "last_accessed": 1761978651.0804784,
+    "file_size": 138250
+  },
+  "eec3a9a15d9bcfdde256c747c22dc0e3": {
+    "text": "2.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978654.0266852,
+    "last_accessed": 1761978654.0266852,
+    "file_size": 37940
+  },
+  "7af7d8f56245adac4d96ddc4be4ca480": {
+    "text": "If you know the department you're looking for, the \"Department Contacts\" document might have the bui",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978657.4443285,
+    "last_accessed": 1761978657.4443285,
+    "file_size": 278684
+  },
+  "cc0e897bdf2c1941a8d2bfd56eb357ed": {
+    "text": "3.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978658.18989,
+    "last_accessed": 1761978658.18989,
+    "file_size": 31252
+  },
+  "7a26ce47b63508fd911e362c0921dcb6": {
+    "text": "For general help, the Central Information Desk in the main building (Welfenschloss) can give directi",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978664.6797411,
+    "last_accessed": 1761978664.6797411,
+    "file_size": 287600
+  },
+  "faf9b42ac37a1b1a0b499010575af8b1": {
+    "text": "It sounds like you're asking for information about the Faculty of Mathematics and Physics, and the F",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978687.7983413,
+    "last_accessed": 1761978687.7983413,
+    "file_size": 450326
+  },
+  "cea29c01c8df6a57a2f7cfdd381cb3fb": {
+    "text": "The Faculty of Mathematics and Physics (F05) is located on Schneiderberg Campus and focuses on pure ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978690.2400107,
+    "last_accessed": 1761978690.2400107,
+    "file_size": 537262
+  },
+  "2cae49f8923ef8d89418617ad2a26582": {
+    "text": "The Faculty of Electrical Engineering and Computer Science covers electrical engineering, informatio",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978699.4198577,
+    "last_accessed": 1761978699.4198577,
+    "file_size": 332182
+  },
+  "b1b1abc8635c6f7585fa45ebae9862c8": {
+    "text": "Let me know if you'd like more details about either of those!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978710.167329,
+    "last_accessed": 1761978710.167329,
+    "file_size": 140478
+  },
+  "2c316f233e0f7b1fd0f41af1c8d024b1": {
+    "text": "We have a B.Sc.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978729.8316033,
+    "last_accessed": 1761978729.8316033,
+    "file_size": 58002
+  },
+  "c5416a4e460398e350fcb4cda3b8e176": {
+    "text": "Okay, I can help you with information about the Computer Science programs here.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978730.1740317,
+    "last_accessed": 1761978730.1740317,
+    "file_size": 211810
+  },
+  "2d7c90add41e6ce64dce1d15f3890b6f": {
+    "text": "in Computer Science (Informatik), a B.Sc.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978736.5896254,
+    "last_accessed": 1761978736.5896254,
+    "file_size": 136020
+  },
+  "a1931dfaa38cac2b87225b939738833c": {
+    "text": "in Technical Computer Science (Technische Informatik), and an M.Sc.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978738.2023888,
+    "last_accessed": 1761978738.2023888,
+    "file_size": 227414
+  },
+  "ce2b8ea8c71f202acc334867baa59327": {
+    "text": "in Computer Science (Informatik).",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978740.569317,
+    "last_accessed": 1761978740.569317,
+    "file_size": 111500
+  },
+  "26466350aebfb273ea4390a34caa5c90": {
+    "text": "The B.Sc.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978745.213293,
+    "last_accessed": 1761978745.213293,
+    "file_size": 51314
+  },
+  "10a6ee77fbfce31d2868fdec7904e8c9": {
+    "text": "in Computer Science and the B.Sc.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978747.6219711,
+    "last_accessed": 1761978747.6219711,
+    "file_size": 104812
+  },
+  "58da026a3eb29fc6de30f6455ce462f0": {
+    "text": "in Technical Computer Science are both 6 semesters long and taught in German.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978749.0365033,
+    "last_accessed": 1761978749.0365033,
+    "file_size": 216268
+  },
+  "b83bc342cd2ef2aad8f064005f7e592c": {
+    "text": "The M.Sc.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978750.7665462,
+    "last_accessed": 1761978750.7665462,
+    "file_size": 44626
+  },
+  "fd841f3316d4d93fea5963b319bb62e6": {
+    "text": "is 4 semesters long and offers courses in both English and German.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978755.5956378,
+    "last_accessed": 1761978755.5956378,
+    "file_size": 209582
+  },
+  "8c1500abd037f9385b2d6fad6c932dd7": {
+    "text": "Each program has core modules and specialization tracks.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978756.63041,
+    "last_accessed": 1761978756.63041,
+    "file_size": 164998
+  },
+  "c534588a57aeaebb87a1da21ee132096": {
+    "text": "To get a complete list of all courses offered, I recommend checking the university's online course c",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978761.2595272,
+    "last_accessed": 1761978761.2595272,
+    "file_size": 296516
+  },
+  "334e17a702ed26511b0a96da106e3bae": {
+    "text": "You can find it on the Leibniz University website under the Computer.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978764.4495301,
+    "last_accessed": 1761978764.4495301,
+    "file_size": 187290
+  },
+  "c3d26d9a76d421bf65f349e6b2f7de44": {
+    "text": "Hello!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978786.1434617,
+    "last_accessed": 1762086619.212463,
+    "file_size": 37940
+  },
+  "31cab96bca6b62addcd5438b53f8a74b": {
+    "text": "I'm Lexi, your assistant for general information about Leibniz University.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978786.5177932,
+    "last_accessed": 1761978786.5177932,
+    "file_size": 189520
+  },
+  "46b46dec3a17af950da2ee5bd028367c": {
+    "text": "Leibniz University was originally founded in 1831 as the Higher Vocational School and renamed on Jul",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978788.8834724,
+    "last_accessed": 1761978788.8834724,
+    "file_size": 543948
+  },
+  "f26a6ddf08b4aa91c428734139cb4373": {
+    "text": "We are a public research university located in Hannover, Lower Saxony, Germany.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978793.274661,
+    "last_accessed": 1761978793.274661,
+    "file_size": 222956
+  },
+  "21ec53d4063cd750f2295317de4e2666": {
+    "text": "We have approximately 30,000 students, including around 3,500 international students.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978804.6822834,
+    "last_accessed": 1761978804.6822834,
+    "file_size": 294288
+  },
+  "0bd1d2c5b79041073235cd955c3c4e4d": {
+    "text": "For more details, you can check the general information document or the history and mission document",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978809.2683294,
+    "last_accessed": 1761978809.2683294,
+    "file_size": 280912
+  },
+  "e79bbee04fec76e99c8b9d113dabadfe": {
+    "text": "If you have more specific questions, feel free to ask!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1761978815.0762851,
+    "last_accessed": 1761978815.0762851,
+    "file_size": 140478
+  },
+  "0c0f4cde34e36c045b15007ccee7cd56": {
+    "text": "That's a pretty broad topic.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025141.147067,
+    "last_accessed": 1762025141.147067,
+    "file_size": 73606
+  },
+  "be41332dabb65f2f8a70e4baf15a1792": {
+    "text": "Okay, so you're asking about innovation.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025141.2800868,
+    "last_accessed": 1762025141.2800868,
+    "file_size": 109272
+  },
+  "3347045bb5e1cb05229064c81f0309ce": {
+    "text": "Can you be a little more specific about what aspect of innovation you're interested in?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025144.6983619,
+    "last_accessed": 1762025144.6983619,
+    "file_size": 205122
+  },
+  "aa881142e349f0515cc37f4ba8f6ee9f": {
+    "text": "Depending on what you want to know, I might be able to point you towards relevant resources or facul",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025146.4588819,
+    "last_accessed": 1762025146.4588819,
+    "file_size": 329954
+  },
+  "3fa45f1354d69a01f2d3f989bd223b82": {
+    "text": "It's also known as F02.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025482.994413,
+    "last_accessed": 1762025482.994413,
+    "file_size": 80292
+  },
+  "2ba44816f68d6f12baf3dd68100a646b": {
+    "text": "Okay, here's some information about the Faculty of Civil Engineering and Geodetic Science.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025483.7119455,
+    "last_accessed": 1762025483.7119455,
+    "file_size": 251934
+  },
+  "95ae350a5b5fd3637c688610c0f33fbb": {
+    "text": "I can tell you that it includes civil engineering, geodesy, geoinformatics, and construction.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025490.523158,
+    "last_accessed": 1762025490.523158,
+    "file_size": 316578
+  },
+  "661f0c95d24869836e54c3f53bed7716": {
+    "text": "Is there anything specific about the faculty you'd like to know?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025491.819326,
+    "last_accessed": 1762025491.819326,
+    "file_size": 156082
+  },
+  "0734bba05770578589bb58055d438efd": {
+    "text": "Okay, I can help you with that.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025509.1420288,
+    "last_accessed": 1762025509.1420288,
+    "file_size": 86980
+  },
+  "d4c45a140bb3b993b623bb659daab594": {
+    "text": "You're looking for details about course information and the curriculum.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025509.4666133,
+    "last_accessed": 1762025509.4666133,
+    "file_size": 180602
+  },
+  "c9664f1f3bda6a4ecf946691dcc5c688": {
+    "text": "We have a detailed guide called \"Course Catalog and Curriculum\" that explains how to access the onli",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025513.4434216,
+    "last_accessed": 1762025513.4434216,
+    "file_size": 606364
+  },
+  "c179dbddffb5cad225fd27a732922fe1": {
+    "text": "It also covers curriculum planning, including typical study plans, elective courses, and prerequisit",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025516.1775925,
+    "last_accessed": 1762025516.1775925,
+    "file_size": 338870
+  },
+  "10795251fbde1d58e0db003239a3eb52": {
+    "text": "You can also find information about course and examination registration.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025528.5463152,
+    "last_accessed": 1762025528.5463152,
+    "file_size": 200664
+  },
+  "5a4339f5d33ccc23cc91d9675bf6bbab": {
+    "text": "Is there anything specific within that topic you'd like to know more about?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025535.618457,
+    "last_accessed": 1762025535.618457,
+    "file_size": 189520
+  },
+  "cbdaa0128515ee6f63f4a10c54ae21eb": {
+    "text": "Okay, so you're looking for the location of the sports complex.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025551.2760057,
+    "last_accessed": 1762025551.2760057,
+    "file_size": 158312
+  },
+  "7f15f9cf5a38f371152b9af899599f43": {
+    "text": "The university has several sports facilities, including a fitness center, sports halls (for basketba",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025552.6915429,
+    "last_accessed": 1762025552.6915429,
+    "file_size": 720048
+  },
+  "6ddbed15030e0ff4e3b63cc4b37b8157": {
+    "text": "Unfortunately, I don't have the specific addresses for each of these facilities.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025555.8475602,
+    "last_accessed": 1762025555.8475602,
+    "file_size": 200664
+  },
+  "bbff5e9c8f4041b3244d40f6018a828b": {
+    "text": "You might find a campus map with building locations on the university website, or by contacting the ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762025571.782791,
+    "last_accessed": 1762025571.782791,
+    "file_size": 361162
+  },
+  "4666d74aee685b9bc65b3124bd350db5": {
+    "text": "That's okay, let's move on. What's your phone number?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762027064.5022645,
+    "last_accessed": 1762027064.5022645,
+    "file_size": 131562
+  },
+  "647e140386159067ec9031d4245f56d3": {
+    "text": "I couldn't understand that phone number. Could you try again? For example, '+49 511 762 2020'. Take ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762027074.8822002,
+    "last_accessed": 1762027074.8822002,
+    "file_size": 448096
+  },
+  "4554d21c2d9698d69103ee40c315d770": {
+    "text": "Hi there!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034036.1419437,
+    "last_accessed": 1762034036.1419437,
+    "file_size": 33482
+  },
+  "de7e06c0a3c15091086e4bed78d79d92": {
+    "text": "\"Bukan apa\" is a Malay phrase that roughly translates to \"it's nothing\" or \"no problem\" in English.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034036.6908119,
+    "last_accessed": 1762034036.6908119,
+    "file_size": 289830
+  },
+  "db6d8af316c708d6cb4153f7a8c48355": {
+    "text": "I don't have much more information about Malay phrases in my knowledge base, but you might find more",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034041.5020554,
+    "last_accessed": 1762034041.5020554,
+    "file_size": 501596
+  },
+  "7a33a4cdb260438a791872d96d880e59": {
+    "text": "Good luck!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034043.7100751,
+    "last_accessed": 1762034043.7100751,
+    "file_size": 37940
+  },
+  "d9355b951cfb76c6cfb577c0adf7b602": {
+    "text": "Got it! So your name is A-M-A S-A-H-I-P, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034610.1151047,
+    "last_accessed": 1762034610.1151047,
+    "file_size": 180602
+  },
+  "505a38c5ba826b79d00495f27df6464d": {
+    "text": "So your name is A-M-A S-A-H-I-P, am I right? Please say 'yes' or 'no'.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034618.6486588,
+    "last_accessed": 1762034618.6486588,
+    "file_size": 314350
+  },
+  "e5230158af03310ec0c92178d8ab02f3": {
+    "text": "No worries! What's your name? Take your time!",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034629.4038851,
+    "last_accessed": 1762071208.681412,
+    "file_size": 95896
+  },
+  "87d1dbd804c5cc1c169ea9049cdf3ce8": {
+    "text": "Got it! So your name is T-R-Y A-G-A-I-N, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034671.7182195,
+    "last_accessed": 1762034671.7182195,
+    "file_size": 193978
+  },
+  "5aef2630335da9463bd46123715a0547": {
+    "text": "So your name is T-R-Y A-G-A-I-N, am I right? Please say 'yes' or 'no'.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034680.410329,
+    "last_accessed": 1762034680.410329,
+    "file_size": 271996
+  },
+  "fa64239765dd58baceddfe03b748f969": {
+    "text": "Great! So your email is tomcruise@gmail.com.com, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034733.1863143,
+    "last_accessed": 1762034733.1863143,
+    "file_size": 198436
+  },
+  "3a843b0e1bb55c6d8cec076e87255fef": {
+    "text": "Great! So your email is pomcuic@gmail.com, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034752.5870292,
+    "last_accessed": 1762034752.5870292,
+    "file_size": 149396
+  },
+  "bab214754956f35fd9f078bda95424bc": {
+    "text": "Perfect! So your phone number is +49 630 180 56 56, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762034780.851964,
+    "last_accessed": 1762034780.851964,
+    "file_size": 276454
+  },
+  "9944408905cb9df01ed326eb277d25b9": {
+    "text": "Got it! So your name is A-M-A-R S-A-R-I, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071201.0683558,
+    "last_accessed": 1762071201.0683558,
+    "file_size": 205122
+  },
+  "5a09798d6ee01a1de439dee45b7c7500": {
+    "text": "Got it! So your name is A-M-A-R S-A-I, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071217.616807,
+    "last_accessed": 1762086348.9552026,
+    "file_size": 173916
+  },
+  "3e2fceb02fef2301d006c9dc2f272028": {
+    "text": "Great! So your email is amarsai2005@gmail.com, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071252.266987,
+    "last_accessed": 1762086372.6090152,
+    "file_size": 220726
+  },
+  "3c3029be2c2bbfe83d3de6589e8ad151": {
+    "text": "Perfect! So your phone number is +91 630 180 565 6, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071273.8901598,
+    "last_accessed": 1762071273.8901598,
+    "file_size": 231872
+  },
+  "dfe61b82462feb266bc02e46674e1647": {
+    "text": "Perfect! So you want to meet with Examination Office, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071310.692294,
+    "last_accessed": 1762086439.6726549,
+    "file_size": 147166
+  },
+  "fa96459733a3978621f0690db5138791": {
+    "text": "Sounds good! So you need Certificate Request, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071345.16496,
+    "last_accessed": 1762071345.16496,
+    "file_size": 140478
+  },
+  "5e6ebac224eee266ab37a8237f824608": {
+    "text": "I didn't catch that. Is all the information correct? Please say 'yes' to confirm or 'no' to make cha",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071472.623748,
+    "last_accessed": 1762071472.623748,
+    "file_size": 276454
+  },
+  "9d9e15d7e235e858dacbc2643d5ee13e": {
+    "text": "Hello.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071532.9713948,
+    "last_accessed": 1762071532.9713948,
+    "file_size": 31252
+  },
+  "610691afdb93fab66793049a32e26483": {
+    "text": "You're asking for general information, history, and programs for universities in India.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071533.514439,
+    "last_accessed": 1762071533.514439,
+    "file_size": 256392
+  },
+  "ff41f5442b79a97a2a293a949affb463": {
+    "text": "That's a very broad topic, as India has thousands of universities.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071534.9789248,
+    "last_accessed": 1762071534.9789248,
+    "file_size": 214040
+  },
+  "badac7e739dbc09545f920af41620a19": {
+    "text": "My knowledge base here at Leibniz is focused on our own institution, so I don't have specific, detai",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071541.2198603,
+    "last_accessed": 1762071541.2198603,
+    "file_size": 621968
+  },
+  "c181fde9ba6173920abb92f73648e7f6": {
+    "text": "For reliable information, I would suggest starting with the University Grants Commission (UGC) websi",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071545.0936837,
+    "last_accessed": 1762071545.0936837,
+    "file_size": 454784
+  },
+  "d0673d507fce901ffad11cd650185262": {
+    "text": "They should have comprehensive lists and official program details.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071557.5479326,
+    "last_accessed": 1762071557.5479326,
+    "file_size": 164998
+  },
+  "f87791ac14b30699c5f7fed9abfffcf0": {
+    "text": "Hi there.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071607.4564211,
+    "last_accessed": 1762071607.4564211,
+    "file_size": 37940
+  },
+  "12d7ddbade3e4b9f0d6aba6bc3e4301d": {
+    "text": "You're asking for clarification on sports examples and information details?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071607.9138427,
+    "last_accessed": 1762071607.9138427,
+    "file_size": 202894
+  },
+  "736610f82ff77955482526b761d566f9": {
+    "text": "The university's main resource for sports is the Hochschulsport (University Sports) website.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071609.523311,
+    "last_accessed": 1762071609.523311,
+    "file_size": 269768
+  },
+  "1706ff5c85f386c58a5f2224e1638df8": {
+    "text": "That site will have details on available sports, schedules, and registration.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071613.8861773,
+    "last_accessed": 1762071613.8861773,
+    "file_size": 202894
+  },
+  "0035d605e7f7a5cddf93b131f063feb7": {
+    "text": "If you need specific rules or performance data for a particular sport, you might need to check the s",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071620.240761,
+    "last_accessed": 1762071620.240761,
+    "file_size": 472616
+  },
+  "cdddc296691bc5fdec16978e86d37d6e": {
+    "text": "Let me know if you need the link to the main sports page.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762071623.455348,
+    "last_accessed": 1762071623.455348,
+    "file_size": 133792
+  },
+  "c20b44f33e859fd124a17d90314328dd": {
+    "text": "Got it! So your name is T-E L-L M-E A-B-O-U-T T-H-E H-I-S-T-O-R-Y O-F T-H-E U-N-I-V-E-R-S-I-T-Y, am ",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762076996.941233,
+    "last_accessed": 1762076996.941233,
+    "file_size": 646488
+  },
+  "4ccda44840c02ca2ca8ca8a8f39b6dd8": {
+    "text": "Perfect! So your phone number is +49 157 816 27 85, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086396.8469076,
+    "last_accessed": 1762086396.8469076,
+    "file_size": 269768
+  },
+  "26ca5c91761d458a82ed060248671f59": {
+    "text": "Perfect! So you want to meet with Academic Advising, am I right?",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086496.129226,
+    "last_accessed": 1762086496.129226,
+    "file_size": 169458
+  },
+  "098b46cb013bc541a8483dc243371259": {
+    "text": "I can certainly help you with general information about Leibniz University.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086577.6910222,
+    "last_accessed": 1762086577.6910222,
+    "file_size": 185060
+  },
+  "b7e737e523803ec424a5b7144504a3cf": {
+    "text": "Regarding the main building location, the general information document mentions the **campus locatio",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086579.1598103,
+    "last_accessed": 1762086579.1598103,
+    "file_size": 374536
+  },
+  "a90fcc7985b0b5494eeec0efa508f1af": {
+    "text": "While it doesn't pinpoint a single \"main building\" address specifically, it covers where the univers",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086583.0281656,
+    "last_accessed": 1762086583.0281656,
+    "file_size": 354474
+  },
+  "667082a2a20f40737e4ec169a4803911": {
+    "text": "For the most precise location details, you might want to check the specific campus maps or administr",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086591.2316084,
+    "last_accessed": 1762086591.2316084,
+    "file_size": 510512
+  },
+  "4e8d41ae49a913294c2b4985a22787be": {
+    "text": "I can give you an overview of the Computer Science (Informatik) program structure here at Leibniz Un",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086620.7974317,
+    "last_accessed": 1762086620.7974317,
+    "file_size": 312120
+  },
+  "d7a51a2adaa51cda951dc121f473c2ab": {
+    "text": "The Bachelor's program is a 6-semester degree taught in German, requiring 180 ECTS credits.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086622.163315,
+    "last_accessed": 1762086622.163315,
+    "file_size": 305434
+  },
+  "542ace4da84fe16de4ae10bfc09095b4": {
+    "text": "The curriculum is built around core modules like Programming and Software Engineering, Mathematics f",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086629.1545613,
+    "last_accessed": 1762086629.1545613,
+    "file_size": 378994
+  },
+  "d4affa226bc83ff9265dc419e0363f50": {
+    "text": "Later on, typically in semesters 5 and 6, you can choose a specialization from options like Informat",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086635.6066108,
+    "last_accessed": 1762086635.6066108,
+    "file_size": 521658
+  },
+  "919f275fa680a34a0292b5526d55b9b0": {
+    "text": "For the full, detailed module descriptions and the exact semester breakdown, you should check the of",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762086643.2004504,
+    "last_accessed": 1762086643.2004504,
+    "file_size": 425806
+  },
+  "8c6a2786c676c59fc5dfb67dd1284f63": {
+    "text": ", 30167 Hannover**.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762088050.2821844,
+    "last_accessed": 1762088050.2821844,
+    "file_size": 82522
+  },
+  "e663249b048d82b1b8a15cc2a8ac04e9": {
+    "text": "The main campus is the **Welfenschloss Campus**, located at **Welfengarten 1",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762088050.7887375,
+    "last_accessed": 1762088050.7887375,
+    "file_size": 271996
+  },
+  "5c046171611b6339757a6473103aa600": {
+    "text": "You can reach it easily via tram at the **Schneiderberg/Wilhelm-Busch-Museum** stop.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762088057.801505,
+    "last_accessed": 1762088057.801505,
+    "file_size": 231872
+  },
+  "93c6f8e87db121f3da0d5afef22bcfb4": {
+    "text": "This central area houses the main building, administration offices, and the library.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762088059.4515107,
+    "last_accessed": 1762088059.4515107,
+    "file_size": 243018
+  },
+  "87db9060e5b3d112bc45b2e638b77e27": {
+    "text": "Think of me as a digital helper for navigating university resources and answering your questions.",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762088081.7358577,
+    "last_accessed": 1762088081.7358577,
+    "file_size": 283142
+  },
+  "1ba7cc4f7cbe6e72f9ea2f87afd899f2": {
+    "text": "I'm Tara, an AI assistant designed to help students at Leibniz University with information and suppo",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762088081.7703,
+    "last_accessed": 1762088081.7703,
+    "file_size": 296516
+  },
+  "ce3163db9bb290fe985110c0a3778fdc": {
+    "text": "If I can't find the answer, I can usually point you toward the right department or service here at t",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762088089.50128,
+    "last_accessed": 1762088089.50128,
+    "file_size": 278684
+  },
+  "2cdbd3f34cba995a9eac46b263ddb26a": {
+    "text": "The main point of contact for general administrative and advisory questions at Leibniz University Ha",
+    "voice": "EXAVITQu4vr4xnSDxMaL",
+    "language": "en-US",
+    "provider": "elevenlabs",
+    "emotion": "helpful",
+    "created": 1762088108.8525798,
+    "last_accessed": 1762088108.8525798,
+    "file_size": 392368
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_2",
+  "turn_number": 3,
+  "dialogue_type": "rag",
+  "text": "The main Service Center is at Appelstraße 2. You can usually find their current opening hours on the university website's 'Contact' page.",
+  "audio_file": "turn_003_The_main_Service_Center_is_at_Appelstraße_2_You_c_1c672725.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_2_3_4rwl586v.wav",
+  "timestamp": 1763231244.4177337,
+  "text_length": 137,
+  "text_hash": "1c672725"
+}

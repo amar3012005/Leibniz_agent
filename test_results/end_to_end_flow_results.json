@@ -1,0 +1,73 @@
+{
+  "test_suite": "End-to-End Flow Tests",
+  "execution_time": "2025-10-27T01:42:10.296759",
+  "summary": {
+    "total_scenarios": 2,
+    "passed": 1,
+    "failed": 1,
+    "errors": 0,
+    "total_duration": 60.806198596954346
+  },
+  "scenarios": [
+    {
+      "scenario_name": "Happy Path - Complete Flow",
+      "status": "FAIL",
+      "duration": 37.63650369644165,
+      "turns": 12,
+      "avg_turn_time": 0.7707025210062662,
+      "validation_results": {
+        "validate_all_intents_classified": false,
+        "validate_context_extracted": false,
+        "validate_appointment_data_collected": true,
+        "validate_friendly_tone": true
+      },
+      "errors": [],
+      "metrics": {
+        "intent_classifications": 12,
+        "responses_generated": 12,
+        "appointment_completed": true
+      }
+    },
+    {
+      "scenario_name": "Appointment-Only Flow",
+      "status": "PASS",
+      "duration": 23.169694900512695,
+      "turns": 10,
+      "avg_turn_time": 0.7165604352951049,
+      "validation_results": {
+        "validate_direct_appointment_booking": true,
+        "validate_appointment_data_collected": true,
+        "validate_friendly_tone": true
+      },
+      "errors": [],
+      "metrics": {
+        "intent_classifications": 10,
+        "responses_generated": 10,
+        "appointment_completed": true
+      }
+    }
+  ],
+  "metrics": {
+    "avg_response_time": 0.7460924820466475,
+    "response_time_target_met": true
+  },
+  "issues": [
+    {
+      "scenario": "Happy Path - Complete Flow",
+      "severity": "high",
+      "description": "Scenario failed with status FAIL",
+      "errors": [],
+      "validation_failures": [
+        "validate_all_intents_classified",
+        "validate_context_extracted"
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "critical",
+      "category": "functionality",
+      "recommendation": "Fix failing scenarios - 1 scenarios are not passing validation"
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "test_suite": "English Pipeline Tests",
+  "execution_time": "2025-10-27T01:21:56.931753",
+  "stt_results": {
+    "stt_tests": [
+      {
+        "name": "Clear English Speech",
+        "input_text": "Hello, welcome to Leibniz University",
+        "transcript": "Hello, welcome to Leibniz University",
+        "confidence": 0.95,
+        "language": "en-US",
+        "processing_time": 0.0,
+        "transcript_correct": true,
+        "confidence_good": true,
+        "language_correct": true,
+        "passed": true
+      },
+      {
+        "name": "University-Specific Terms",
+        "input_text": "What are the computer science program admission requirements?",
+        "transcript": "What are the computer science program admission requirements?",
+        "confidence": 0.95,
+        "language": "en-US",
+        "processing_time": 0.0,
+        "transcript_correct": true,
+        "confidence_good": true,
+        "language_correct": true,
+        "passed": true
+      },
+      {
+        "name": "Appointment Booking Request",
+        "input_text": "I'd like to schedule an appointment with the admissions office",
+        "transcript": "I'd like to schedule an appointment with the admissions office",
+        "confidence": 0.95,
+        "language": "en-US",
+        "processing_time": 0.0,
+        "transcript_correct": true,
+        "confidence_good": true,
+        "language_correct": true,
+        "passed": true
+      },
+      {
+        "name": "Complex Academic Query",
+        "input_text": "Can you tell me about financial aid scholarships for international students?",
+        "transcript": "Can you tell me about financial aid scholarships for international students?",
+        "confidence": 0.95,
+        "language": "en-US",
+        "processing_time": 0.0,
+        "transcript_correct": true,
+        "confidence_good": true,
+        "language_correct": true,
+        "passed": true
+      }
+    ],
+    "summary": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "avg_confidence": 0.95,
+      "avg_processing_time": 0.0,
+      "language_detection_accuracy": 1.0
+    },
+    "issues": []
+  },
+  "tts_results": {
+    "tts_tests": [],
+    "provider_tests": [],
+    "cache_tests": [],
+    "summary": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "avg_synthesis_time": 0.0,
+      "providers_available": [],
+      "cache_hit_rate": 0.0
+    },
+    "issues": [
+      "TTS initialization error: 'charmap' codec can't encode characters in position 0-1: character maps to <undefined>"
+    ]
+  },
+  "language_results": {
+    "language_tests": [
+      {
+        "text": "Hello, how are you today?",
+        "language": "English",
+        "expected": "english",
+        "detected": "english",
+        "correct": true
+      },
+      {
+        "text": "What are the admission requirements?",
+        "language": "English",
+        "expected": "english",
+        "detected": "english",
+        "correct": true
+      },
+      {
+        "text": "Hola, \u00bfc\u00f3mo est\u00e1s?",
+        "language": "Spanish",
+        "expected": "non_english",
+        "detected": "non_english",
+        "correct": true
+      },
+      {
+        "text": "Bonjour, comment allez-vous?",
+        "language": "French",
+        "expected": "non_english",
+        "detected": "non_english",
+        "correct": true
+      },
+      {
+        "text": "Hallo, wie geht es dir?",
+        "language": "German",
+        "expected": "non_english",
+        "detected": "non_english",
+        "correct": true
+      }
+    ],
+    "summary": {
+      "total": 5,
+      "english_detected": 2,
+      "non_english_detected": 3,
+      "detection_accuracy": 1.0
+    },
+    "issues": []
+  },
+  "round_trip_results": {
+    "round_trip_tests": [
+      {
+        "name": "Round-trip Simple",
+        "original_text": "Hello, how are you?",
+        "transcribed_text": "Hello, how are you?",
+        "audio_file": "test_audio/round_trip_round-trip_simple.wav",
+        "synthesis_time": 1.5,
+        "transcription_time": 1.2,
+        "total_time": 0.0,
+        "word_error_rate": 0.0,
+        "wer_acceptable": true,
+        "time_reasonable": true,
+        "passed": true
+      },
+      {
+        "name": "Round-trip Complex",
+        "original_text": "I need information about the computer science program admission requirements",
+        "transcribed_text": "I need information about the CS program admission requirements",
+        "audio_file": "test_audio/round_trip_round-trip_complex.wav",
+        "synthesis_time": 1.5,
+        "transcription_time": 1.2,
+        "total_time": 0.0,
+        "word_error_rate": 0.5,
+        "wer_acceptable": false,
+        "time_reasonable": true,
+        "passed": false
+      }
+    ],
+    "summary": {
+      "total": 2,
+      "passed": 1,
+      "failed": 1,
+      "avg_word_error_rate": 0.25,
+      "avg_round_trip_time": 0.0
+    },
+    "issues": [
+      "High WER: 50.00%"
+    ]
+  },
+  "summary": {
+    "stt_pass_rate": 1.0,
+    "tts_pass_rate": 0,
+    "round_trip_pass_rate": 0.5,
+    "language_detection_accuracy": 1.0,
+    "providers_available": [],
+    "overall_pass_rate": 0.8333333333333334
+  },
+  "issues": [
+    "TTS initialization error: 'charmap' codec can't encode characters in position 0-1: character maps to <undefined>",
+    "High WER: 50.00%"
+  ],
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "tts",
+      "recommendation": "Improve TTS quality - only 0.0% pass rate"
+    },
+    {
+      "priority": "medium",
+      "category": "providers",
+      "recommendation": "Configure additional TTS providers for redundancy - only 0 available"
+    },
+    {
+      "priority": "high",
+      "category": "round_trip",
+      "recommendation": "Improve round-trip accuracy - only 50.0% pass rate"
+    }
+  ]
+}

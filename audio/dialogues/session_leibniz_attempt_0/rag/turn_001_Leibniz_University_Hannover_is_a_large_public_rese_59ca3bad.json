@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_0",
+  "turn_number": 1,
+  "dialogue_type": "rag",
+  "text": "Leibniz University Hannover is a large public research university known for engineering and natural sciences, but strong in many fields. It has a rich history dating back to 1831.",
+  "audio_file": "turn_001_Leibniz_University_Hannover_is_a_large_public_rese_59ca3bad.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_0_1_it30dzmt.wav",
+  "timestamp": 1763198401.3943715,
+  "text_length": 179,
+  "text_hash": "59ca3bad"
+}

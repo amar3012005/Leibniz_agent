@@ -1,0 +1,5 @@
+# This directory stores the FAISS vector index and metadata for Leibniz RAG system
+# Files will be generated automatically on first query:
+# - index.faiss: FAISS vector index (binary file)
+# - metadata.json: Document metadata (source, category, chunk_id, priority)
+# - texts.json: Document texts (actual content of chunks)

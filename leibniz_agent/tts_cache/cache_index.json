@@ -1,0 +1,32 @@
+{
+  "dec51b308b86e89d671db908eb7fdea0": {
+    "text": "Welcome to Leibniz University! I'm Lexi, your virtual assistant.",
+    "voice": null,
+    "language": "en-US",
+    "provider": "gemini",
+    "emotion": "helpful",
+    "created": 1761509756.1312451,
+    "last_accessed": 1761509756.1323514,
+    "file_size": 113324
+  },
+  "6422fb1a01bca436ed7dbc3475fc36c2": {
+    "text": "Hi there! I'm Lexi, your friendly assistant for Leibniz University. How can I help you today?",
+    "voice": null,
+    "language": "en-US",
+    "provider": "gemini",
+    "emotion": "excited",
+    "created": 1761524676.0160272,
+    "last_accessed": 1761528796.5492718,
+    "file_size": 301484
+  },
+  "3ea49ab36ebc2385d1f9eafeb9bbe0aa": {
+    "text": "Hello! How can I help you?",
+    "voice": null,
+    "language": "en-US",
+    "provider": "gemini",
+    "emotion": "helpful",
+    "created": 1761524683.273975,
+    "last_accessed": 1761524689.1287003,
+    "file_size": 268844
+  }
+}

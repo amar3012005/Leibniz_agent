@@ -1,0 +1,637 @@
+{
+  "test_metadata": {
+    "timestamp": "2025-10-27T10:07:14.083806",
+    "total_queries": 15,
+    "test_version": "1.0.0"
+  },
+  "questions": [
+    {
+      "question_id": 1,
+      "question": "What are your opening hours?",
+      "category": "contact_information",
+      "intent_classification": {
+        "intent": "GREETING",
+        "confidence": 0.95,
+        "entities": {},
+        "should_use_rag": false,
+        "processing_time_ms": 2.2041797637939453
+      },
+      "rag_response": {
+        "answer": "In short, hey there! Happy to help with your question about our opening hours.\n\nHere's the scoop for the Student Services Office:\n\n*   **Monday to Thursday:** 9:00 AM to 4:00 PM\n*   **Friday:** 9:00 AM to 2:00 PM\n\nIf you'd like to drop in, walk-in hours are Tuesdays and Thursdays from 10:00 AM to 12:00 PM. But, for more complex questions, it's a good idea to schedule an appointment. Feel free to ask if you have other questions.",
+        "response_length": 431,
+        "processing_time_ms": 7362.067461013794,
+        "keyword_match_score": 0.5,
+        "expected_keywords": [
+          "hours",
+          "opening",
+          "closed",
+          "time"
+        ],
+        "keywords_found": [
+          "hours",
+          "opening"
+        ],
+        "keywords_missing": [
+          "closed",
+          "time"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 2.2041797637939453,
+        "rag_processing_ms": 7362.067461013794,
+        "total_time_ms": 7364.271640777588
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 2,
+      "question": "How do I apply for admission?",
+      "category": "admissions",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 1.0094642639160156
+      },
+      "rag_response": {
+        "answer": "Here's how you can hey there! Applying for admission is a great step! Here's what you need to know about the application process:\n\nBasically, you'll need to follow these steps:\n\n1.  **Choose Your Program:** Figure out which program you want to apply for and what the specific requirements are.\n2.  **Check Eligibility:** Make sure you meet all the requirements, including any language requirements.\n3.  **Prepare Documents:** Get all your documents ready, like transcripts and certificates.... Let me know if you'd like more details!",
+        "response_length": 533,
+        "processing_time_ms": 2427.999258041382,
+        "keyword_match_score": 1.0,
+        "expected_keywords": [
+          "apply",
+          "admission",
+          "application",
+          "process"
+        ],
+        "keywords_found": [
+          "apply",
+          "admission",
+          "application",
+          "process"
+        ],
+        "keywords_missing": []
+      },
+      "timing": {
+        "intent_classification_ms": 1.0094642639160156,
+        "rag_processing_ms": 2427.999258041382,
+        "total_time_ms": 2429.008722305298
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 3,
+      "question": "What programs do you offer?",
+      "category": "academic_programs",
+      "intent_classification": {
+        "intent": "GREETING",
+        "confidence": 0.95,
+        "entities": {},
+        "should_use_rag": false,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "Here's what you need to know: hey there! I'd be happy to tell you about the programs we offer!\n\nUnfortunately, I don't have that specific information right now. But don't worry! For details about the programs, you'll need to check the university's official website. You'll find all the info you need there! Let me know if you need more details!",
+        "response_length": 344,
+        "processing_time_ms": 1472.2020626068115,
+        "keyword_match_score": 0.25,
+        "expected_keywords": [
+          "programs",
+          "degrees",
+          "courses",
+          "study"
+        ],
+        "keywords_found": [
+          "programs"
+        ],
+        "keywords_missing": [
+          "degrees",
+          "courses",
+          "study"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 1472.2020626068115,
+        "total_time_ms": 1473.2046127319336
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 4,
+      "question": "Where is the university located?",
+      "category": "location_transportation",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "Head over to hey there! The university is located in Hannover, Germany.\n\nThe main campus is at Welfengarten 1, 30167 Hannover. It's an urban campus, so it's right in the city! You'll find the main building, Welfenschloss, which is the administration building, there, along with the library and a few faculty buildings. Hope that helps! Anything else you'd like to know?",
+        "response_length": 369,
+        "processing_time_ms": 1896.5363502502441,
+        "keyword_match_score": 0.5,
+        "expected_keywords": [
+          "location",
+          "address",
+          "city",
+          "campus"
+        ],
+        "keywords_found": [
+          "city",
+          "campus"
+        ],
+        "keywords_missing": [
+          "location",
+          "address"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 1896.5363502502441,
+        "total_time_ms": 1897.5410461425781
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 5,
+      "question": "What are the tuition fees?",
+      "category": "fees_financing",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.6189346313476562
+      },
+      "rag_response": {
+        "answer": "In short, hey there! Happy to help with your question about tuition fees. 😊\n\nBasically, you'll pay a semester contribution of €434.35 (as of Winter 2025/26). This covers things like student services, your semester ticket for public transport, and some other fees. So, no separate tuition fees! Hope that helps! Anything else you'd like to know?",
+        "response_length": 344,
+        "processing_time_ms": 2121.964693069458,
+        "keyword_match_score": 0.5,
+        "expected_keywords": [
+          "tuition",
+          "fees",
+          "cost",
+          "price"
+        ],
+        "keywords_found": [
+          "tuition",
+          "fees"
+        ],
+        "keywords_missing": [
+          "cost",
+          "price"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.6189346313476562,
+        "rag_processing_ms": 2121.964693069458,
+        "total_time_ms": 2122.5836277008057
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 6,
+      "question": "How do I contact the admissions office?",
+      "category": "contact_information",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 1.0218620300292969
+      },
+      "rag_response": {
+        "answer": "You'll need to hey there! You're wondering how to get in touch with the admissions office, right? No problem, I can help with that!\n\nYou can reach them in a few ways:\n\n*   **Email**: studium@uni-hannover.de\n*   **Phone**: +49 511 762-2020\n\nTheir office hours are Monday to Thursday, from 9:00 AM to 4:00 PM, and on Fridays, they're available from 9:00 AM to 2:00 PM.\n\nI hope this helps! Feel free to ask if you have any more questions. Is there anything else I can help you with?",
+        "response_length": 479,
+        "processing_time_ms": 1986.8528842926025,
+        "keyword_match_score": 0.75,
+        "expected_keywords": [
+          "contact",
+          "phone",
+          "email",
+          "admissions"
+        ],
+        "keywords_found": [
+          "phone",
+          "email",
+          "admissions"
+        ],
+        "keywords_missing": [
+          "contact"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 1.0218620300292969,
+        "rag_processing_ms": 1986.8528842926025,
+        "total_time_ms": 1988.968849182129
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 7,
+      "question": "What library resources are available?",
+      "category": "facilities_services",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "Basically, hey there! I can definitely help you with that. So, you're wondering about library resources? Basically, the Leibniz University Library (TIB) has a ton to offer!\n\nHere's what you should know:\n\n*   **You've got the Main Library and some Subject Libraries** that are specialized by faculty.\n*   **They have all kinds of stuff:** Books, journals, newspapers, e-books, e-journals, and online databases.... Let me know if you'd like more details!",
+        "response_length": 452,
+        "processing_time_ms": 1996.5879917144775,
+        "keyword_match_score": 0.75,
+        "expected_keywords": [
+          "library",
+          "resources",
+          "books",
+          "study"
+        ],
+        "keywords_found": [
+          "library",
+          "resources",
+          "books"
+        ],
+        "keywords_missing": [
+          "study"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 1996.5879917144775,
+        "total_time_ms": 1996.5879917144775
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 8,
+      "question": "Are there any student clubs or organizations?",
+      "category": "student_life",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "Hey there! Absolutely, there are student clubs and organizations! You can totally get involved in campus life this way.\n\nHere's the lowdown: There are academic clubs, cultural organizations, special interest clubs, and even social and volunteer groups. The Student Government (AStA) is also a big part of this. They handle student advice, events, and represent students.... Let me know if you'd like more details!",
+        "response_length": 413,
+        "processing_time_ms": 2272.907257080078,
+        "keyword_match_score": 0.75,
+        "expected_keywords": [
+          "clubs",
+          "organizations",
+          "activities",
+          "student"
+        ],
+        "keywords_found": [
+          "clubs",
+          "organizations",
+          "student"
+        ],
+        "keywords_missing": [
+          "activities"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 2272.907257080078,
+        "total_time_ms": 2274.0049362182617
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 9,
+      "question": "What career services are available?",
+      "category": "career_services",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "Basically, hey there! You're wondering about career services, right? I'd be happy to help!\n\nBasically, we offer a bunch of services to help you with your career. You can get:\n\n*   **Individual Career Counseling:** One-on-one sessions for career planning and job search strategies.\n*   **Career Workshops:** Workshops on CV writing, interview skills, and networking.\n*   **Career Assessments:** Skills assessments and interest inventories.... Let me know if you'd like more details!",
+        "response_length": 481,
+        "processing_time_ms": 1584.3498706817627,
+        "keyword_match_score": 0.25,
+        "expected_keywords": [
+          "career",
+          "jobs",
+          "employment",
+          "placement"
+        ],
+        "keywords_found": [
+          "career"
+        ],
+        "keywords_missing": [
+          "jobs",
+          "employment",
+          "placement"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 1584.3498706817627,
+        "total_time_ms": 1585.6139659881592
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 10,
+      "question": "How do I register for courses?",
+      "category": "academic_programs",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "The process is hey there! You want to know how to register for courses? Awesome!\n\nHere's the lowdown: You'll register online through either QIS or Stud.IP. Make sure you check the registration periods, which are usually at the start of the semester.\n\nIf you're a bit further along in your studies, there might be some priority registration options. Also, if a course is full, you can usually get on a waitlist.\n\nI hope that helps! Feel free to ask if you have any other questions.... Let me know if you'd like more details!",
+        "response_length": 523,
+        "processing_time_ms": 2003.363847732544,
+        "keyword_match_score": 0.5,
+        "expected_keywords": [
+          "register",
+          "courses",
+          "enrollment",
+          "classes"
+        ],
+        "keywords_found": [
+          "register",
+          "courses"
+        ],
+        "keywords_missing": [
+          "enrollment",
+          "classes"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 2003.363847732544,
+        "total_time_ms": 2004.3792724609375
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 11,
+      "question": "What housing options are available?",
+      "category": "student_life",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "Basically, hey there! Finding a place to live in Hannover is a big step, but don't worry, I can totally help! Here's a breakdown of the housing options you've got:\n\n*   **Student Dormitories (Studentenwohnheime):** These are run by Studentenwerk Hannover, and they're often a good bet. Think modern facilities, all-inclusive rent, and a built-in social scene. They're usually a bit pricier than a WG, but easier to get into. Places like The Fizz and Youniq Hannover are popular choices.... Let me know if you'd like more details!",
+        "response_length": 529,
+        "processing_time_ms": 2910.6719493865967,
+        "keyword_match_score": 0.25,
+        "expected_keywords": [
+          "housing",
+          "accommodation",
+          "dorms",
+          "residence"
+        ],
+        "keywords_found": [
+          "housing"
+        ],
+        "keywords_missing": [
+          "accommodation",
+          "dorms",
+          "residence"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 2910.6719493865967,
+        "total_time_ms": 2911.6101264953613
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 12,
+      "question": "How do I get my transcripts?",
+      "category": "student_services",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.9989738464355469
+      },
+      "rag_response": {
+        "answer": "The process is hey there! No problem, I can totally help with that! Here's how you can get your transcripts:\n\nBasically, you have two main options:\n\n*   **Unofficial Grade Report:** You can view and print this instantly from the online portal. Easy peasy!\n*   **Official Transcript:** You'll need to submit a request to the examination office. You'll need to provide some info like your student ID and matriculation number.... Let me know if you'd like more details!",
+        "response_length": 466,
+        "processing_time_ms": 2320.2853202819824,
+        "keyword_match_score": 0.25,
+        "expected_keywords": [
+          "transcripts",
+          "records",
+          "academic",
+          "documents"
+        ],
+        "keywords_found": [
+          "transcripts"
+        ],
+        "keywords_missing": [
+          "records",
+          "academic",
+          "documents"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.9989738464355469,
+        "rag_processing_ms": 2320.2853202819824,
+        "total_time_ms": 2321.284294128418
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 13,
+      "question": "What is the parking situation?",
+      "category": "location_transportation",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "In short, hey there! So you're wondering about parking? No problem, I can help with that! Here's the general parking situation at the Institute:\n\n*   **Car Parking:** There's info about student parking (including permits), visitor parking, and where the parking lots are located on campus. You can also find details on street parking nearby.... Let me know if you'd like more details!",
+        "response_length": 384,
+        "processing_time_ms": 2747.882127761841,
+        "keyword_match_score": 0.25,
+        "expected_keywords": [
+          "parking",
+          "vehicle",
+          "transportation",
+          "access"
+        ],
+        "keywords_found": [
+          "parking"
+        ],
+        "keywords_missing": [
+          "vehicle",
+          "transportation",
+          "access"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 2747.882127761841,
+        "total_time_ms": 2747.882127761841
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 14,
+      "question": "How do I find information about specific professors?",
+      "category": "academic_programs",
+      "intent_classification": {
+        "intent": "RAG_QUERY",
+        "confidence": 0.85,
+        "entities": {},
+        "should_use_rag": true,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "The process is hey there! Finding info about specific professors is easy. You can find information about courses in the Course Catalog. Also, I don't have information about specific professors, but you can find this information by looking into the specific courses. Good luck! Hope that helps! Anything else you'd like to know?",
+        "response_length": 327,
+        "processing_time_ms": 1288.6812686920166,
+        "keyword_match_score": 0.25,
+        "expected_keywords": [
+          "professors",
+          "faculty",
+          "teaching",
+          "staff"
+        ],
+        "keywords_found": [
+          "professors"
+        ],
+        "keywords_missing": [
+          "faculty",
+          "teaching",
+          "staff"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 1288.6812686920166,
+        "total_time_ms": 1289.698839187622
+      },
+      "status": "success"
+    },
+    {
+      "question_id": 15,
+      "question": "What student support services are available?",
+      "category": "student_services",
+      "intent_classification": {
+        "intent": "GREETING",
+        "confidence": 0.95,
+        "entities": {},
+        "should_use_rag": false,
+        "processing_time_ms": 0.0
+      },
+      "rag_response": {
+        "answer": "Basically, hey there! I'd be happy to tell you about the student support services we offer.\n\nBasically, you have access to a bunch of different services to help you out during your studies. Here's a quick rundown:\n\n*   **Disability and Accessibility Services:** They provide support and accommodations for students with disabilities, chronic illnesses, or special needs.... Let me know if you'd like more details!",
+        "response_length": 413,
+        "processing_time_ms": 2026.2653827667236,
+        "keyword_match_score": 0.75,
+        "expected_keywords": [
+          "support",
+          "help",
+          "services",
+          "assistance"
+        ],
+        "keywords_found": [
+          "support",
+          "help",
+          "services"
+        ],
+        "keywords_missing": [
+          "assistance"
+        ]
+      },
+      "timing": {
+        "intent_classification_ms": 0.0,
+        "rag_processing_ms": 2026.2653827667236,
+        "total_time_ms": 2026.2653827667236
+      },
+      "status": "success"
+    }
+  ],
+  "summary": {
+    "total_queries": 15,
+    "successful_queries": 15,
+    "failed_queries": 0,
+    "success_rate": 1.0,
+    "avg_keyword_match": 0.5,
+    "avg_intent_time_ms": 0.3902276357014974,
+    "avg_rag_time_ms": 2427.9078483581543,
+    "avg_total_time_ms": 2428.860362370809,
+    "min_time_ms": 1289.698839187622,
+    "max_time_ms": 7364.271640777588,
+    "category_stats": {
+      "contact_information": {
+        "count": 2,
+        "avg_keyword_match": 0.625,
+        "avg_time_ms": 4676.620244979858
+      },
+      "admissions": {
+        "count": 1,
+        "avg_keyword_match": 1.0,
+        "avg_time_ms": 2429.008722305298
+      },
+      "academic_programs": {
+        "count": 3,
+        "avg_keyword_match": 0.3333333333333333,
+        "avg_time_ms": 1589.0942414601643
+      },
+      "location_transportation": {
+        "count": 2,
+        "avg_keyword_match": 0.375,
+        "avg_time_ms": 2322.7115869522095
+      },
+      "fees_financing": {
+        "count": 1,
+        "avg_keyword_match": 0.5,
+        "avg_time_ms": 2122.5836277008057
+      },
+      "facilities_services": {
+        "count": 1,
+        "avg_keyword_match": 0.75,
+        "avg_time_ms": 1996.5879917144775
+      },
+      "student_life": {
+        "count": 2,
+        "avg_keyword_match": 0.5,
+        "avg_time_ms": 2592.8075313568115
+      },
+      "career_services": {
+        "count": 1,
+        "avg_keyword_match": 0.25,
+        "avg_time_ms": 1585.6139659881592
+      },
+      "student_services": {
+        "count": 2,
+        "avg_keyword_match": 0.5,
+        "avg_time_ms": 2173.774838447571
+      }
+    }
+  }
+}
