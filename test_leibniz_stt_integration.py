@@ -106,7 +106,7 @@ class TestTranscriptNormalization:
         """Test whitespace stripping and lowercasing"""
         result = normalize_english_transcript("  HELLO WORLD  ")
         assert result == "hello world"
-        logger.info("✅ Basic normalization verified")
+        logger.info(" Basic normalization verified")
     
     @pytest.mark.unit
     def test_filler_word_removal(self):
@@ -118,7 +118,7 @@ class TestTranscriptNormalization:
         assert "like" not in result
         assert "hello" in result
         assert "there" in result
-        logger.info(f"✅ Filler removal: '{result}'")
+        logger.info(f" Filler removal: '{result}'")
     
     @pytest.mark.unit
     def test_stuttering_removal(self):
@@ -128,7 +128,7 @@ class TestTranscriptNormalization:
         assert result.count("i") <= 2  # Reduced repetition
         assert "want" in result
         assert "thank" in result
-        logger.info(f"✅ Stuttering removal: '{result}'")
+        logger.info(f" Stuttering removal: '{result}'")
     
     @pytest.mark.unit
     def test_artifact_removal(self):
@@ -139,21 +139,21 @@ class TestTranscriptNormalization:
         assert "[silence]" not in result
         assert "hello" in result
         assert "world" in result
-        logger.info(f"✅ Artifact removal: '{result}'")
+        logger.info(f" Artifact removal: '{result}'")
     
     @pytest.mark.unit
     def test_phone_number_preservation(self):
         """Test phone number preservation"""
         result = normalize_english_transcript("my number is 9876543210")
         assert "9876543210" in result
-        logger.info(f"✅ Phone preservation: '{result}'")
+        logger.info(f" Phone preservation: '{result}'")
     
     @pytest.mark.unit
     def test_empty_input(self):
         """Test empty input handling"""
         result = normalize_english_transcript("")
         assert result == ""
-        logger.info("✅ Empty input handled")
+        logger.info(" Empty input handled")
     
     @pytest.mark.unit
     def test_special_token_preservation(self):
@@ -163,7 +163,7 @@ class TestTranscriptNormalization:
         
         assert result1 == "NO_SPEECH"
         assert result2 == "NON_ENGLISH_DETECTED"
-        logger.info("✅ Special tokens preserved")
+        logger.info(" Special tokens preserved")
 
 
 # Test Class: TestAudioPreprocessing
@@ -184,7 +184,7 @@ class TestAudioPreprocessing:
             assert result['valid'] is True
             assert 'duration' in result
             assert 'sample_rate' in result
-            logger.info(f"✅ Valid audio file: {result}")
+            logger.info(f" Valid audio file: {result}")
         finally:
             Path(test_file).unlink(missing_ok=True)
     
@@ -197,7 +197,7 @@ class TestAudioPreprocessing:
         assert 'valid' in result
         assert result['valid'] is False
         assert 'errors' in result
-        logger.info(f"✅ Non-existent file rejected: {result['errors']}")
+        logger.info(f" Non-existent file rejected: {result['errors']}")
     
     @pytest.mark.integration
     def test_check_audio_quality_normal(self):
@@ -209,7 +209,7 @@ class TestAudioPreprocessing:
         assert 'has_clipping' in quality
         assert quality['is_silent'] is False
         assert quality['has_clipping'] is False
-        logger.info(f"✅ Normal audio quality: {quality}")
+        logger.info(f" Normal audio quality: {quality}")
     
     @pytest.mark.unit
     def test_check_audio_quality_silent(self):
@@ -219,7 +219,7 @@ class TestAudioPreprocessing:
         
         assert quality['is_silent'] is True
         assert quality['rms_db'] < -40
-        logger.info(f"✅ Silent audio detected: {quality}")
+        logger.info(f" Silent audio detected: {quality}")
     
     @pytest.mark.unit
     def test_check_audio_quality_clipping(self):
@@ -228,7 +228,7 @@ class TestAudioPreprocessing:
         quality = check_audio_quality(audio, 16000)
         
         assert quality['has_clipping'] is True
-        logger.info(f"✅ Clipping detected: {quality}")
+        logger.info(f" Clipping detected: {quality}")
     
     @pytest.mark.unit
     def test_convert_audio_format_resample(self):
@@ -242,7 +242,7 @@ class TestAudioPreprocessing:
         # Verify length adjusted (approximately)
         expected_len = int(len(audio_44k) * 16000 / 44100)
         assert abs(len(audio_16k) - expected_len) < 100
-        logger.info(f"✅ Resampling: {len(audio_44k)} → {len(audio_16k)} samples")
+        logger.info(f" Resampling: {len(audio_44k)} → {len(audio_16k)} samples")
     
     @pytest.mark.unit
     def test_convert_audio_format_stereo_to_mono(self):
@@ -255,7 +255,7 @@ class TestAudioPreprocessing:
         
         # Verify single channel (1D array)
         assert mono.ndim == 1
-        logger.info(f"✅ Stereo→Mono: {stereo.shape} → {mono.shape}")
+        logger.info(f" Stereo→Mono: {stereo.shape} → {mono.shape}")
     
     @pytest.mark.integration
     def test_create_silent_audio_file(self):
@@ -272,7 +272,7 @@ class TestAudioPreprocessing:
             assert len(audio) / sr >= 0.45  # Approximately 0.5s
             assert np.allclose(audio, 0.0)  # All zeros
             
-            logger.info(f"✅ Silent file created: {len(audio)} samples")
+            logger.info(f" Silent file created: {len(audio)} samples")
         finally:
             Path(temp_file).unlink(missing_ok=True)
     
@@ -297,7 +297,7 @@ class TestAudioPreprocessing:
         for f in files:
             assert not Path(f).exists()
         
-        logger.info("✅ Temp files cleaned up")
+        logger.info(" Temp files cleaned up")
 
 
 # Test Class: TestVADIntegration
@@ -314,14 +314,14 @@ class TestVADIntegration:
         # Should have at least basic metrics
         assert len(metrics) > 0
         
-        logger.info(f"✅ Combined metrics: {list(metrics.keys())}")
+        logger.info(f" Combined metrics: {list(metrics.keys())}")
     
     @pytest.mark.unit
     def test_is_capture_active_coordination(self):
         """Test capture active detection"""
         # Initially not active
         assert is_capture_active() is False
-        logger.info("✅ Capture active detection working")
+        logger.info(" Capture active detection working")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -330,7 +330,7 @@ class TestVADIntegration:
         result = check_and_handle_barge_in()
         # Should return False when no barge-in
         assert isinstance(result, bool)
-        logger.info("✅ Barge-in check working")
+        logger.info(" Barge-in check working")
     
     @pytest.mark.unit
     def test_trigger_lightweight_prewarm_throttling(self):
@@ -342,7 +342,7 @@ class TestVADIntegration:
         trigger_lightweight_prewarm('test')
         
         # Should not crash
-        logger.info("✅ Prewarm throttling working")
+        logger.info(" Prewarm throttling working")
 
 
 # Test Class: TestSTTVADCoordination
@@ -360,7 +360,7 @@ class TestSTTVADCoordination:
         await cleanup_leibniz_stt()
         await cleanup_leibniz_vad()
         
-        logger.info("✅ Cleanup coordination working")
+        logger.info(" Cleanup coordination working")
 
 
 # Test Class: TestLanguageDetectionAndTranscription (Comment 9)
@@ -384,7 +384,7 @@ class TestLanguageDetectionAndTranscription:
             assert normalized != "NON_ENGLISH_DETECTED"
             assert normalized != ""
             assert len(normalized) > 0
-            logger.info(f"✅ English accepted: '{text[:30]}...'")
+            logger.info(f" English accepted: '{text[:30]}...'")
     
     @pytest.mark.unit
     def test_language_detector_mixed_language(self):
@@ -395,7 +395,7 @@ class TestLanguageDetectionAndTranscription:
         
         # Should extract English portions or handle gracefully
         assert isinstance(normalized, str)
-        logger.info(f"✅ Mixed language handled: '{normalized}'")
+        logger.info(f" Mixed language handled: '{normalized}'")
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -416,7 +416,7 @@ class TestLanguageDetectionAndTranscription:
             # Verify normalized
             assert transcript == "hello there"  # Already normalized by VAD
             
-            logger.info(f"✅ transcribe_with_vad: ({audio_file}, '{transcript}')")
+            logger.info(f" transcribe_with_vad: ({audio_file}, '{transcript}')")
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -435,7 +435,7 @@ class TestLanguageDetectionAndTranscription:
             assert "um" not in transcript
             assert "uh" not in transcript
             
-            logger.info(f"✅ Normalized: '  HELLO WORLD  um uh  ' → '{transcript}'")
+            logger.info(f" Normalized: '  HELLO WORLD  um uh  ' → '{transcript}'")
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -452,7 +452,7 @@ class TestLanguageDetectionAndTranscription:
         # Should complete quickly (not actually warming up)
         assert (time2 - time1) < 0.1
         
-        logger.info("✅ Prewarm throttling verified (no 20s wait)")
+        logger.info(" Prewarm throttling verified (no 20s wait)")
 
 
 # Test Class: TestEnglishOnlyValidation
@@ -466,7 +466,7 @@ class TestEnglishOnlyValidation:
         assert "hello" in result
         assert "how" in result
         assert "you" in result
-        logger.info(f"✅ English accepted: '{result}'")
+        logger.info(f" English accepted: '{result}'")
 
 
 # Test Class: TestSTTVADPerformance
@@ -489,7 +489,7 @@ class TestSTTVADPerformance:
             
             # Comment 13: Relaxed target <30ms (was <10ms)
             assert duration < 0.030, f"Normalization too slow: {duration*1000:.1f}ms"
-            logger.info(f"📊 Normalize ({len(text)} chars): {duration*1000:.2f}ms")
+            logger.info(f" Normalize ({len(text)} chars): {duration*1000:.2f}ms")
     
     @pytest.mark.benchmark
     def test_benchmark_audio_preprocessing_speed(self):
@@ -522,7 +522,7 @@ class TestSTTVADPerformance:
             assert quality_time < 0.2
             assert convert_time < 0.2
             
-            logger.info(f"📊 Preprocessing: Val={val_time*1000:.1f}ms, Quality={quality_time*1000:.1f}ms, Convert={convert_time*1000:.1f}ms")
+            logger.info(f" Preprocessing: Val={val_time*1000:.1f}ms, Quality={quality_time*1000:.1f}ms, Convert={convert_time*1000:.1f}ms")
         finally:
             Path(test_file).unlink(missing_ok=True)
 

@@ -122,27 +122,27 @@ async def lifespan(app: FastAPI):
     global rag_engine, redis_client, cache_hits, cache_misses, app_start_time
     
     # Startup
-    logger.info("🚀 Starting RAG service...")
+    logger.info(" Starting RAG service...")
     app_start_time = time.time()
     
     try:
         # Load config
         config = RAGConfig.from_env()
-        logger.info("✅ Configuration loaded")
+        logger.info(" Configuration loaded")
         
         # Create RAG engine
         rag_engine = RAGEngine(config)
         
         # Verify index loaded
         if not rag_engine.vector_store or not rag_engine.documents:
-            logger.error("❌ FAISS index not loaded - service cannot start")
+            logger.error(" FAISS index not loaded - service cannot start")
             raise RuntimeError("FAISS index not loaded")
         
-        logger.info(f"✅ RAG engine initialized: {len(rag_engine.documents)} documents")
+        logger.info(f" RAG engine initialized: {len(rag_engine.documents)} documents")
         
         # Connect to Redis
         redis_client = await get_redis_client()
-        logger.info(f"✅ Redis connected: {os.getenv('LEIBNIZ_REDIS_HOST', 'localhost')}")
+        logger.info(f" Redis connected: {os.getenv('LEIBNIZ_REDIS_HOST', 'localhost')}")
         
         # Initialize counters
         cache_hits = 0
@@ -155,27 +155,27 @@ async def lifespan(app: FastAPI):
         app.state.cache_misses = cache_misses
         app.state.start_time = app_start_time
         
-        logger.info("✅ RAG service ready")
+        logger.info(" RAG service ready")
         
         yield
         
         # Shutdown
-        logger.info("🔄 Shutting down RAG service...")
+        logger.info(" Shutting down RAG service...")
         
         # Log performance stats
         if rag_engine:
             stats = rag_engine.get_performance_stats()
-            logger.info(f"📊 Performance stats: {stats}")
+            logger.info(f" Performance stats: {stats}")
         
         # Close Redis
         if redis_client:
             await close_redis_client(redis_client)
-            logger.info("✅ Redis connection closed")
+            logger.info(" Redis connection closed")
         
-        logger.info("✅ RAG service shutdown complete")
+        logger.info(" RAG service shutdown complete")
     
     except Exception as e:
-        logger.error(f"❌ Startup error: {e}", exc_info=True)
+        logger.error(f" Startup error: {e}", exc_info=True)
         raise
 
 
@@ -218,7 +218,7 @@ async def query_knowledge_base(request: QueryRequest):
             result = json.loads(cached)
             result['cached'] = True
             
-            logger.info(f"✅ CACHE HIT: {request.query[:50]}...")
+            logger.info(f" CACHE HIT: {request.query[:50]}...")
             return QueryResponse(**result)
         
         # Cache miss
@@ -248,12 +248,12 @@ async def query_knowledge_base(request: QueryRequest):
                 })
             )
         except Exception as cache_error:
-            logger.warning(f"⚠️ Cache write failed: {cache_error}")
+            logger.warning(f"️ Cache write failed: {cache_error}")
         
         # Log query
         if app.state.rag_engine.config.log_queries:
             logger.info(
-                f"✅ QUERY: {request.query[:50]}... → "
+                f" QUERY: {request.query[:50]}... → "
                 f"{result['confidence']:.2f} confidence, "
                 f"{result['timing_breakdown']['total_ms']:.1f}ms"
             )
@@ -261,7 +261,7 @@ async def query_knowledge_base(request: QueryRequest):
         return QueryResponse(**result)
     
     except Exception as e:
-        logger.error(f"❌ Query error: {e}", exc_info=True)
+        logger.error(f" Query error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Query processing failed: {str(e)}")
 
 
@@ -386,15 +386,15 @@ async def rebuild_index(request: RebuildIndexRequest):
             keys = await app.state.redis.keys("rag:*")
             if keys:
                 await app.state.redis.delete(*keys)
-                logger.info(f"🗑️ Cleared {len(keys)} cached queries")
+                logger.info(f"️ Cleared {len(keys)} cached queries")
         except Exception as cache_error:
-            logger.warning(f"⚠️ Cache clear failed: {cache_error}")
+            logger.warning(f"️ Cache clear failed: {cache_error}")
         
         # Get stats
         stats = builder.get_index_stats()
         build_time = time.time() - build_start
         
-        logger.info(f"✅ Index rebuilt: {stats['total_documents']} documents in {build_time:.2f}s")
+        logger.info(f" Index rebuilt: {stats['total_documents']} documents in {build_time:.2f}s")
         
         return RebuildIndexResponse(
             status="success",

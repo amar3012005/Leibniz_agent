@@ -162,7 +162,7 @@ async def run_test_suite(suite: Dict[str, Any]) -> Dict[str, Any]:
             "timestamp": datetime.now().isoformat()
         }
         
-        logger.info(f"✅ Test suite completed: {suite['name']}")
+        logger.info(f" Test suite completed: {suite['name']}")
         logger.info(f"   Status: {status}")
         logger.info(f"   Duration: {duration:.2f}s")
         logger.info(f"   Exit code: {exit_code}")
@@ -174,7 +174,7 @@ async def run_test_suite(suite: Dict[str, Any]) -> Dict[str, Any]:
         
     except Exception as e:
         duration = time.time() - start_time
-        logger.error(f"❌ Error running test suite {suite['name']}: {str(e)}")
+        logger.error(f" Error running test suite {suite['name']}: {str(e)}")
         
         return {
             "suite_name": suite['name'],
@@ -219,7 +219,7 @@ def extract_metrics_from_output(output: str, suite_name: str) -> Dict[str, Any]:
                     match = re.search(r'(\d+)', line)
                     if match:
                         metrics["total_scenarios"] = int(match.group(1))
-                if "Passed:" in line and "✅" in line:
+                if "Passed:" in line and "" in line:
                     match = re.search(r'(\d+)', line)
                     if match:
                         metrics["passed_scenarios"] = int(match.group(1))
@@ -417,12 +417,12 @@ def generate_consolidated_report(aggregated_results: Dict[str, Any]) -> Dict[str
     
     # Quality summary
     report["quality_summary"] = {
-        "appointment_booking": "✅ Working - Complete 7-field booking flow",
-        "rag_retrieval": "✅ Working - Context-aware retrieval from 258 chunks",
-        "intent_classification": "✅ Working - GREETING, RAG_QUERY, APPOINTMENT_SCHEDULING, EXIT",
-        "tone_consistency": "✅ Good - Friendly casual tone maintained",
-        "error_handling": "✅ Excellent - 100% graceful error handling",
-        "knowledge_coverage": "✅ Good - 75% category coverage (limited by API quota)"
+        "appointment_booking": " Working - Complete 7-field booking flow",
+        "rag_retrieval": " Working - Context-aware retrieval from 258 chunks",
+        "intent_classification": " Working - GREETING, RAG_QUERY, APPOINTMENT_SCHEDULING, EXIT",
+        "tone_consistency": " Good - Friendly casual tone maintained",
+        "error_handling": " Excellent - 100% graceful error handling",
+        "knowledge_coverage": " Good - 75% category coverage (limited by API quota)"
     }
     
     # Generate recommendations based on results
@@ -491,12 +491,12 @@ def generate_consolidated_report(aggregated_results: Dict[str, Any]) -> Dict[str
 def print_master_summary(report: Dict[str, Any]):
     """Print comprehensive master test summary"""
     print("\n" + "="*100)
-    print("🎓 LEIBNIZ UNIVERSITY AGENT - MASTER TEST RESULTS")
+    print(" LEIBNIZ UNIVERSITY AGENT - MASTER TEST RESULTS")
     print("="*100)
     
     exec_summary = report["executive_summary"]
-    print(f"\n📊 EXECUTIVE SUMMARY:")
-    print(f"   Overall Status: {exec_summary['overall_status']} {'✅' if exec_summary['overall_status'] == 'PASS' else '❌'}")
+    print(f"\n EXECUTIVE SUMMARY:")
+    print(f"   Overall Status: {exec_summary['overall_status']} {'' if exec_summary['overall_status'] == 'PASS' else ''}")
     print(f"   System Readiness: {exec_summary.get('overall_readiness', 'UNKNOWN')}")
     print(f"   Test Suites: {exec_summary['total_suites']}")
     print(f"   Pass Rate: {exec_summary['pass_rate']:.1%}")
@@ -504,45 +504,45 @@ def print_master_summary(report: Dict[str, Any]):
     print(f"   Critical Issues: {exec_summary['critical_issues']}")
     print(f"   High Priority Issues: {exec_summary['high_priority_issues']}")
     
-    print(f"\n🔧 DETAILED RESULTS:")
+    print(f"\n DETAILED RESULTS:")
     for suite_name, details in report["detailed_results"].items():
-        status_icon = "✅" if details["status"] == "PASS" else "❌" if details["status"] == "FAIL" else "⚠️"
+        status_icon = "" if details["status"] == "PASS" else "" if details["status"] == "FAIL" else "️"
         print(f"   {suite_name}: {details['status']} {status_icon}")
         print(f"      → {details['key_finding']}")
     
-    print(f"\n⚡ PERFORMANCE SUMMARY:")
+    print(f"\n PERFORMANCE SUMMARY:")
     perf = report["performance_summary"]
     for metric, value in perf.items():
         print(f"   {metric.replace('_', ' ').title()}: {value}")
     
-    print(f"\n🎯 QUALITY SUMMARY:")
+    print(f"\n QUALITY SUMMARY:")
     for feature, status in report["quality_summary"].items():
         print(f"   {feature.replace('_', ' ').title()}: {status}")
     
-    print(f"\n📋 PRODUCTION READINESS CHECKLIST:")
+    print(f"\n PRODUCTION READINESS CHECKLIST:")
     checklist = report["production_readiness_checklist"]
     for item, status in checklist.items():
-        icon = "✅" if status else "❌"
+        icon = "" if status else ""
         print(f"   {icon} {item.replace('_', ' ').title()}")
     
     if report["recommendations"]:
-        print(f"\n🚀 RECOMMENDATIONS:")
+        print(f"\n RECOMMENDATIONS:")
         for rec in report["recommendations"]:
             blocking_text = " (BLOCKING)" if rec.get("blocking", False) else ""
             print(f"   [{rec['priority']}] {rec['recommendation']}{blocking_text}")
     
     # Final assessment
     readiness = exec_summary.get('overall_readiness', 'UNKNOWN')
-    print(f"\n🎯 FINAL ASSESSMENT:")
+    print(f"\n FINAL ASSESSMENT:")
     
     if readiness == "PRODUCTION_READY":
-        print("   🎉 SYSTEM IS READY FOR PRODUCTION DEPLOYMENT!")
+        print("    SYSTEM IS READY FOR PRODUCTION DEPLOYMENT!")
         print("   All critical tests passing, performance excellent, quality validated.")
     elif readiness == "READY_WITH_MINOR_ISSUES":
-        print("   ✅ SYSTEM IS READY WITH MINOR CAVEATS")
+        print("    SYSTEM IS READY WITH MINOR CAVEATS")
         print("   Core functionality working, minor issues can be addressed post-deployment.")
     else:
-        print("   ⚠️ SYSTEM NEEDS MORE WORK BEFORE PRODUCTION")
+        print("   ️ SYSTEM NEEDS MORE WORK BEFORE PRODUCTION")
         print("   Address critical and high-priority issues before deployment.")
     
     print("\n" + "="*100)
@@ -550,7 +550,7 @@ def print_master_summary(report: Dict[str, Any]):
 async def main():
     """Main test runner"""
     print("\n" + "="*100)
-    print("🎓 LEIBNIZ UNIVERSITY AGENT - MASTER TEST SUITE")
+    print(" LEIBNIZ UNIVERSITY AGENT - MASTER TEST SUITE")
     print("="*100)
     print(f"Starting comprehensive testing at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Total test suites: {len(TEST_SUITES)}")
@@ -569,7 +569,7 @@ async def main():
     
     if missing_scripts:
         logger.error(f"Missing test scripts: {missing_scripts}")
-        print(f"❌ Missing test scripts: {missing_scripts}")
+        print(f" Missing test scripts: {missing_scripts}")
         return 2
     
     # Check if knowledge base exists
@@ -577,7 +577,7 @@ async def main():
     if not kb_path.exists():
         logger.warning("Knowledge base directory not found - some tests may fail")
     
-    logger.info("✅ Prerequisites check completed")
+    logger.info(" Prerequisites check completed")
     
     # Run all test suites
     results = []
@@ -628,7 +628,7 @@ async def main():
         
         f.write("## Test Suite Results\n\n")
         for result in aggregated_results["suite_results"]:
-            status_icon = "✅" if result["status"] == "PASS" else "❌" if result["status"] == "FAIL" else "⚠️"
+            status_icon = "" if result["status"] == "PASS" else "" if result["status"] == "FAIL" else "️"
             f.write(f"### {result['suite_name']} {status_icon}\n")
             f.write(f"- **Status**: {result['status']}\n")
             f.write(f"- **Duration**: {result['duration']:.2f}s\n")
@@ -650,7 +650,7 @@ async def main():
         
         f.write("## Production Readiness Checklist\n\n")
         for item, status in report["production_readiness_checklist"].items():
-            icon = "✅" if status else "❌"
+            icon = "" if status else ""
             f.write(f"- {icon} **{item.replace('_', ' ').title()}**\n")
         f.write("\n")
         
@@ -664,13 +664,13 @@ async def main():
         f.write("## System Readiness Assessment\n\n")
         readiness = exec_summary.get('overall_readiness', 'UNKNOWN')
         if readiness == "PRODUCTION_READY":
-            f.write("🎉 **SYSTEM IS READY FOR PRODUCTION DEPLOYMENT!**\n\n")
+            f.write(" **SYSTEM IS READY FOR PRODUCTION DEPLOYMENT!**\n\n")
             f.write("All critical tests passing, performance excellent, quality validated.\n")
         elif readiness == "READY_WITH_MINOR_ISSUES":
-            f.write("✅ **SYSTEM IS READY WITH MINOR CAVEATS**\n\n")
+            f.write(" **SYSTEM IS READY WITH MINOR CAVEATS**\n\n")
             f.write("Core functionality working, minor issues can be addressed post-deployment.\n")
         else:
-            f.write("⚠️ **SYSTEM NEEDS MORE WORK BEFORE PRODUCTION**\n\n")
+            f.write("️ **SYSTEM NEEDS MORE WORK BEFORE PRODUCTION**\n\n")
             f.write("Address critical and high-priority issues before deployment.\n")
     
     # Save issues log
@@ -709,18 +709,18 @@ async def main():
 
 if __name__ == "__main__":
     print("\n" + "="*100)
-    print("🎓 LEIBNIZ UNIVERSITY AGENT - MASTER TEST SUITE")
+    print(" LEIBNIZ UNIVERSITY AGENT - MASTER TEST SUITE")
     print("="*100 + "\n")
     
     exit_code = asyncio.run(main())
     
     print("\n" + "="*100)
     if exit_code == 0:
-        print("✅ ALL TESTS PASSED - SYSTEM READY FOR PRODUCTION")
+        print(" ALL TESTS PASSED - SYSTEM READY FOR PRODUCTION")
     elif exit_code == 1:
-        print("⚠️ SYSTEM READY WITH MINOR ISSUES - REVIEW RECOMMENDED")
+        print("️ SYSTEM READY WITH MINOR ISSUES - REVIEW RECOMMENDED")
     else:
-        print("❌ CRITICAL ISSUES FOUND - NOT READY FOR PRODUCTION")
+        print(" CRITICAL ISSUES FOUND - NOT READY FOR PRODUCTION")
     print("="*100 + "\n")
     
     sys.exit(exit_code)

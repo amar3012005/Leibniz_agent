@@ -396,9 +396,9 @@ class LeibnizConfig:
                         if hasattr(section, key):
                             setattr(section, key, value)
             
-            print(f"✅ Leibniz configuration loaded from {config_file}")
+            print(f" Leibniz configuration loaded from {config_file}")
         except Exception as e:
-            print(f"⚠️ Error loading config file: {e}")
+            print(f" Error loading config file: {e}")
     
     def save_to_file(self, config_file: str = None):
         """Save current configuration to JSON file"""
@@ -419,9 +419,9 @@ class LeibnizConfig:
             with open(config_file, 'w', encoding='utf-8') as f:
                 json.dump(config_data, f, indent=2, ensure_ascii=False)
             
-            print(f"✅ Configuration saved to {config_file}")
+            print(f" Configuration saved to {config_file}")
         except Exception as e:
-            print(f"❌ Error saving config file: {e}")
+            print(f" Error saving config file: {e}")
     
     def get_tts_settings(self, emotion: str = 'helpful') -> Dict:
         """Get TTS settings for audio generation"""
@@ -573,7 +573,7 @@ def reload_leibniz_config():
         _leibniz_config.load_from_file(config_path)
     else:
         _leibniz_config = LeibnizConfig()
-    print("🔄 Global Leibniz configuration reloaded")
+    print(" Global Leibniz configuration reloaded")
 
 # Convenience functions for common settings
 def get_voice_settings(emotion: str = 'helpful'):
@@ -633,41 +633,41 @@ def get_emotion_expression(emotion: str):
 
 if __name__ == "__main__":
     # Test the configuration
-    print("🎓 Leibniz University Agent Configuration Test")
+    print(" Leibniz University Agent Configuration Test")
     print("=" * 60)
     
     # Initialize config
     config = LeibnizConfig()
     
     # Test voice settings
-    print("🎤 Voice Settings:")
+    print(" Voice Settings:")
     voice_settings = config.get_tts_settings('helpful')
     for key, value in voice_settings.items():
         print(f"   {key}: {value}")
     
     # Test personality settings
-    print("\n😊 Personality Settings:")
+    print("\n Personality Settings:")
     personality = config.get_response_style()
     for key, value in personality.items():
         print(f"   {key}: {value}")
     
     # Test conversation rules
-    print("\n💬 Conversation Rules:")
+    print("\n Conversation Rules:")
     rules = config.get_conversation_rules()
     for key, value in rules.items():
         print(f"   {key}: {value}")
     
     # Test current energy
-    print(f"\n⚡ Current Energy Level: {config.get_current_energy_level()}")
+    print(f"\n Current Energy Level: {config.get_current_energy_level()}")
     
     # Test emotions
-    print(f"\n😊 Excitement Expression: {config.get_emotion_expression('excitement')}")
-    print(f"🤝 Sympathy Expression: {config.get_emotion_expression('sympathy')}")
+    print(f"\n Excitement Expression: {config.get_emotion_expression('excitement')}")
+    print(f" Sympathy Expression: {config.get_emotion_expression('sympathy')}")
     
     # Test personality prompt
-    print("\n🎯 Personality Prompt:")
+    print("\n Personality Prompt:")
     print(config.get_personality_prompt()[:300] + "...")
     
     # Save example config
     config.save_to_file("leibniz_config_example.json")
-    print(f"\n✅ Example configuration saved!")
+    print(f"\n Example configuration saved!")

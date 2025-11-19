@@ -62,8 +62,8 @@ TEST_QUERIES = [
 
 class LeibnizHybridRAG:
     def __init__(self, knowledge_base_dir="leibniz_knowledge_base"):
-        logging.info(f"🚀 Initializing Leibniz Hybrid RAG (Rule-Based + Phi-2)")
-        logging.info(f"📁 Knowledge base: {knowledge_base_dir}\n")
+        logging.info(f" Initializing Leibniz Hybrid RAG (Rule-Based + Phi-2)")
+        logging.info(f" Knowledge base: {knowledge_base_dir}\n")
         
         self.knowledge_base_dir = knowledge_base_dir
         self.embedding_model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -87,26 +87,26 @@ class LeibnizHybridRAG:
     def prewarm_models(self):
         """Pre-warm embedding model and Phi-2 LLM"""
         logging.info(f"{'='*60}")
-        logging.info(f"🔥 PRE-WARMING MODELS (HYBRID MODE)")
+        logging.info(f" PRE-WARMING MODELS (HYBRID MODE)")
         logging.info(f"{'='*60}")
         
         # 1. Load embedding model
-        logging.info(f"📥 Loading embedding model: {self.embedding_model_name}")
+        logging.info(f" Loading embedding model: {self.embedding_model_name}")
         start_time = time.time()
         self.embedder = SentenceTransformer(self.embedding_model_name)
         embed_load_time = time.time() - start_time
-        logging.info(f"✅ Embedding model loaded in {embed_load_time:.2f}s")
+        logging.info(f" Embedding model loaded in {embed_load_time:.2f}s")
         
         # 2. Warmup embeddings
-        logging.info(f"🔥 Warming up embedding model...")
+        logging.info(f" Warming up embedding model...")
         start_time = time.time()
         _ = self.embedder.encode(["test query for warmup"], show_progress_bar=False)
         warmup_time = time.time() - start_time
-        logging.info(f"✅ Embedding model warmed up in {warmup_time:.2f}s")
+        logging.info(f" Embedding model warmed up in {warmup_time:.2f}s")
         
         # 3. Load Phi-2 model
-        logging.info(f"\n📥 Loading Phi-2 model: {self.phi2_model_name}")
-        logging.info(f"   ⚠️  First download may take 3-5 minutes (2.7GB)...")
+        logging.info(f"\n Loading Phi-2 model: {self.phi2_model_name}")
+        logging.info(f"   ️  First download may take 3-5 minutes (2.7GB)...")
         start_time = time.time()
         
         self.phi2_tokenizer = AutoTokenizer.from_pretrained(self.phi2_model_name)
@@ -114,7 +114,7 @@ class LeibnizHybridRAG:
             self.phi2_tokenizer.pad_token = self.phi2_tokenizer.eos_token
         
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        logging.info(f"   🖥️  Target device: {self.device}")
+        logging.info(f"   ️  Target device: {self.device}")
         
         # Load with optimizations for faster inference
         self.phi2_model = AutoModelForCausalLM.from_pretrained(
@@ -129,32 +129,32 @@ class LeibnizHybridRAG:
             self.phi2_model = self.phi2_model.to(self.device)
         
         phi2_load_time = time.time() - start_time
-        logging.info(f"✅ Phi-2 loaded in {phi2_load_time:.2f}s on {self.device}")
+        logging.info(f" Phi-2 loaded in {phi2_load_time:.2f}s on {self.device}")
         
         # 4. Warm up Phi-2 with dummy generation
-        logging.info(f"🔥 Warming up Phi-2 model...")
+        logging.info(f" Warming up Phi-2 model...")
         start_time = time.time()
         test_input = self.phi2_tokenizer("Test warmup", return_tensors="pt")
         test_input = {k: v.to(self.device) for k, v in test_input.items()}
         with torch.no_grad():
             _ = self.phi2_model.generate(**test_input, max_new_tokens=10)
         phi2_warmup_time = time.time() - start_time
-        logging.info(f"✅ Phi-2 warmed up in {phi2_warmup_time:.2f}s")
+        logging.info(f" Phi-2 warmed up in {phi2_warmup_time:.2f}s")
         
         # 5. Load knowledge base
-        logging.info(f"\n📚 Loading knowledge base from {self.knowledge_base_dir}")
+        logging.info(f"\n Loading knowledge base from {self.knowledge_base_dir}")
         self._load_knowledge_base()
         
         # 6. Build FAISS index
-        logging.info(f"🔨 Building FAISS index...")
+        logging.info(f" Building FAISS index...")
         start_time = time.time()
         self._build_faiss_index()
         index_time = time.time() - start_time
-        logging.info(f"✅ FAISS index built in {index_time:.2f}s")
-        logging.info(f"📊 Index size: {self.faiss_index.ntotal} vectors")
+        logging.info(f" FAISS index built in {index_time:.2f}s")
+        logging.info(f" Index size: {self.faiss_index.ntotal} vectors")
         
         logging.info(f"\n{'='*60}")
-        logging.info(f"✅ HYBRID RAG SYSTEM READY")
+        logging.info(f" HYBRID RAG SYSTEM READY")
         logging.info(f"   Rule-Based Extraction + Phi-2 Generation")
         logging.info(f"{'='*60}\n")
     
@@ -177,9 +177,9 @@ class LeibnizHybridRAG:
                     chunks = self._chunk_text(content, source_name)
                     self.documents.extend(chunks)
             except Exception as e:
-                logging.warning(f"⚠️ Could not load {file_path}: {e}")
+                logging.warning(f"️ Could not load {file_path}: {e}")
         
-        logging.info(f"✅ Loaded {len(self.documents)} chunks from {len(md_files)} files")
+        logging.info(f" Loaded {len(self.documents)} chunks from {len(md_files)} files")
     
     def _chunk_text(self, text: str, source: str) -> List[Dict]:
         """Split text into overlapping chunks"""
@@ -209,7 +209,7 @@ class LeibnizHybridRAG:
     
     def _build_faiss_index(self):
         """Build FAISS index from documents"""
-        logging.info(f"🔢 Generating embeddings for {len(self.documents)} chunks...")
+        logging.info(f" Generating embeddings for {len(self.documents)} chunks...")
         
         texts = [doc["text"] for doc in self.documents]
         embeddings = self.embedder.encode(texts, show_progress_bar=True, batch_size=32)
@@ -372,36 +372,36 @@ Answer (friendly, 2-3 sentences):"""
     def run_query_test(self, query: str, query_idx: int, total_queries: int):
         """Run hybrid RAG test: retrieval + rule-based extraction + Phi-2 generation"""
         logging.info(f"\n{'='*60}")
-        logging.info(f"🧪 Query {query_idx}/{total_queries}")
+        logging.info(f" Query {query_idx}/{total_queries}")
         logging.info(f"{'='*60}")
-        logging.info(f"❓ Question: {query}")
+        logging.info(f" Question: {query}")
         
         try:
             # Step 1: Retrieve documents
-            logging.info(f"\n🔍 Step 1: Retrieving relevant documents...")
+            logging.info(f"\n Step 1: Retrieving relevant documents...")
             retrieved_docs, retrieval_time_ms = self.retrieve_documents(query)
-            logging.info(f"⚡ Retrieved {len(retrieved_docs)} documents in {retrieval_time_ms:.2f}ms")
+            logging.info(f" Retrieved {len(retrieved_docs)} documents in {retrieval_time_ms:.2f}ms")
             
             # Step 2: Extract clean context (rule-based)
-            logging.info(f"\n📝 Step 2: Extracting clean context (rule-based)...")
+            logging.info(f"\n Step 2: Extracting clean context (rule-based)...")
             extract_start = time.time()
             context = self._extract_clean_context(retrieved_docs, max_length=800)
             extract_time_ms = (time.time() - extract_start) * 1000
-            logging.info(f"⚡ Extracted {len(context)} chars in {extract_time_ms:.2f}ms")
+            logging.info(f" Extracted {len(context)} chars in {extract_time_ms:.2f}ms")
             
             # Step 3: Generate response with Phi-2
-            logging.info(f"\n🤖 Step 3: Generating response with Phi-2...")
+            logging.info(f"\n Step 3: Generating response with Phi-2...")
             answer, generation_time_ms = self._generate_phi2_response(query, context)
-            logging.info(f"⚡ Generated response in {generation_time_ms:.2f}ms")
+            logging.info(f" Generated response in {generation_time_ms:.2f}ms")
             
             # Display answer
-            logging.info(f"\n💬 Generated Answer ({len(answer)} chars):")
+            logging.info(f"\n Generated Answer ({len(answer)} chars):")
             logging.info(f"   {'-'*55}")
             logging.info(f"   {answer}")
             logging.info(f"   {'-'*55}")
             
             # Show top documents used
-            logging.info(f"\n📚 Top 3 Retrieved Documents:")
+            logging.info(f"\n Top 3 Retrieved Documents:")
             for i, doc in enumerate(retrieved_docs[:3], 1):
                 logging.info(f"   {i}. [{doc['source']}] Relevance: {doc['relevance_score']:.4f}")
             
@@ -428,15 +428,15 @@ Answer (friendly, 2-3 sentences):"""
             self.results["queries"].append(test_result)
             
         except Exception as e:
-            logging.error(f"❌ Query test failed: {e}")
+            logging.error(f" Query test failed: {e}")
             import traceback
             logging.error(traceback.format_exc())
             self.results["queries"].append({"query": query, "error": str(e)})
     
     def run_all_tests(self):
         """Run complete hybrid RAG test suite"""
-        logging.info(f"🎯 Starting Leibniz Hybrid RAG Test Suite")
-        logging.info(f"📅 Test Run ID: {self.results['test_run_id']}\n")
+        logging.info(f" Starting Leibniz Hybrid RAG Test Suite")
+        logging.info(f" Test Run ID: {self.results['test_run_id']}\n")
         
         start_time = time.time()
         
@@ -455,7 +455,7 @@ Answer (friendly, 2-3 sentences):"""
         # Save results
         self._save_results()
         
-        logging.info(f"\n✅ Testing Complete! Total time: {total_time:.2f}s")
+        logging.info(f"\n Testing Complete! Total time: {total_time:.2f}s")
     
     def _print_summary(self, total_time: float):
         """Print test summary"""
@@ -463,7 +463,7 @@ Answer (friendly, 2-3 sentences):"""
         failed_tests = [q for q in self.results["queries"] if "error" in q]
         
         if not successful_tests:
-            logging.warning("⚠️  No successful tests to summarize")
+            logging.warning("️  No successful tests to summarize")
             return
         
         avg_retrieval = sum(q["retrieval_time_ms"] for q in successful_tests) / len(successful_tests)
@@ -473,9 +473,9 @@ Answer (friendly, 2-3 sentences):"""
         avg_answer_length = sum(q["answer_length"] for q in successful_tests) / len(successful_tests)
         
         logging.info(f"\n{'='*60}")
-        logging.info(f"🎉 FINAL TEST SUMMARY (HYBRID RAG)")
+        logging.info(f" FINAL TEST SUMMARY (HYBRID RAG)")
         logging.info(f"{'='*60}")
-        logging.info(f"📊 Overall Performance:")
+        logging.info(f" Overall Performance:")
         logging.info(f"   - Total Queries: {len(TEST_QUERIES)}")
         logging.info(f"   - Successful: {len(successful_tests)}")
         logging.info(f"   - Failed: {len(failed_tests)}")
@@ -485,7 +485,7 @@ Answer (friendly, 2-3 sentences):"""
         logging.info(f"   - Avg Total Time: {avg_total:.2f}ms")
         logging.info(f"   - Avg Answer Length: {avg_answer_length:.0f} chars")
         logging.info(f"   - Total Test Time: {total_time:.2f}s")
-        logging.info(f"\n🚀 Performance Analysis:")
+        logging.info(f"\n Performance Analysis:")
         logging.info(f"   - Retrieval: {(avg_retrieval/avg_total)*100:.1f}% of total time")
         logging.info(f"   - Extraction: {(avg_extraction/avg_total)*100:.1f}% of total time")
         logging.info(f"   - Generation: {(avg_generation/avg_total)*100:.1f}% of total time")
@@ -496,7 +496,7 @@ Answer (friendly, 2-3 sentences):"""
         output_file = f"leibniz_hybrid_rag_results_{self.results['test_run_id']}.json"
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2)
-        logging.info(f"💾 Results saved to: {output_file}")
+        logging.info(f" Results saved to: {output_file}")
 
 def main():
     tester = LeibnizHybridRAG()

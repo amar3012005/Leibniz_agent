@@ -56,11 +56,11 @@ class IntentClassifier:
             try:
                 genai.configure(api_key=config.gemini_api_key)
                 self.model = genai.GenerativeModel(config.gemini_model)
-                logger.info(f"✅ Gemini model initialized: {config.gemini_model}")
+                logger.info(f" Gemini model initialized: {config.gemini_model}")
             except Exception as e:
-                logger.warning(f"⚠️ Gemini initialization failed: {e}. Only fast pattern matching will be available.")
+                logger.warning(f"️ Gemini initialization failed: {e}. Only fast pattern matching will be available.")
         else:
-            logger.warning("⚠️ No Gemini API key. Only fast pattern matching available.")
+            logger.warning("️ No Gemini API key. Only fast pattern matching available.")
         
         # Performance tracking
         self.fast_route_count = 0
@@ -115,7 +115,7 @@ class IntentClassifier:
                 
                 if self.config.log_classifications:
                     logger.info(
-                        f"✅ FAST: {fast_result['intent']} "
+                        f" FAST: {fast_result['intent']} "
                         f"(conf={fast_result['confidence']:.2f}, "
                         f"time={fast_result['response_time']:.3f}s)"
                     )
@@ -133,7 +133,7 @@ class IntentClassifier:
                     
                     if self.config.log_classifications:
                         logger.info(
-                            f"🤖 GEMINI: {gemini_result['intent']} "
+                            f" GEMINI: {gemini_result['intent']} "
                             f"(conf={gemini_result['confidence']:.2f}, "
                             f"time={gemini_result['response_time']:.3f}s)"
                         )
@@ -141,7 +141,7 @@ class IntentClassifier:
                     return gemini_result
                 
                 except Exception as e:
-                    logger.warning(f"⚠️ Gemini classification failed: {e}")
+                    logger.warning(f"️ Gemini classification failed: {e}")
                     # Return fast result as final fallback
                     self.fast_route_count += 1
                     self.total_confidence += fast_result["confidence"]
@@ -157,14 +157,14 @@ class IntentClassifier:
                 
                 if self.config.log_classifications:
                     logger.info(
-                        f"✅ FAST (no Gemini): {fast_result['intent']} "
+                        f" FAST (no Gemini): {fast_result['intent']} "
                         f"(conf={fast_result['confidence']:.2f})"
                     )
                 
                 return fast_result
                 
         except Exception as e:
-            logger.error(f"❌ Classification error: {e}")
+            logger.error(f" Classification error: {e}")
             return {
                 "intent": "UNCLEAR",
                 "confidence": 0.2,
@@ -501,7 +501,7 @@ class IntentClassifier:
             return result
             
         except json.JSONDecodeError as e:
-            logger.warning(f"⚠️ JSON parse error in Gemini response: {e}")
+            logger.warning(f"️ JSON parse error in Gemini response: {e}")
             return {
                 "intent": "UNCLEAR",
                 "confidence": 0.4,
@@ -513,7 +513,7 @@ class IntentClassifier:
                 "reasoning": "Failed to parse Gemini JSON response"
             }
         except Exception as e:
-            logger.warning(f"⚠️ Gemini API error: {e}")
+            logger.warning(f"️ Gemini API error: {e}")
             return {
                 "intent": "UNCLEAR",
                 "confidence": 0.2,

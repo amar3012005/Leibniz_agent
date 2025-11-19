@@ -30,11 +30,11 @@ def test_huggingface():
         import torch
         
         logging.info("\n" + "="*60)
-        logging.info("🤗 TESTING HUGGINGFACE PHI-2 (Optimized)")
+        logging.info(" TESTING HUGGINGFACE PHI-2 (Optimized)")
         logging.info("="*60)
         
         # Load model
-        logging.info("📥 Loading HuggingFace model...")
+        logging.info(" Loading HuggingFace model...")
         start = time.time()
         
         model = AutoModelForCausalLM.from_pretrained(
@@ -46,18 +46,18 @@ def test_huggingface():
         tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
         
         load_time = time.time() - start
-        logging.info(f"✅ Loaded in {load_time:.2f}s")
+        logging.info(f" Loaded in {load_time:.2f}s")
         
         # Warmup
-        logging.info("🔥 Warming up...")
+        logging.info(" Warming up...")
         start = time.time()
         prompt = "Test warmup"
         inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
         _ = model.generate(**inputs, max_new_tokens=5, do_sample=False)
-        logging.info(f"✅ Warmed up in {time.time()-start:.2f}s")
+        logging.info(f" Warmed up in {time.time()-start:.2f}s")
         
         # Test 3 generations
-        logging.info("\n🧪 Running 3 test generations...")
+        logging.info("\n Running 3 test generations...")
         times = []
         
         for i in range(3):
@@ -88,12 +88,12 @@ Answer (friendly, 2-3 sentences):"""
             logging.info(f"   Run {i+1}: {gen_time:.0f}ms ({len(answer)} chars)")
         
         avg_time = sum(times) / len(times)
-        logging.info(f"\n📊 HuggingFace Average: {avg_time:.0f}ms")
+        logging.info(f"\n HuggingFace Average: {avg_time:.0f}ms")
         
         return {"name": "HuggingFace Phi-2", "avg_ms": avg_time, "times": times}
     
     except Exception as e:
-        logging.error(f"❌ HuggingFace test failed: {e}")
+        logging.error(f" HuggingFace test failed: {e}")
         return None
 
 def test_gguf():
@@ -102,13 +102,13 @@ def test_gguf():
         from llama_cpp import Llama
         
         logging.info("\n" + "="*60)
-        logging.info("⚡ TESTING GGUF PHI-2 (Q4_K_M)")
+        logging.info(" TESTING GGUF PHI-2 (Q4_K_M)")
         logging.info("="*60)
         
         model_path = "models/phi-2.Q4_K_M.gguf"
         
         # Load model
-        logging.info("📥 Loading GGUF model...")
+        logging.info(" Loading GGUF model...")
         start = time.time()
         
         llm = Llama(
@@ -123,16 +123,16 @@ def test_gguf():
         )
         
         load_time = time.time() - start
-        logging.info(f"✅ Loaded in {load_time:.2f}s")
+        logging.info(f" Loaded in {load_time:.2f}s")
         
         # Warmup
-        logging.info("🔥 Warming up...")
+        logging.info(" Warming up...")
         start = time.time()
         _ = llm("Test warmup", max_tokens=5, temperature=0.7)
-        logging.info(f"✅ Warmed up in {time.time()-start:.2f}s")
+        logging.info(f" Warmed up in {time.time()-start:.2f}s")
         
         # Test 3 generations
-        logging.info("\n🧪 Running 3 test generations...")
+        logging.info("\n Running 3 test generations...")
         times = []
         
         for i in range(3):
@@ -161,17 +161,17 @@ Answer (friendly, 2-3 sentences):"""
             logging.info(f"   Run {i+1}: {gen_time:.0f}ms ({len(answer)} chars)")
         
         avg_time = sum(times) / len(times)
-        logging.info(f"\n📊 GGUF Average: {avg_time:.0f}ms")
+        logging.info(f"\n GGUF Average: {avg_time:.0f}ms")
         
         return {"name": "GGUF Phi-2 Q4", "avg_ms": avg_time, "times": times}
     
     except Exception as e:
-        logging.error(f"❌ GGUF test failed: {e}")
+        logging.error(f" GGUF test failed: {e}")
         return None
 
 def main():
     logging.info("\n" + "="*60)
-    logging.info("🏁 PHI-2 PERFORMANCE BENCHMARK")
+    logging.info(" PHI-2 PERFORMANCE BENCHMARK")
     logging.info("="*60)
     
     results = []
@@ -189,7 +189,7 @@ def main():
     # Compare
     if len(results) == 2:
         logging.info("\n" + "="*60)
-        logging.info("🏆 FINAL COMPARISON")
+        logging.info(" FINAL COMPARISON")
         logging.info("="*60)
         
         for r in results:
@@ -206,7 +206,7 @@ def main():
         
         speedup = slower['avg_ms'] / faster['avg_ms']
         
-        logging.info(f"\n🏆 WINNER: {faster['name']}")
+        logging.info(f"\n WINNER: {faster['name']}")
         logging.info(f"   {speedup:.2f}x faster than {slower['name']}")
         logging.info(f"   ({faster['avg_ms']:.0f}ms vs {slower['avg_ms']:.0f}ms)")
         logging.info("="*60)

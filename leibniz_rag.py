@@ -88,14 +88,14 @@ class LeibnizRAG:
             fallback_path = os.path.abspath(kb_path_raw)
             if os.path.exists(fallback_path):
                 self.knowledge_base_path = fallback_path
-                print(f"📂 Using fallback KB path: {self.knowledge_base_path}")
+                print(f" Using fallback KB path: {self.knowledge_base_path}")
             else:
-                print(f"❌ WARNING: Knowledge base directory does not exist!")
+                print(f" WARNING: Knowledge base directory does not exist!")
                 print(f"   Tried (repo root): {self.knowledge_base_path}")
                 print(f"   Tried (cwd): {fallback_path}")
                 print(f"   Set LEIBNIZ_RAG_KNOWLEDGE_BASE_PATH to use absolute path")
         else:
-            print(f"📂 Knowledge base path (resolved from repo root): {self.knowledge_base_path}")
+            print(f" Knowledge base path (resolved from repo root): {self.knowledge_base_path}")
         
         # Count files to verify it's populated
         self.kb_missing = False
@@ -104,10 +104,10 @@ class LeibnizRAG:
             md_count = sum(1 for root, dirs, files in os.walk(self.knowledge_base_path) for f in files if f.endswith('.md'))
             if md_count == 0:
                 self.kb_empty = True
-                print(f"❌ WARNING: Knowledge base directory exists but contains no markdown files!")
+                print(f" WARNING: Knowledge base directory exists but contains no markdown files!")
                 print(f"   Please populate with markdown files or run setup_simple_kb.py")
             else:
-                print(f"✅ Knowledge base exists ({md_count} markdown files found)")
+                print(f" Knowledge base exists ({md_count} markdown files found)")
         else:
             self.kb_missing = True
         
@@ -209,19 +209,19 @@ class LeibnizRAG:
         # This ensures FAISS index is ready immediately, not on first query
         if self.auto_build and self.vector_store is None:
             if not self.kb_missing and not self.kb_empty:
-                print("🏗️ Auto-building vector store at initialization (auto_build=True)...")
+                print(" Auto-building vector store at initialization (auto_build=True)...")
                 build_success = self._build_vector_store_from_knowledge_base()
                 if build_success:
-                    print(f"✅ Vector store built successfully at initialization ({len(self.documents)} chunks)")
+                    print(f" Vector store built successfully at initialization ({len(self.documents)} chunks)")
                 else:
-                    print("❌ Vector store auto-build failed - will retry on first query")
+                    print(" Vector store auto-build failed - will retry on first query")
             else:
-                print("⚠️ Skipping auto-build: Knowledge base missing or empty")
+                print(" Skipping auto-build: Knowledge base missing or empty")
         
-        print("🎓 Leibniz RAG: Initialized for university customer service")
+        print(" Leibniz RAG: Initialized for university customer service")
         print(f"   Knowledge base: {self.knowledge_base_path}")
         print(f"   Top-K: {self.top_k}, Top-N: {self.top_n}, Similarity threshold: {self.similarity_threshold}")
-        print(f"   🔧 Hybrid mode: {len(self.quick_answer_patterns)} rule-based patterns loaded")
+        print(f"    Hybrid mode: {len(self.quick_answer_patterns)} rule-based patterns loaded")
 
     
     def _initialize_embeddings(self):
@@ -232,10 +232,10 @@ class LeibnizRAG:
                 model_kwargs={'device': 'cpu'},
                 encode_kwargs={'normalize_embeddings': True}
             )
-            print(f"✅ Embeddings model loaded successfully ({self.embedding_model_name})")
+            print(f" Embeddings model loaded successfully ({self.embedding_model_name})")
         except Exception as e:
-            print(f"⚠️ Failed to load embeddings model: {e}")
-            print("⚠️ Using Gemini-only mode (embeddings will be generated via API)")
+            print(f" Failed to load embeddings model: {e}")
+            print(" Using Gemini-only mode (embeddings will be generated via API)")
             self.embeddings = None
     
     def _initialize_gemini(self):
@@ -243,16 +243,16 @@ class LeibnizRAG:
         try:
             api_key = os.getenv("GEMINI_API_KEY")
             if not api_key:
-                print("⚠️ GEMINI_API_KEY not found in environment")
+                print(" GEMINI_API_KEY not found in environment")
                 self.gemini_model = None
                 return
             
             genai.configure(api_key=api_key)
             model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-lite")
             self.gemini_model = genai.GenerativeModel(model_name)
-            print(f"✅ Gemini 2.0 Flash initialized for Leibniz RAG (169.5 tok/s)")
+            print(f" Gemini 2.0 Flash initialized for Leibniz RAG (169.5 tok/s)")
         except Exception as e:
-            print(f"⚠️ Failed to initialize Gemini: {e}")
+            print(f" Failed to initialize Gemini: {e}")
             self.gemini_model = None
     
     def _load_vector_store(self):
@@ -272,12 +272,12 @@ class LeibnizRAG:
                 with open(texts_path, 'r', encoding='utf-8') as f:
                     self.documents = json.load(f)
                 
-                print(f"✅ Leibniz vector store loaded successfully ({len(self.documents)} chunks)")
+                print(f" Leibniz vector store loaded successfully ({len(self.documents)} chunks)")
             else:
-                print("⚠️ Vector store not found, will build from leibniz_knowledge_base/")
+                print(" Vector store not found, will build from leibniz_knowledge_base/")
                 self.vector_store = None
         except Exception as e:
-            print(f"⚠️ Error loading vector store: {e}")
+            print(f" Error loading vector store: {e}")
             self.vector_store = None
     
     def _build_vector_store_from_knowledge_base(self) -> bool:
@@ -285,7 +285,7 @@ class LeibnizRAG:
         try:
             return self._build_optimized_vector_store()
         except Exception as e:
-            print(f"⚠️ Optimized build failed: {e}, trying basic method")
+            print(f" Optimized build failed: {e}, trying basic method")
             return self._build_basic_vector_store()
     
     def _build_optimized_vector_store(self) -> bool:
@@ -293,7 +293,7 @@ class LeibnizRAG:
         try:
             # Comment 6: Abort if knowledge base path doesn't exist
             if not os.path.exists(self.knowledge_base_path):
-                print(f"❌ Knowledge base not found: {self.knowledge_base_path}")
+                print(f" Knowledge base not found: {self.knowledge_base_path}")
                 print(f"   Resolved absolute path: {os.path.abspath(self.knowledge_base_path)}")
                 print(f"   Please create this directory and add markdown files,")
                 print(f"   or run setup_simple_kb.py to generate sample content.")
@@ -304,7 +304,7 @@ class LeibnizRAG:
             all_documents = []
             all_metadata = []
             
-            print(f"📚 Scanning Leibniz knowledge base: {self.knowledge_base_path}")
+            print(f" Scanning Leibniz knowledge base: {self.knowledge_base_path}")
             
             for root, dirs, files in os.walk(self.knowledge_base_path):
                 for file in files:
@@ -339,21 +339,21 @@ class LeibnizRAG:
             
             if not all_documents:
                 # FIX: Consolidated clear error message with actionable fix
-                print("❌ RAG system not ready: No markdown files found in knowledge base")
+                print(" RAG system not ready: No markdown files found in knowledge base")
                 print(f"   Expected location: {self.knowledge_base_path}")
                 print(f"   Please verify the knowledge base exists at the repository root")
                 print(f"   Or set LEIBNIZ_RAG_KNOWLEDGE_BASE_PATH environment variable to absolute path")
                 return False
             
-            print(f"📄 Processed {len(all_documents)} document chunks from {len(set(m['source'] for m in all_metadata))} files")
+            print(f" Processed {len(all_documents)} document chunks from {len(set(m['source'] for m in all_metadata))} files")
             
             # Create embeddings
-            print("🔄 Creating embeddings...")
+            print(" Creating embeddings...")
             embeddings_array = self.embeddings.embed_documents(all_documents)
             embeddings_array = np.array(embeddings_array, dtype=np.float32)
             
             # Build FAISS index
-            print("🔄 Building FAISS index...")
+            print(" Building FAISS index...")
             dimension = embeddings_array.shape[1]
             index = faiss.IndexFlatL2(dimension)
             index.add(embeddings_array)
@@ -378,11 +378,11 @@ class LeibnizRAG:
             self.documents = all_documents
             self.doc_metadata = all_metadata
             
-            print(f"✅ Leibniz vector store built with {len(all_documents)} document chunks")
+            print(f" Leibniz vector store built with {len(all_documents)} document chunks")
             return True
             
         except Exception as e:
-            print(f"❌ Error building optimized vector store: {e}")
+            print(f" Error building optimized vector store: {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -446,11 +446,11 @@ class LeibnizRAG:
             self.documents = all_documents
             self.doc_metadata = all_metadata
             
-            print(f"✅ Basic vector store built and saved ({len(all_documents)} chunks)")
+            print(f" Basic vector store built and saved ({len(all_documents)} chunks)")
             return True
             
         except Exception as e:
-            print(f"❌ Error building basic vector store: {e}")
+            print(f" Error building basic vector store: {e}")
             return False
     
     def _intelligent_chunk_text(self, content: str, filename: str) -> List[str]:
@@ -797,7 +797,7 @@ class LeibnizRAG:
                     best_match_count = match_count
         
         if best_match:
-            logger.debug(f"📋 Pattern detected: {best_match['name']} (match_count: {best_match_count})")
+            logger.debug(f" Pattern detected: {best_match['name']} (match_count: {best_match_count})")
         
         return best_match
     
@@ -836,7 +836,7 @@ class LeibnizRAG:
         for dept, keywords in dept_keywords.items():
             if dept in query_lower:
                 enriched_query = f"{query} {keywords}"
-                logger.debug(f"✨ Query enriched with department keywords: {dept}")
+                logger.debug(f" Query enriched with department keywords: {dept}")
                 break
         
         # Add entities from context
@@ -880,7 +880,7 @@ class LeibnizRAG:
                     boost_cat_lower = boost_cat.lower()
                     if boost_cat_lower in doc_category or boost_cat_lower in doc_source:
                         boosted_similarity *= 1.5  # 50% boost!
-                        logger.debug(f"📈 Boosted {doc_source} (matched '{boost_cat}')")
+                        logger.debug(f" Boosted {doc_source} (matched '{boost_cat}')")
                         break  # Only boost once
                 
                 candidates.append({
@@ -911,7 +911,7 @@ class LeibnizRAG:
             final_docs.append(doc)
             total_chars += doc_length
         
-        logger.info(f"📚 Hybrid retrieval: {len(final_docs)} docs ({total_chars} chars, limit: {max_context_chars})")
+        logger.info(f" Hybrid retrieval: {len(final_docs)} docs ({total_chars} chars, limit: {max_context_chars})")
         
         return final_docs, timing
     
@@ -1102,6 +1102,8 @@ Here's the contact info you have:
 {json.dumps(extracted_info, indent=2, ensure_ascii=False)}
 {context_summary}
 
+{"Respond in German." if context and context.get('language') == 'german' else ""}
+
 Give them the contact information directly - email, phone, location, hours, whatever's relevant. Keep it short and clear (2-3 sentences). Keep your response between 150-200 characters total. Just give them what they need.
 
 Your response:"""
@@ -1109,6 +1111,8 @@ Your response:"""
                 # Fallback if extraction failed
                 prompt = f"""They asked: "{query}"
 {context_summary}
+
+{"Respond in German." if context and context.get('language') == 'german' else ""}
 
 Give them the contact information from what you know. Be specific and direct. Keep your response between 150-200 characters total.
 
@@ -1123,12 +1127,16 @@ Requirements you found:
 {json.dumps(extracted_info, indent=2, ensure_ascii=False)}
 {context_summary}
 
+{"Respond in German." if context and context.get('language') == 'german' else ""}
+
 List out the admission requirements clearly. Mention the program if you know it. Keep it structured (3-4 sentences). Keep your response between 150-200 characters total. Only suggest contacting admissions if you're missing key info.
 
 Your response:"""
             else:
                 prompt = f"""They asked: "{query}"
 {context_summary}
+
+{"Respond in German." if context and context.get('language') == 'german' else ""}
 
 Give them the admission requirements based on what you know. Be direct and clear. Keep your response between 150-200 characters total.
 
@@ -1141,6 +1149,8 @@ Your response:"""
 Pattern type: {pattern_name.replace('_', ' ')}
 Details: {json.dumps(extracted_info, ensure_ascii=False)}
 {context_summary}
+
+{"Respond in German." if context and context.get('language') == 'german' else ""}
 
 Answer directly using the details you have. Be friendly and conversational (2-3 sentences). Keep your response between 150-200 characters total. If you don't have complete info, suggest who they should contact. Don't mention any template structure.
 
@@ -1177,19 +1187,19 @@ Your response:"""
                 query_text = context.get('extracted_meaning', '')
                 
                 if query_text and SEMANTIC_CONTEXT_DEBUG:
-                    logger.debug(f"🧠 Using extracted_meaning from context: '{query_text}'")
+                    logger.debug(f" Using extracted_meaning from context: '{query_text}'")
                 
                 # Fallback to user_goal if extracted_meaning empty
                 if not query_text:
                     query_text = context.get('user_goal', '')
                     if query_text and SEMANTIC_CONTEXT_DEBUG:
-                        logger.debug(f"🧠 Using user_goal from context: '{query_text}'")
+                        logger.debug(f" Using user_goal from context: '{query_text}'")
             
             # Fallback to raw query parameter
             if not query_text:
                 query_text = query if query else ""
                 if query_text and SEMANTIC_CONTEXT_DEBUG:
-                    logger.debug(f"⚠️ No context available, using raw query: '{query_text}'")
+                    logger.debug(f" No context available, using raw query: '{query_text}'")
             
             if not query_text:
                 return "I'm sorry, I didn't understand your question. Could you please rephrase it?"
@@ -1198,28 +1208,28 @@ Your response:"""
             try:
                 cached_result = self.cache_manager.get_query_response(query_text, language='mixed')
                 if cached_result:
-                    logger.info(f"✅ Cache hit for query: '{query_text[:50]}...'")
+                    logger.info(f" Cache hit for query: '{query_text[:50]}...'")
                     return cached_result
             except Exception as cache_error:
-                logger.warning(f"⚠️ Cache check failed: {cache_error}")
+                logger.warning(f" Cache check failed: {cache_error}")
                 # Continue with normal processing
             
             # Step 2: Auto-build vector store if needed
             if self.vector_store is None:
                 if SEMANTIC_CONTEXT_DEBUG:
-                    logger.debug("🔄 Building Leibniz vector store from knowledge base...")
+                    logger.debug(" Building Leibniz vector store from knowledge base...")
                 if not self._build_vector_store_from_knowledge_base():
                     return "I'm having trouble accessing the knowledge base. Please try again in a moment."
             
             # Step 3: Validate components
             if not self.embeddings:
-                logger.warning("⚠️ Embeddings not available, using Gemini-only fallback with keyword filtering")
+                logger.warning(" Embeddings not available, using Gemini-only fallback with keyword filtering")
                 # Gemini-only fallback: keyword-based document selection
                 return_timing_flag = context.get('return_timing', False) if context else False
                 return self._gemini_only_query(query_text, context, timing, return_timing_flag, streaming_callback)
             
             if not self.vector_store:
-                logger.warning("⚠️ Vector store not available, using Gemini-only fallback")
+                logger.warning(" Vector store not available, using Gemini-only fallback")
                 return_timing_flag = context.get('return_timing', False) if context else False
                 return self._gemini_only_query(query_text, context, timing, return_timing_flag, streaming_callback)
             
@@ -1233,7 +1243,7 @@ Your response:"""
             
             if detected_pattern:
                 # HYBRID PATH: Use rule-based boosting + reduced context
-                logger.info(f"📋 Pattern detected: {detected_pattern['name']} (optimized hybrid path)")
+                logger.info(f" Pattern detected: {detected_pattern['name']} (optimized hybrid path)")
                 
                 # Retrieve with category boosting and context truncation
                 relevant_docs, retrieval_timing = self._retrieve_with_boosting(
@@ -1282,9 +1292,9 @@ Your response:"""
                             'processing_time_ms': timing.get('total_ms', 0)
                         }
                         self.cache_manager.cache_query_response(query_text, answer, language='mixed', metadata=cache_metadata)
-                        logger.debug(f"💾 Cached Leibniz hybrid RAG response for query: '{query_text[:50]}...'")
+                        logger.debug(f" Cached Leibniz hybrid RAG response for query: '{query_text[:50]}...'")
                     except Exception as cache_error:
-                        logger.warning(f"⚠️ Failed to cache hybrid response: {cache_error}")
+                        logger.warning(f" Failed to cache hybrid response: {cache_error}")
                     
                     # Return with timing if requested
                     total_time = (time.time() - start_time) * 1000
@@ -1297,14 +1307,14 @@ Your response:"""
                         return answer
                         
                 except Exception as e:
-                    logger.error(f"❌ Hybrid generation failed: {e}")
+                    logger.error(f" Hybrid generation failed: {e}")
                     # Fall through to standard RAG path
             
             # STANDARD RAG PATH: No pattern match or hybrid failed
             if detected_pattern:
-                logger.info("🔄 Falling back to standard RAG (hybrid failed)")
+                logger.info(" Falling back to standard RAG (hybrid failed)")
             else:
-                logger.info("🔍 Standard RAG path (no pattern match)")
+                logger.info(" Standard RAG path (no pattern match)")
             
             # Step 4: Enhanced query embedding (STANDARD logic)
             enriched_query = query_text
@@ -1315,14 +1325,14 @@ Your response:"""
                 entity_terms = ' '.join([f"{k} {v}" for k, v in entities.items()])
                 enriched_query = f"{query_text} {entity_terms}"
                 if SEMANTIC_CONTEXT_DEBUG:
-                    logger.debug(f"✨ Query enriched with entities: '{enriched_query}'")
+                    logger.debug(f" Query enriched with entities: '{enriched_query}'")
             
             # Add user goal for semantic context
             if context and 'user_goal' in context:
                 user_goal = context['user_goal']
                 enriched_query = f"{enriched_query} {user_goal}"
                 if SEMANTIC_CONTEXT_DEBUG:
-                    logger.debug(f"✨ Query enriched with user_goal: final query length = {len(enriched_query)} chars")
+                    logger.debug(f" Query enriched with user_goal: final query length = {len(enriched_query)} chars")
             
             embed_start = time.time()
             query_embedding = self.embeddings.embed_query(enriched_query)
@@ -1336,7 +1346,7 @@ Your response:"""
             timing['search_ms'] = search_elapsed
             
             # PHASE 2 CHANGE 2.4: Add retrieval timing log
-            logger.info(f"🔍 Vector search completed in {search_elapsed:.1f}ms (top_k={self.top_k})")
+            logger.info(f" Vector search completed in {search_elapsed:.1f}ms (top_k={self.top_k})")
             
             # Retrieve relevant documents and filter by similarity threshold
             relevant_docs = []
@@ -1427,6 +1437,7 @@ Your response:"""
             user_goal_text = context.get('user_goal', 'general information') if context else 'general information'
             key_entities_text = str(context.get('key_entities', {})) if context else '{}'
             extracted_meaning = context.get('extracted_meaning', query_text) if context else query_text
+            language = context.get('language', 'english') if context else 'english'
             
             prompt = f"""You're in the middle of a conversation as TARA, helping a student at Leibniz University.
 
@@ -1434,6 +1445,8 @@ They just asked: "{query_text}"
 
 What you know:
 {context_text}
+
+{"Respond in German." if language == 'german' else ""}
 
 Be direct and helpful - no need for greetings or formalities since you're already talking. Give them the information they need in 2-4 sentences. Keep your response between 150-200 characters total. If you don't have the answer in your knowledge base, be honest and point them to who can help. Sound natural, like you're actually talking to them.
 
@@ -1509,7 +1522,7 @@ Your response:"""
                                     
                                     # PHASE 2 CHANGE 2.5: Add first-sentence emission timing
                                     first_emit_elapsed = (time.time() - gen_start) * 1000
-                                    logger.info(f"⚡ First chunk emitted in {first_emit_elapsed:.1f}ms: '{first_chunk_text[:40]}...' (trigger: {'time' if should_emit_time else 'chars'})")
+                                    logger.info(f" First chunk emitted in {first_emit_elapsed:.1f}ms: '{first_chunk_text[:40]}...' (trigger: {'time' if should_emit_time else 'chars'})")
                                     
                                     first_emit_done = True
                                     sentence_buffer = ""
@@ -1531,7 +1544,7 @@ Your response:"""
                                     if len(accumulated_clause) >= 60:
                                         # Emit accumulated clauses
                                         streaming_callback(accumulated_clause.strip(), False)
-                                        logger.debug(f"⏱️ Timer flush (700ms): '{accumulated_clause.strip()[:40]}...'")
+                                        logger.debug(f"⏱ Timer flush (700ms): '{accumulated_clause.strip()[:40]}...'")
                                         accumulated_clause = ""
                                 
                                 # Keep last incomplete clause in buffer
@@ -1570,9 +1583,9 @@ Your response:"""
                         try:
                             streaming_callback("", True)  # Empty text with is_final=True acts as sentinel
                             sentinel_sent = True
-                            logger.debug("📍 Sentinel sent from RAG streaming (finally block)")
+                            logger.debug(" Sentinel sent from RAG streaming (finally block)")
                         except Exception as sentinel_error:
-                            logger.error(f"❌ Failed to send sentinel in finally: {sentinel_error}")
+                            logger.error(f" Failed to send sentinel in finally: {sentinel_error}")
             else:
                 # Standard non-streaming generation
                 response = self.gemini_model.generate_content(
@@ -1600,15 +1613,19 @@ Your response:"""
             # Comment 4 FIX: Trim response if > 200 chars (enforce 150-200 char limit)
             raw_response = self._trim_to_max_length(raw_response, max_chars=200)
             
-            # Step 10: Humanize response for conversational English
-            # Detect if this is first turn or follow-up based on context
-            is_first_turn = True
-            if context:
-                turn_number = context.get('turn_number', 1)
-                conversation_history = context.get('conversation_history', [])
-                is_first_turn = (turn_number <= 1 and len(conversation_history) == 0)
-            
-            final_response = self._humanize_response_english(raw_response, query_text, context, is_first_turn)
+            # Step 10: Humanize response for conversational English (skip for German)
+            language = context.get('language', 'english') if context else 'english'
+            if language == 'german':
+                final_response = raw_response
+            else:
+                # Detect if this is first turn or follow-up based on context
+                is_first_turn = True
+                if context:
+                    turn_number = context.get('turn_number', 1)
+                    conversation_history = context.get('conversation_history', [])
+                    is_first_turn = (turn_number <= 1 and len(conversation_history) == 0)
+                
+                final_response = self._humanize_response_english(raw_response, query_text, context, is_first_turn)
             
             # NEW: Cache the successful result
             try:
@@ -1618,9 +1635,9 @@ Your response:"""
                     'processing_time_ms': timing.get('total_ms', 0)
                 }
                 self.cache_manager.cache_query_response(query_text, final_response, language='mixed', metadata=cache_metadata)
-                logger.debug(f"💾 Cached Leibniz RAG response for query: '{query_text[:50]}...'")
+                logger.debug(f" Cached Leibniz RAG response for query: '{query_text[:50]}...'")
             except Exception as cache_error:
-                logger.warning(f"⚠️ Failed to cache response: {cache_error}")
+                logger.warning(f" Failed to cache response: {cache_error}")
             
             timing['total_ms'] = (time.time() - start_time) * 1000
             
@@ -1631,7 +1648,7 @@ Your response:"""
                 return final_response
             
         except Exception as e:
-            print(f"❌ Error processing RAG query: {e}")
+            print(f" Error processing RAG query: {e}")
             import traceback
             traceback.print_exc()
             return "I apologize, but I encountered an error while processing your question. Could you please try rephrasing it?"
@@ -1641,7 +1658,7 @@ Your response:"""
         try:
             # If no documents loaded at all, use Gemini without knowledge base
             if not self.documents:
-                print("⚠️ No knowledge base documents available, using Gemini standalone mode")
+                print(" No knowledge base documents available, using Gemini standalone mode")
                 if not self.gemini_model:
                     return "I'm having trouble accessing the knowledge base. Please try again later."
                 
@@ -1650,6 +1667,8 @@ Your response:"""
 They asked: {query_text}
 
 You don't have specific knowledge base info right now, but answer as helpfully as you can based on general university knowledge. Be direct and friendly - no need for greetings since you're already talking. Keep your response between 150-200 characters total.
+
+{"Respond in German." if context and context.get('language') == 'german' else ""}
 
 Your response:"""
                 
@@ -1665,7 +1684,7 @@ Your response:"""
                         return (final_response, timing)
                     return final_response
                 except Exception as e:
-                    print(f"❌ Gemini generation error: {e}")
+                    print(f" Gemini generation error: {e}")
                     return "I'm having trouble generating a response. Please try again."
             
             # Keyword-based document selection from loaded documents
@@ -1698,12 +1717,14 @@ Your response:"""
             
             if not relevant_docs:
                 # No keyword matches, use Gemini standalone
-                print("⚠️ No keyword matches found, using Gemini standalone")
+                print(" No keyword matches found, using Gemini standalone")
                 prompt = f"""You're helping a student at Leibniz University right now.
 
 They asked: {query_text}
 
 You don't have specific documents on this topic, but do your best to help. Be direct and friendly. Keep your response between 150-200 characters total.
+
+{"Respond in German." if context and context.get('language') == 'german' else ""}
 
 Your response:"""
             else:
@@ -1720,6 +1741,8 @@ They asked: {query_text}
 
 Give them a helpful, direct answer using what you know above. Be natural and conversational - you're already talking to them, so skip the greetings. Keep your response between 150-200 characters total.
 
+{"Respond in German." if context and context.get('language') == 'german' else ""}
+
 Your response:"""
             
             # Generate response
@@ -1733,8 +1756,9 @@ Your response:"""
                 
                 final_response = response.text.strip()
                 
-                # Apply humanization if enabled
-                if self.enable_humanization:
+                # Apply humanization if enabled and not German
+                language = context.get('language', 'english') if context else 'english'
+                if self.enable_humanization and language != 'german':
                     final_response = self._humanize_response_english(final_response, query_text, context)
                 
                 timing['total_ms'] = sum(timing.values())
@@ -1744,11 +1768,11 @@ Your response:"""
                 return final_response
                 
             except Exception as e:
-                print(f"❌ Gemini generation error: {e}")
+                print(f" Gemini generation error: {e}")
                 return "I encountered an error generating a response. Please try again."
                 
         except Exception as e:
-            print(f"❌ Gemini-only query error: {e}")
+            print(f" Gemini-only query error: {e}")
             import traceback
             traceback.print_exc()
             return "I apologize, but I'm having trouble processing your question. Please try again."
@@ -2065,7 +2089,7 @@ async def test_leibniz_rag():
         casual_phrases = ["here's", "basically", "you'll need to", "feel free"]
         is_casual = any(phrase in response.lower() for phrase in casual_phrases)
         
-        tone = "Casual ✓" if is_casual else ("Formal ✗" if is_formal else "Neutral")
+        tone = "Casual " if is_casual else ("Formal " if is_formal else "Neutral")
         print(f"Tone: {tone}")
         
         total_length += len(response)

@@ -61,23 +61,23 @@ async def test_websocket_with_synthetic_audio():
     print(f"Generated {len(chunks)} chunks ({duration}s of audio)")
     
     async with connect(WS_URL) as websocket:
-        print("✅ WebSocket connected")
+        print(" WebSocket connected")
         
         # Send audio chunks
         for i, chunk in enumerate(chunks):
             await websocket.send(chunk)
             if i % 10 == 0:
-                print(f"📤 Sent chunk {i+1}/{len(chunks)}")
+                print(f" Sent chunk {i+1}/{len(chunks)}")
             await asyncio.sleep(0.05)  # 50ms delay between chunks
         
-        print("✅ All chunks sent, waiting for responses...")
+        print(" All chunks sent, waiting for responses...")
         
         # Receive responses
         try:
             while True:
                 message = await asyncio.wait_for(websocket.recv(), timeout=5.0)
                 data = json.loads(message)
-                print(f"📥 Received: {data}")
+                print(f" Received: {data}")
                 
                 if data["type"] in ["final", "timeout", "error"]:
                     break
@@ -105,21 +105,21 @@ async def test_websocket_with_silence():
     print(f"Generated {len(chunks)} silent chunks")
     
     async with connect(WS_URL) as websocket:
-        print("✅ WebSocket connected")
+        print(" WebSocket connected")
         
         # Send silence chunks
         for i, chunk in enumerate(chunks):
             await websocket.send(chunk)
             await asyncio.sleep(0.05)
         
-        print("✅ Sent silence, waiting for timeout...")
+        print(" Sent silence, waiting for timeout...")
         
         # Receive responses
         try:
             while True:
                 message = await asyncio.wait_for(websocket.recv(), timeout=15.0)
                 data = json.loads(message)
-                print(f"📥 Received: {data}")
+                print(f" Received: {data}")
                 
                 if data["type"] in ["final", "timeout", "error"]:
                     break
@@ -145,10 +145,10 @@ async def main():
         # Final metrics
         await test_metrics()
         
-        print("\n✅ All tests complete!")
+        print("\n All tests complete!")
         
     except Exception as e:
-        print(f"\n❌ Test failed: {e}")
+        print(f"\n Test failed: {e}")
         import traceback
         traceback.print_exc()
 

@@ -337,7 +337,7 @@ async def test_context_extraction(test_cases: List[ContextExtractionTestCase]) -
             
             results["test_cases"].append(test_result)
             
-            logger.info(f"Intent: {actual_intent} ({'✓' if intent_correct else '✗'})")
+            logger.info(f"Intent: {actual_intent} ({'' if intent_correct else ''})")
             logger.info(f"Context quality: {context_validation['overall_score']:.2f} ({context_validation['quality_level']})")
             logger.info(f"Fast route: {'Yes' if fast_route else 'No'}")
             logger.info(f"Result: {'PASS' if test_passed else 'FAIL'}")
@@ -550,8 +550,8 @@ def print_report_summary(report: Dict):
     context_summary = report["context_extraction"]["summary"]
     print(f"\nContext Extraction Summary:")
     print(f"  Total Test Cases: {context_summary['total']}")
-    print(f"  Passed: {context_summary['passed']} ✅")
-    print(f"  Failed: {context_summary['failed']} ❌")
+    print(f"  Passed: {context_summary['passed']} ")
+    print(f"  Failed: {context_summary['failed']} ")
     print(f"  Pass Rate: {report['summary']['context_extraction_pass_rate']:.1%}")
     print(f"  Average Context Quality: {report['summary']['avg_context_quality']:.2f}")
     print(f"  Fast Route Usage: {report['summary']['fast_route_percentage']:.1%} (target: {FAST_ROUTE_TARGET:.1%})")
@@ -559,9 +559,9 @@ def print_report_summary(report: Dict):
     rag_summary = report["rag_comparison"]["summary"]
     print(f"\nRAG Comparison Summary:")
     print(f"  Total Comparisons: {rag_summary['total_tests']}")
-    print(f"  Context Improved: {rag_summary['context_improved']} ✅")
-    print(f"  No Change: {rag_summary['no_improvement']} ➖")
-    print(f"  Context Worse: {rag_summary['context_worse']} ❌")
+    print(f"  Context Improved: {rag_summary['context_improved']} ")
+    print(f"  No Change: {rag_summary['no_improvement']} ")
+    print(f"  Context Worse: {rag_summary['context_worse']} ")
     print(f"  Average Improvement: {rag_summary['avg_improvement']:.2f}")
     
     if report["issues"]:

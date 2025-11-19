@@ -137,7 +137,7 @@ class LeibnizSarvamSTTService:
         self.audio_buffer: bytearray = bytearray()
         self.buffer_lock: asyncio.Lock = asyncio.Lock()
 
-        logger.info("✅ LeibnizSarvamSTTService initialized")
+        logger.info(" LeibnizSarvamSTTService initialized")
 
     def _load_config(self) -> Dict[str, Any]:
         """Load Sarvam AI configuration from environment variables."""
@@ -176,7 +176,7 @@ class LeibnizSarvamSTTService:
         and launches background tasks for sending/receiving.
         """
         if self.is_running:
-            logger.warning("⚠️ Sarvam STT service already running")
+            logger.warning("️ Sarvam STT service already running")
             return
 
         if not self.config['api_key']:
@@ -235,7 +235,7 @@ class LeibnizSarvamSTTService:
             self.is_running = True
             self.start_time = time.time()
 
-            logger.info("✅ Sarvam STT continuous service started")
+            logger.info(" Sarvam STT continuous service started")
 
         except Exception as e:
             await self._cleanup_resources()
@@ -251,7 +251,7 @@ class LeibnizSarvamSTTService:
             ws_url = self._build_websocket_url()
             headers = {'Api-Subscription-Key': self.config['api_key']}
 
-            logger.info(f"🔌 Connecting to Sarvam AI: {ws_url}")
+            logger.info(f" Connecting to Sarvam AI: {ws_url}")
 
             # websockets 15.x uses additional_headers parameter
             self.websocket = await websockets.connect(
@@ -261,10 +261,10 @@ class LeibnizSarvamSTTService:
                 ping_timeout=10,
                 close_timeout=5
             )
-            logger.info("✅ WebSocket connected to Sarvam AI")
+            logger.info(" WebSocket connected to Sarvam AI")
 
         except Exception as e:
-            logger.error(f"❌ WebSocket connection failed: {e}")
+            logger.error(f" WebSocket connection failed: {e}")
             raise
 
     async def _send_audio_loop(self):
@@ -303,7 +303,7 @@ class LeibnizSarvamSTTService:
                         self.last_activity_time = time.time()
 
                 except websockets.exceptions.ConnectionClosed:
-                    logger.warning("🔌 WebSocket connection closed, attempting reconnect...")
+                    logger.warning(" WebSocket connection closed, attempting reconnect...")
                     await self._handle_connection_error()
                     break
                 except Exception as e:
@@ -344,7 +344,7 @@ class LeibnizSarvamSTTService:
                             vad = get_leibniz_vad()
 
                             if vad.is_agent_speaking:
-                                logger.debug(f"🎤 Ignoring transcript during agent speech: '{transcript[:50]}...'")
+                                logger.debug(f" Ignoring transcript during agent speech: '{transcript[:50]}...'")
                                 continue
 
                             # Normalize transcript
@@ -369,19 +369,19 @@ class LeibnizSarvamSTTService:
                                 try:
                                     await self.on_user_speech(normalized_transcript)
                                 except Exception as callback_err:
-                                    logger.error(f"❌ User speech callback error: {callback_err}")
+                                    logger.error(f" User speech callback error: {callback_err}")
 
                             # Signal main loop
                             self.user_transcript_event.set()
 
-                            logger.info(f"📝 Transcript: '{normalized_transcript}' (VAD: {vad_confidence:.3f})")
+                            logger.info(f" Transcript: '{normalized_transcript}' (VAD: {vad_confidence:.3f})")
 
                 except websockets.exceptions.ConnectionClosed:
-                    logger.warning("🔌 WebSocket connection closed in listener")
+                    logger.warning(" WebSocket connection closed in listener")
                     await self._handle_connection_error()
                     break
                 except json.JSONDecodeError as e:
-                    logger.warning(f"⚠️ Invalid JSON response: {e}")
+                    logger.warning(f"️ Invalid JSON response: {e}")
                     continue
                 except Exception as e:
                     await self._handle_listener_error(e)
@@ -407,7 +407,7 @@ class LeibnizSarvamSTTService:
                     self.consecutive_timeouts += 1
 
                     if self.consecutive_timeouts >= 2:
-                        logger.warning("🔄 Watchdog: Restarting Sarvam STT service")
+                        logger.warning(" Watchdog: Restarting Sarvam STT service")
                         await self.restart_service()
                         self.consecutive_timeouts = 0
                 else:
@@ -417,7 +417,7 @@ class LeibnizSarvamSTTService:
         except asyncio.CancelledError:
             raise
         except Exception as e:
-            logger.error(f"❌ Watchdog error: {e}")
+            logger.error(f" Watchdog error: {e}")
 
     async def wait_for_user_speech(self, timeout: float = 30.0) -> Optional[str]:
         """
@@ -475,9 +475,9 @@ class LeibnizSarvamSTTService:
             try:
                 await self.websocket.close()
                 self.websocket = None
-                logger.debug("✅ WebSocket closed")
+                logger.debug(" WebSocket closed")
             except Exception as e:
-                logger.warning(f"⚠️ Error closing WebSocket: {e}")
+                logger.warning(f"️ Error closing WebSocket: {e}")
 
         # Stop audio stream
         if self.audio_stream:
@@ -485,9 +485,9 @@ class LeibnizSarvamSTTService:
                 self.audio_stream.stop()
                 self.audio_stream.close()
                 self.audio_stream = None
-                logger.debug("✅ Audio stream closed")
+                logger.debug(" Audio stream closed")
             except Exception as e:
-                logger.warning(f"⚠️ Error closing audio stream: {e}")
+                logger.warning(f"️ Error closing audio stream: {e}")
 
         # Clear audio queue
         if self.thread_audio_queue:
@@ -504,13 +504,13 @@ class LeibnizSarvamSTTService:
         self.websocket_reconnects += 1
 
         if self.is_running:
-            logger.info("🔄 Attempting WebSocket reconnect...")
+            logger.info(" Attempting WebSocket reconnect...")
             await self.restart_service()
 
     async def _handle_send_error(self, error: Exception):
         """Handle errors in audio send loop."""
         self.errors_count += 1
-        logger.warning(f"⚠️ Send error: {error}")
+        logger.warning(f"️ Send error: {error}")
 
         if self.is_running:
             await asyncio.sleep(1.0)  # Brief pause before continue
@@ -518,7 +518,7 @@ class LeibnizSarvamSTTService:
     async def _handle_listener_error(self, error: Exception):
         """Handle errors in transcript listener loop."""
         self.errors_count += 1
-        logger.warning(f"⚠️ Listener error: {error}")
+        logger.warning(f"️ Listener error: {error}")
 
         if self.is_running:
             await asyncio.sleep(1.0)  # Brief pause before continue
@@ -527,7 +527,7 @@ class LeibnizSarvamSTTService:
         """
         Restart the entire STT service after errors.
         """
-        logger.info("🔄 Restarting Sarvam STT service...")
+        logger.info(" Restarting Sarvam STT service...")
 
         # Stop existing tasks
         self.is_running = False
@@ -553,9 +553,9 @@ class LeibnizSarvamSTTService:
         # Reinitialize
         try:
             await self.start_continuous_stt()
-            logger.info("✅ Sarvam STT service restarted successfully")
+            logger.info(" Sarvam STT service restarted successfully")
         except Exception as e:
-            logger.error(f"❌ Failed to restart Sarvam STT service: {e}")
+            logger.error(f" Failed to restart Sarvam STT service: {e}")
             raise
 
     def get_health_status(self) -> Dict[str, Any]:
@@ -588,9 +588,9 @@ class LeibnizSarvamSTTService:
             try:
                 flush_message = {"flush_signal": True}
                 await self.websocket.send(json.dumps(flush_message))
-                logger.debug("📤 Flush signal sent")
+                logger.debug(" Flush signal sent")
             except Exception as e:
-                logger.warning(f"⚠️ Failed to send flush signal: {e}")
+                logger.warning(f"️ Failed to send flush signal: {e}")
 
 
 # Module-level singleton accessor and helper functions
@@ -646,12 +646,12 @@ def validate_sarvam_config():
     is_valid = len(errors) == 0
 
     if errors:
-        logger.error(f"❌ Sarvam config validation failed: {'; '.join(errors)}")
+        logger.error(f" Sarvam config validation failed: {'; '.join(errors)}")
     else:
-        logger.debug("✅ Sarvam config validation passed")
+        logger.debug(" Sarvam config validation passed")
 
     if warnings:
-        logger.warning(f"⚠️ Sarvam config warnings: {'; '.join(warnings)}")
+        logger.warning(f"️ Sarvam config warnings: {'; '.join(warnings)}")
 
     return {
         'valid': is_valid,

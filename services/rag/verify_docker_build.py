@@ -31,13 +31,13 @@ def log_info(msg: str):
     print(f"{BLUE}ℹ️  {msg}{NC}")
 
 def log_success(msg: str):
-    print(f"{GREEN}✅ {msg}{NC}")
+    print(f"{GREEN} {msg}{NC}")
 
 def log_warning(msg: str):
-    print(f"{YELLOW}⚠️  {msg}{NC}")
+    print(f"{YELLOW}️  {msg}{NC}")
 
 def log_error(msg: str):
-    print(f"{RED}❌ {msg}{NC}")
+    print(f"{RED} {msg}{NC}")
 
 def run_command(cmd: str, check: bool = True) -> Tuple[int, str, str]:
     """Run shell command and return (returncode, stdout, stderr)"""
@@ -206,7 +206,7 @@ def verify_dev_mode():
     run_command("docker-compose -f docker-compose.leibniz.yml down", check=False)
     
     log_success("=" * 60)
-    log_success("Development Mode Verification: PASSED ✅")
+    log_success("Development Mode Verification: PASSED ")
     log_success("=" * 60)
 
 def verify_prod_mode():
@@ -266,7 +266,7 @@ def verify_prod_mode():
     run_command("docker-compose -f docker-compose.leibniz.yml --profile production down", check=False)
     
     log_success("=" * 60)
-    log_success("Production Mode Verification: PASSED ✅")
+    log_success("Production Mode Verification: PASSED ")
     log_success("=" * 60)
 
 def main():
@@ -291,7 +291,7 @@ def main():
             verify_prod_mode()
         
         log_success("")
-        log_success("🎉 All verification tests passed!")
+        log_success(" All verification tests passed!")
         log_success("")
         log_success("Development workflow is ready to use:")
         log_success("  PowerShell: .\\rag-dev.ps1 build; .\\rag-dev.ps1 start; .\\rag-dev.ps1 setup; .\\rag-dev.ps1 run")

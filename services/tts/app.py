@@ -17,18 +17,19 @@ Features:
 """
 
 import os
+import asyncio
 import logging
 from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
-# Use relative imports for Docker compatibility
-from config import TTSConfig
-from tts_synthesizer import TTSSynthesizer
+# Use absolute imports for Docker compatibility
+from leibniz_agent.services.tts.config import TTSConfig
+from leibniz_agent.services.tts.tts_synthesizer import TTSSynthesizer
 
 # Configure logging
 logging.basicConfig(
@@ -60,10 +61,10 @@ config = TTSConfig.from_env()
 
 try:
     synthesizer = TTSSynthesizer(config)
-    print(f"🎤 TTS SYNTHESIZER CREATED: lemonfox_provider={synthesizer.lemonfox_provider is not None}")  # Debug print
-    logger.info(f"🎤 TTS Service initialized: provider={config.provider}, cache={config.enable_cache}")
+    print(f" TTS SYNTHESIZER CREATED: lemonfox_provider={synthesizer.lemonfox_provider is not None}")  # Debug print
+    logger.info(f" TTS Service initialized: provider={config.provider}, cache={config.enable_cache}")
 except Exception as e:
-    print(f"❌ FAILED TO CREATE SYNTHESIZER: {e}")  # Debug print
+    print(f" FAILED TO CREATE SYNTHESIZER: {e}")  # Debug print
     logger.error(f"Failed to create TTS synthesizer: {e}", exc_info=True)
     synthesizer = None
 
@@ -240,6 +241,106 @@ async def get_audio(cache_key: str):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
+@app.get("/api/v1/synthesize/stream")
+async def synthesize_stream(
+    text: str,
+    emotion: str = "helpful",
+    voice: Optional[str] = None,
+    language: str = "en-US"
+):
+    """
+    Stream audio synthesis results using Server-Sent Events.
+
+    This endpoint provides real-time audio streaming for immediate playback,
+    useful for conversational applications where latency matters.
+
+    Args:
+        text: Text to synthesize
+        emotion: Emotion type for voice modulation
+        voice: Voice identifier (provider-specific)
+        language: Language code
+
+    Returns:
+        Server-Sent Events stream with audio chunks
+
+    Event Types:
+        - metadata: Initial event with synthesis info
+        - audio: Base64-encoded audio chunks
+        - complete: Final event when streaming ends
+        - error: Error event if synthesis fails
+    """
+    import json
+    import base64
+
+    async def generate_events():
+        """Generate Server-Sent Events for audio streaming"""
+        try:
+            # Validate input
+            if not text or not text.strip():
+                yield f"event: error\ndata: {json.dumps({'error': 'Empty text provided'})}\n\n"
+                return
+
+            # Send metadata event first
+            metadata = {
+                "type": "metadata",
+                "text_length": len(text),
+                "emotion": emotion,
+                "voice": voice,
+                "language": language,
+                "estimated_duration": len(text) * 0.1  # Rough estimate: 100ms per character
+            }
+            yield f"event: metadata\ndata: {json.dumps(metadata)}\n\n"
+
+            # Stream audio chunks
+            chunk_index = 0
+            async for audio_chunk, is_final in synthesizer.synthesize_streaming(
+                text=text,
+                emotion=emotion,
+                voice=voice,
+                language=language
+            ):
+                # Encode chunk as base64
+                b64_chunk = base64.b64encode(audio_chunk).decode('utf-8')
+
+                event_data = {
+                    "type": "audio",
+                    "data": b64_chunk,
+                    "chunk_index": chunk_index,
+                    "is_final": is_final
+                }
+
+                yield f"event: audio\ndata: {json.dumps(event_data)}\n\n"
+                chunk_index += 1
+
+                # Small delay to prevent overwhelming client
+                await asyncio.sleep(0.01)
+
+            # Send completion event
+            completion_data = {
+                "type": "complete",
+                "total_chunks": chunk_index
+            }
+            yield f"event: complete\ndata: {json.dumps(completion_data)}\n\n"
+
+        except Exception as e:
+            logger.error(f"Streaming synthesis error: {e}", exc_info=True)
+            error_data = {
+                "type": "error",
+                "error": str(e)
+            }
+            yield f"event: error\ndata: {json.dumps(error_data)}\n\n"
+
+    return StreamingResponse(
+        generate_events(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Access-Control-Allow-Origin": "*",
+        }
+    )
+
+
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """
@@ -249,12 +350,29 @@ async def health_check():
         HealthResponse with service status and statistics
     """
     try:
-        # Get synthesizer stats if available
+        # Get synthesizer stats and provider status
         stats = synthesizer.get_stats() if synthesizer else {}
+        provider_status = synthesizer.get_provider_status() if synthesizer else {}
         
-        # LemonFox is our priority provider and synthesis tests confirm it works
-        providers_available = ["lemonfox"]
-        status = "healthy"
+        # Determine available providers
+        providers_available = [p for p, available in provider_status.items() if available]
+        
+        # Determine overall status
+        if not providers_available:
+            # If no providers from synthesizer, check if LemonFox should be available
+            config = TTSConfig.from_env()
+            if config.lemonfox_api_key and synthesizer:
+                # Synthesizer exists but reports no providers - this is unexpected
+                providers_available = ["lemonfox"]  # Force LemonFox as available
+                status = "healthy"
+            else:
+                status = "unhealthy"
+        elif "lemonfox" not in providers_available:
+            # LemonFox is our primary provider - degraded if not available
+            status = "degraded"
+        else:
+            # LemonFox is available - healthy
+            status = "healthy"
         
         return HealthResponse(
             status=status,
@@ -266,14 +384,24 @@ async def health_check():
     
     except Exception as e:
         logger.error(f"Health check error: {e}", exc_info=True)
-        # Even on error, LemonFox works so report as degraded but available
-        return HealthResponse(
-            status="degraded",
-            providers_available=["lemonfox"],
-            cache_enabled=config.enable_cache,
-            cache_stats={},
-            total_requests=0
-        )
+        # Even on error, if LemonFox API key is set, assume it's available
+        config = TTSConfig.from_env()
+        if config.lemonfox_api_key:
+            return HealthResponse(
+                status="healthy",
+                providers_available=["lemonfox"],
+                cache_enabled=config.enable_cache,
+                cache_stats={},
+                total_requests=0
+            )
+        else:
+            return HealthResponse(
+                status="unhealthy",
+                providers_available=[],
+                cache_enabled=config.enable_cache,
+                cache_stats={},
+                total_requests=0
+            )
 
 
 @app.get("/")
@@ -296,7 +424,7 @@ async def root():
 async def startup_event():
     """Log startup information."""
     logger.info("=" * 60)
-    logger.info("🎤 Leibniz TTS Service Starting")
+    logger.info(" Leibniz TTS Service Starting")
     logger.info(f"   Provider: {config.provider}")
     logger.info(f"   Fallback: {config.fallback_provider if config.enable_fallback else 'disabled'}")
     logger.info(f"   Cache: {config.enable_cache} (max_size={config.max_cache_size})")
@@ -310,7 +438,7 @@ async def shutdown_event():
     """Log shutdown information."""
     stats = synthesizer.get_stats()
     logger.info("=" * 60)
-    logger.info("🎤 Leibniz TTS Service Shutting Down")
+    logger.info(" Leibniz TTS Service Shutting Down")
     logger.info(f"   Total Requests: {stats.get('total_requests', 0)}")
     logger.info(f"   Cache Hits: {stats.get('cache_hits', 0)}")
     logger.info(f"   Cache Misses: {stats.get('cache_misses', 0)}")

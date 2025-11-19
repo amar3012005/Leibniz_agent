@@ -64,9 +64,9 @@ class SNACDecoder:
     def __init__(self, device: str = "cuda"):
         """Initialize SNAC decoder with 24kHz model."""
         self.device = device
-        print(f"🎵 Loading SNAC 24kHz model to {device}...")
+        print(f" Loading SNAC 24kHz model to {device}...")
         self.snac_model = SNAC.from_pretrained(SNAC_MODEL_NAME).eval().to(device)
-        print(f"✅ SNAC decoder initialized")
+        print(f" SNAC decoder initialized")
     
     def unpack_snac_from_7(self, vocab_ids: List[int]) -> List[List[int]]:
         """
@@ -276,20 +276,20 @@ class Maya1VoiceModel:
         """
         self.model_path = model_path
         
-        print(f"🚀 Initializing Maya-1-Voice Model")
-        print(f"📁 Model: {model_path}")
-        print(f"🔢 Dtype: {dtype}")
+        print(f" Initializing Maya-1-Voice Model")
+        print(f" Model: {model_path}")
+        print(f" Dtype: {dtype}")
         
         # Load tokenizer (must be from checkpoint with emotion tags)
-        print(f"📝 Loading tokenizer...")
+        print(f" Loading tokenizer...")
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_path,
             trust_remote_code=True,
         )
-        print(f"✅ Tokenizer loaded: {len(self.tokenizer)} tokens")
+        print(f" Tokenizer loaded: {len(self.tokenizer)} tokens")
         
         # Initialize VLLM async engine
-        print(f"🔧 Initializing VLLM engine...")
+        print(f" Initializing VLLM engine...")
         engine_args = AsyncEngineArgs(
             model=model_path,
             tokenizer=model_path,
@@ -300,7 +300,7 @@ class Maya1VoiceModel:
         )
         
         self.engine = AsyncLLMEngine.from_engine_args(engine_args)
-        print(f"✅ VLLM engine ready")
+        print(f" VLLM engine ready")
     
     def build_prompt(self, description: str, text: str) -> str:
         """
@@ -346,7 +346,7 @@ class Maya1VoiceStreamingPipeline:
         """Initialize streaming pipeline."""
         self.model = model
         self.snac_decoder = snac_decoder
-        print(f"🌊 Maya-1-Voice Streaming Pipeline initialized")
+        print(f" Maya-1-Voice Streaming Pipeline initialized")
     
     async def generate_speech_stream(
         self,
@@ -371,9 +371,9 @@ class Maya1VoiceStreamingPipeline:
         Yields:
             Audio chunks as bytes (int16 PCM, 24kHz mono)
         """
-        print(f"\n🌊 Starting streaming generation")
-        print(f"📝 Description: {description[:80]}...")
-        print(f"💬 Text: {text}")
+        print(f"\n Starting streaming generation")
+        print(f" Description: {description[:80]}...")
+        print(f" Text: {text}")
         
         # Build prompt
         prompt = self.model.build_prompt(description, text)
@@ -388,7 +388,7 @@ class Maya1VoiceStreamingPipeline:
             stop_token_ids=[CODE_END_TOKEN_ID],  # Stop on audio EOS
         )
         
-        print(f"🎲 Sampling: temp={temperature}, top_p={top_p}, max_tokens={max_tokens}")
+        print(f" Sampling: temp={temperature}, top_p={top_p}, max_tokens={max_tokens}")
         
         # Token buffer for sliding window
         token_buffer = []
@@ -433,10 +433,10 @@ class Maya1VoiceStreamingPipeline:
                         if audio_bytes:
                             total_chunks += 1
                             if total_chunks == 1:
-                                print(f"🎵 First chunk decoded ({len(audio_bytes)} bytes)")
+                                print(f" First chunk decoded ({len(audio_bytes)} bytes)")
                             yield audio_bytes
         
-        print(f"✅ Streaming complete: {total_tokens} tokens → {total_chunks} chunks")
+        print(f" Streaming complete: {total_tokens} tokens → {total_chunks} chunks")
 
 
 # ============================================================================
@@ -495,11 +495,11 @@ async def main():
         max_tokens=500,
     ):
         audio_chunks.append(chunk)
-        print(f"📦 Received chunk {len(audio_chunks)}: {len(chunk)} bytes")
+        print(f" Received chunk {len(audio_chunks)}: {len(chunk)} bytes")
     
     # Combine chunks
     full_audio = b''.join(audio_chunks)
-    print(f"\n✅ Total audio: {len(full_audio)} bytes ({len(full_audio)//2} samples, {len(full_audio)/2/24000:.2f}s)")
+    print(f"\n Total audio: {len(full_audio)} bytes ({len(full_audio)//2} samples, {len(full_audio)/2/24000:.2f}s)")
     
     # Save audio (optional)
     try:
@@ -510,9 +510,9 @@ async def main():
             wav.setsampwidth(2)  # 16-bit
             wav.setframerate(24000)  # 24kHz
             wav.writeframes(full_audio)
-        print(f"💾 Saved to {output_file}")
+        print(f" Saved to {output_file}")
     except ImportError:
-        print(f"⚠️  Install 'wave' module to save audio files")
+        print(f"️  Install 'wave' module to save audio files")
     
     # Example 2: Character voice with emotions
     print(f"\n{'='*80}")
@@ -533,10 +533,10 @@ async def main():
         max_tokens=800,
     ):
         audio_chunks.append(chunk)
-        print(f"📦 Received chunk {len(audio_chunks)}: {len(chunk)} bytes")
+        print(f" Received chunk {len(audio_chunks)}: {len(chunk)} bytes")
     
     full_audio = b''.join(audio_chunks)
-    print(f"\n✅ Total audio: {len(full_audio)} bytes ({len(full_audio)//2} samples, {len(full_audio)/2/24000:.2f}s)")
+    print(f"\n Total audio: {len(full_audio)} bytes ({len(full_audio)//2} samples, {len(full_audio)/2/24000:.2f}s)")
     
     # Save audio
     try:
@@ -547,12 +547,12 @@ async def main():
             wav.setsampwidth(2)
             wav.setframerate(24000)
             wav.writeframes(full_audio)
-        print(f"💾 Saved to {output_file}")
+        print(f" Saved to {output_file}")
     except ImportError:
         pass
     
     print(f"\n{'='*80}")
-    print("🎉 Examples complete!")
+    print(" Examples complete!")
     print(f"{'='*80}")
 
 

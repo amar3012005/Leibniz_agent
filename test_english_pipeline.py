@@ -424,7 +424,7 @@ async def test_tts_providers(results: Dict[str, Any]):
             
             results["provider_tests"].append(test_result)
             
-            logger.info(f"{provider}: {'Available ✅' if available else 'Not available ❌'}")
+            logger.info(f"{provider}: {'Available ' if available else 'Not available '}")
         
         except Exception as e:
             logger.error(f"Error testing {provider}: {str(e)}")

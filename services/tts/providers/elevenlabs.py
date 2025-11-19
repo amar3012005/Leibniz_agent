@@ -91,7 +91,7 @@ class ElevenLabsTTSProvider:
         # Initialize client
         self.client = self.ElevenLabs(api_key=self.config.elevenlabs_api_key)
         
-        logger.info(f"✅ ElevenLabs TTS initialized (voice: {self.config.elevenlabs_voice})")
+        logger.info(f" ElevenLabs TTS initialized (voice: {self.config.elevenlabs_voice})")
     
     def _convert_pcm_to_wav(self, pcm_data: bytes, sample_rate: int) -> bytes:
         """
@@ -140,7 +140,7 @@ class ElevenLabsTTSProvider:
                 # Write 24-bit WAV
                 wav_buffer = io.BytesIO()
                 self.sf.write(wav_buffer, audio_float, sample_rate, format='WAV', subtype='PCM_24')
-                logger.debug(f"📦 Converted 24-bit PCM ({pcm_len} bytes) → WAV")
+                logger.debug(f" Converted 24-bit PCM ({pcm_len} bytes) → WAV")
             
             else:
                 # Assume 16-bit PCM (most common)
@@ -149,13 +149,13 @@ class ElevenLabsTTSProvider:
                 # Write 16-bit WAV
                 wav_buffer = io.BytesIO()
                 self.sf.write(wav_buffer, audio_array, sample_rate, format='WAV', subtype='PCM_16')
-                logger.debug(f"📦 Converted 16-bit PCM ({pcm_len} bytes) → WAV")
+                logger.debug(f" Converted 16-bit PCM ({pcm_len} bytes) → WAV")
             
             wav_bytes = wav_buffer.getvalue()
             return wav_bytes
         
         except Exception as e:
-            logger.error(f"❌ PCM to WAV conversion failed: {e}")
+            logger.error(f" PCM to WAV conversion failed: {e}")
             raise
     
     def _get_voice_settings(self, emotion: str = "neutral"):
@@ -262,11 +262,11 @@ class ElevenLabsTTSProvider:
             # Convert PCM to WAV
             wav_audio = self._convert_pcm_to_wav(pcm_audio, 24000)
             
-            logger.debug(f"✅ ElevenLabs TTS synthesized {len(text)} chars → {len(wav_audio)} bytes")
+            logger.debug(f" ElevenLabs TTS synthesized {len(text)} chars → {len(wav_audio)} bytes")
             return wav_audio
         
         except Exception as e:
-            logger.error(f"❌ ElevenLabs TTS synthesis failed: {e}")
+            logger.error(f" ElevenLabs TTS synthesis failed: {e}")
             raise
     
     async def stream_synthesize(
@@ -314,7 +314,7 @@ class ElevenLabsTTSProvider:
                 yield wav_chunk
         
         except Exception as e:
-            logger.error(f"❌ ElevenLabs streaming synthesis failed: {e}")
+            logger.error(f" ElevenLabs streaming synthesis failed: {e}")
             raise
     
     def get_available_voices(self) -> Dict[str, Any]:
@@ -347,11 +347,11 @@ class ElevenLabsTTSProvider:
                     "description": getattr(voice, 'description', voice.name)
                 }
             
-            logger.info(f"📋 ElevenLabs TTS: {len(voices)} voices available")
+            logger.info(f" ElevenLabs TTS: {len(voices)} voices available")
             return voices
         
         except Exception as e:
-            logger.error(f"❌ Failed to list ElevenLabs voices: {e}")
+            logger.error(f" Failed to list ElevenLabs voices: {e}")
             return {}
     
     def validate_config(self) -> Tuple[bool, Optional[str]]:

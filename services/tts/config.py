@@ -50,12 +50,12 @@ class TTSConfig:
     google_voice: str = "en-US-Neural2-F"
     google_credentials_path: Optional[str] = None
     
-    # ElevenLabs TTS
-    elevenlabs_api_key: Optional[str] = None
-    elevenlabs_voice: str = "21m00Tcm4TlvDq8ikWAM"  # Rachel voice
-    elevenlabs_model: str = "eleven_multilingual_v2"
-    elevenlabs_stability: float = 0.5
-    elevenlabs_similarity_boost: float = 0.75
+    # ElevenLabs TTS (REMOVED - keeping only LemonFox)
+    # elevenlabs_api_key: Optional[str] = None
+    # elevenlabs_voice: str = "21m00Tcm4TlvDq8ikWAM"
+    # elevenlabs_model: str = "eleven_multilingual_v2"
+    # elevenlabs_stability: float = 0.5
+    # elevenlabs_similarity_boost: float = 0.75
     
     # Audio settings
     language_code: str = "en-US"
@@ -129,12 +129,12 @@ class TTSConfig:
             google_voice=os.getenv("GOOGLE_TTS_VOICE", "en-US-Neural2-F"),
             google_credentials_path=os.getenv("GOOGLE_APPLICATION_CREDENTIALS"),
             
-            # ElevenLabs TTS
-            elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY"),
-            elevenlabs_voice=os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM"),
-            elevenlabs_model=os.getenv("ELEVENLABS_MODEL", "eleven_multilingual_v2"),
-            elevenlabs_stability=float(os.getenv("ELEVENLABS_STABILITY", "0.5")),
-            elevenlabs_similarity_boost=float(os.getenv("ELEVENLABS_SIMILARITY_BOOST", "0.75")),
+            # ElevenLabs TTS (REMOVED)
+            # elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY"),
+            # elevenlabs_voice=os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM"),
+            # elevenlabs_model=os.getenv("ELEVENLABS_MODEL", "eleven_multilingual_v2"),
+            # elevenlabs_stability=float(os.getenv("ELEVENLABS_STABILITY", "0.5")),
+            # elevenlabs_similarity_boost=float(os.getenv("ELEVENLABS_SIMILARITY_BOOST", "0.75")),
             
             # Audio settings
             language_code=os.getenv("LEIBNIZ_TTS_LANGUAGE_CODE", "en-US"),
@@ -196,12 +196,12 @@ class TTSConfig:
             logger.warning(f"Pitch {self.pitch} outside valid range [-20.0, 20.0]. Clamping.")
             self.pitch = max(-20.0, min(20.0, self.pitch))
         
-        # Validate ElevenLabs settings
-        if not (0.0 <= self.elevenlabs_stability <= 1.0):
-            raise ValueError(f"Invalid elevenlabs_stability: {self.elevenlabs_stability}. Must be between 0.0 and 1.0.")
+        # Validate ElevenLabs settings (REMOVED)
+        # if not (0.0 <= self.elevenlabs_stability <= 1.0):
+        #     raise ValueError(f"Invalid elevenlabs_stability: {self.elevenlabs_stability}. Must be between 0.0 and 1.0.")
         
-        if not (0.0 <= self.elevenlabs_similarity_boost <= 1.0):
-            raise ValueError(f"Invalid elevenlabs_similarity_boost: {self.elevenlabs_similarity_boost}. Must be between 0.0 and 1.0.")
+        # if not (0.0 <= self.elevenlabs_similarity_boost <= 1.0):
+        #     raise ValueError(f"Invalid elevenlabs_similarity_boost: {self.elevenlabs_similarity_boost}. Must be between 0.0 and 1.0.")
         
         # Validate service settings
         if self.timeout <= 0:
@@ -216,15 +216,15 @@ class TTSConfig:
         # Warn if no API keys set
         has_lemonfox = bool(self.lemonfox_api_key)
         has_google = bool(self.google_credentials_path)
-        has_elevenlabs = bool(self.elevenlabs_api_key)
+        # has_elevenlabs = bool(self.elevenlabs_api_key)  # REMOVED
         
-        if not (has_lemonfox or has_google or has_elevenlabs or self.mock_mode):
+        if not (has_lemonfox or has_google or self.mock_mode):
             logger.warning(
-                "⚠️ No TTS provider API keys configured! "
+                "️ No TTS provider API keys configured! "
                 "Set at least one: LEMONFOX_API_KEY, GOOGLE_APPLICATION_CREDENTIALS, "
-                "ELEVENLABS_API_KEY, or enable MOCK_TTS=true"
+                "or enable MOCK_TTS=true"
             )
         
         # Log configuration
-        logger.info(f"🎙️ TTS Config: provider={self.provider}, fallback={self.fallback_provider}, "
+        logger.info(f"️ TTS Config: provider={self.provider}, fallback={self.fallback_provider}, "
                    f"cache={self.enable_cache}, sample_rate={self.sample_rate}Hz, mock={self.mock_mode}")

@@ -13,13 +13,13 @@ def main():
     
     # Check device
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"\n✅ Device: {device}")
+    print(f"\n Device: {device}")
     if device == "cuda":
         print(f"   GPU: {torch.cuda.get_device_name(0)}")
         print(f"   VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB")
     
     # Load model
-    print("\n📥 Loading Maya1 model...")
+    print("\n Loading Maya1 model...")
     try:
         model = AutoModelForCausalLM.from_pretrained(
             "maya-research/maya1",
@@ -28,13 +28,13 @@ def main():
             trust_remote_code=True
         )
         tokenizer = AutoTokenizer.from_pretrained("maya-research/maya1", trust_remote_code=True)
-        print("✅ Model loaded successfully!")
+        print(" Model loaded successfully!")
     except Exception as e:
-        print(f"❌ Model load failed: {e}")
+        print(f" Model load failed: {e}")
         return
     
     # Test generation
-    print("\n🎯 Testing token generation...")
+    print("\n Testing token generation...")
     description = "Male voice, 30s, warm, conversational"
     text = "Hello world"
     prompt = f'<description="{description}"> {text}'
@@ -61,22 +61,22 @@ def main():
     snac_count = sum(1 for t in generated_ids if 128266 <= t <= 156937)
     eos_count = sum(1 for t in generated_ids if t == 128009)
     
-    print(f"\n📊 Token Analysis:")
+    print(f"\n Token Analysis:")
     print(f"   SNAC audio tokens (128266-156937): {snac_count}")
     print(f"   EOS tokens (128009): {eos_count}")
     print(f"   Other tokens: {len(generated_ids) - snac_count - eos_count}")
     
     if snac_count > 0:
-        print("\n✅ SUCCESS! Maya1 is generating audio tokens!")
+        print("\n SUCCESS! Maya1 is generating audio tokens!")
         print(f"   Audio frames: {snac_count // 7}")
         print(f"   Approx duration: {(snac_count // 7) / 47:.2f} seconds")
     else:
-        print("\n❌ FAIL: No audio tokens generated")
-        print("\n🔍 Debug info:")
+        print("\n FAIL: No audio tokens generated")
+        print("\n Debug info:")
         print(f"   First 20 tokens: {generated_ids[:20].tolist()}")
         print(f"   Decoded output: {tokenizer.decode(generated_ids, skip_special_tokens=False)[:200]}")
         
-        print("\n💡 Possible issues:")
+        print("\n Possible issues:")
         print("   1. Model may need specific prompt format")
         print("   2. Generation parameters may need tuning")
         print("   3. Model checkpoint may have issues")

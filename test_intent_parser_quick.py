@@ -13,13 +13,13 @@ async def test_intent_parser():
     """Test local Leibniz intent parser with multiple queries"""
     
     print("=" * 70)
-    print("🧪 LEIBNIZ INTENT PARSER - QUICK TEST")
+    print(" LEIBNIZ INTENT PARSER - QUICK TEST")
     print("=" * 70)
     
     # Initialize parser
     print("\n⏳ Initializing parser...")
     parser = LeibnizIntentParser()
-    print("✅ Parser initialized\n")
+    print(" Parser initialized\n")
     
     # Test queries (mix of fast route and Gemini fallback)
     test_queries = [
@@ -101,7 +101,7 @@ async def test_intent_parser():
             
         except Exception as e:
             elapsed_ms = (time.time() - start_time) * 1000
-            print(f"   ❌ Error: {e}")
+            print(f"    Error: {e}")
             print(f"   Time:   {elapsed_ms:.2f}ms")
             
             results.append({
@@ -153,7 +153,7 @@ async def test_intent_parser():
     print(f"Cache hits:            {stats.get('cache_hits', 0)}")
     print(f"Average confidence:    {stats.get('average_confidence', 0.0):.2%}")
     
-    print("\n✅ Test completed!\n")
+    print("\n Test completed!\n")
 
 
 if __name__ == "__main__":

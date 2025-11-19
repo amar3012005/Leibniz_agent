@@ -85,7 +85,7 @@ class RAGConfig:
         # Validate knowledge base path
         if not os.path.exists(self.knowledge_base_path):
             logger.warning(
-                f"⚠️ Knowledge base path does not exist: {self.knowledge_base_path}"
+                f"️ Knowledge base path does not exist: {self.knowledge_base_path}"
             )
         
         # Validate similarity threshold
@@ -125,13 +125,13 @@ class RAGConfig:
         # Warn if Gemini API key missing
         if not self.gemini_api_key:
             logger.warning(
-                "⚠️ GEMINI_API_KEY not set. Response generation will fail."
+                "️ GEMINI_API_KEY not set. Response generation will fail."
             )
         
         # Log configuration if verbose
         if self.verbose:
             logger.info(
-                f"✅ RAGConfig loaded: model={self.gemini_model}, "
+                f" RAGConfig loaded: model={self.gemini_model}, "
                 f"top_k={self.top_k}, top_n={self.top_n}, "
                 f"similarity_threshold={self.similarity_threshold}, "
                 f"chunk_size={self.chunk_size_min}-{self.chunk_size_max}, "

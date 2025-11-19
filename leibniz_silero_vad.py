@@ -8,15 +8,15 @@ Gemini VAD patterns from leibniz_agent with real-time speech detection,
 barge-in support, and final transcript delivery.
 
 Key Features:
-✅ Persistent session management (eliminates model reload delays)
-✅ Bidirectional conversation state tracking
-✅ Real-time streaming with 50ms chunks
-✅ Barge-in detection during agent speech
-✅ Dynamic timeout configuration
-✅ Fragment-level transcription callbacks
-✅ Robust error handling with auto-recovery
-✅ Low latency (<100ms) speech detection
-✅ Final transcript delivery with word boundary detection
+ Persistent session management (eliminates model reload delays)
+ Bidirectional conversation state tracking
+ Real-time streaming with 50ms chunks
+ Barge-in detection during agent speech
+ Dynamic timeout configuration
+ Fragment-level transcription callbacks
+ Robust error handling with auto-recovery
+ Low latency (<100ms) speech detection
+ Final transcript delivery with word boundary detection
 
 Based on official Silero Models documentation and leibniz_agent patterns.
 """
@@ -179,7 +179,7 @@ class SileroPersistentSession:
             session_age > config.session_timeout_s or
             instance._config != config):
 
-            logger.info("🔄 Creating new Silero session...")
+            logger.info(" Creating new Silero session...")
             await cls._load_models(config)
             instance._creation_time = now
             instance._config = config
@@ -263,7 +263,7 @@ class AudioStreamer:
             )
             self.is_streaming = True
             self.stream.start()
-            logger.debug(f"🎤 Audio stream started ({self.sample_rate}Hz)")
+            logger.debug(f" Audio stream started ({self.sample_rate}Hz)")
             try:
                 yield self.stream
             finally:
@@ -271,7 +271,7 @@ class AudioStreamer:
                 if self.stream:
                     self.stream.stop()
                     self.stream.close()
-                logger.debug("🔇 Audio stream stopped")
+                logger.debug(" Audio stream stopped")
 
         return stream_context()
 
@@ -329,7 +329,7 @@ class SileroBidirectionalVAD:
             self.is_agent_speaking = is_speaking
             self.conversation_state = "agent_speaking" if is_speaking else "idle"
 
-        status = f"🔊 Agent speaking - {context}" if is_speaking else f"🎤 Ready for user - {context}"
+        status = f" Agent speaking - {context}" if is_speaking else f" Ready for user - {context}"
         logger.debug(status)
 
     def should_accept_user_audio(self) -> bool:
@@ -349,7 +349,7 @@ class SileroBidirectionalVAD:
                     rejection_reasons.append(f"state_{self.conversation_state}")
                 if not is_listening_active:
                     rejection_reasons.append("not_listening")
-                logger.debug(f"🎤 Audio rejected: {', '.join(rejection_reasons)}")
+                logger.debug(f" Audio rejected: {', '.join(rejection_reasons)}")
 
             return should_accept
 
@@ -383,12 +383,12 @@ class SileroBidirectionalVAD:
                     self.silence_start_time = None
 
                     if self.config.log_vad_events:
-                        logger.info(f"🗣️ Speech detected! (VAD: {vad_prob:.3f})")
+                        logger.info(f"️ Speech detected! (VAD: {vad_prob:.3f})")
 
                     # Handle barge-in
                     with self._speaking_lock:
                         if self.is_agent_speaking:
-                            logger.info("🔄 Barge-in detected during agent speech")
+                            logger.info(" Barge-in detected during agent speech")
                             self.barge_in_detected = True
                             await self.set_agent_speaking_state(False, "Barge-in interrupt")
 
@@ -408,7 +408,7 @@ class SileroBidirectionalVAD:
                             speech_duration = len(self.speech_chunks) * 512 / vad_config.sample_rate
 
                             if self.config.log_vad_events:
-                                logger.info(f"🔇 Speech ended (duration: {speech_duration:.2f}s)")
+                                logger.info(f" Speech ended (duration: {speech_duration:.2f}s)")
 
                             # Check minimum speech duration
                             if speech_duration >= (vad_config.min_speech_duration_ms / 1000.0):
@@ -416,7 +416,7 @@ class SileroBidirectionalVAD:
                                 transcript = await self._transcribe_speech(vad_config)
                                 if transcript:
                                     self.last_transcript = transcript
-                                    logger.info(f"📝 Transcribed: '{transcript}'")
+                                    logger.info(f" Transcribed: '{transcript}'")
                             else:
                                 if self.config.verbose:
                                     logger.debug(f"Speech too short: {speech_duration:.2f}s")
@@ -464,7 +464,7 @@ class SileroBidirectionalVAD:
                     try:
                         speech_tensor = speech_tensor.cuda()
                     except Exception as e:
-                        logger.warning(f"⚠️ Failed to move tensor to CUDA, using CPU: {e}")
+                        logger.warning(f"️ Failed to move tensor to CUDA, using CPU: {e}")
                         speech_tensor = speech_tensor.cpu()
                         vad_config.device = 'cpu'
                         vad_config.use_gpu = False
@@ -484,7 +484,7 @@ class SileroBidirectionalVAD:
                         try:
                             output = stt_model(input_tensor.cuda())
                         except Exception as e:
-                            logger.warning(f"⚠️ STT inference failed on CUDA, trying CPU: {e}")
+                            logger.warning(f"️ STT inference failed on CUDA, trying CPU: {e}")
                             output = stt_model(input_tensor.cpu())
                     else:
                         output = stt_model(input_tensor.cpu())
@@ -547,7 +547,7 @@ class SileroBidirectionalVAD:
             self.is_listening = True
             self.barge_in_detected = False
 
-            logger.info(f"🎤 Listening (timeout={self.config.start_timeout_s}s)")
+            logger.info(f" Listening (timeout={self.config.start_timeout_s}s)")
 
             # Create audio streamer
             streamer = AudioStreamer(self.config.sample_rate)
@@ -591,10 +591,10 @@ class SileroBidirectionalVAD:
                 self.total_capture_time += capture_time
                 self.avg_capture_time = self.total_capture_time / self.capture_count
 
-                logger.info(f"✅ Speech captured in {capture_time*1000:.1f}ms: '{final_transcript}'")
+                logger.info(f" Speech captured in {capture_time*1000:.1f}ms: '{final_transcript}'")
 
         except Exception as e:
-            logger.error(f"❌ Capture error: {e}")
+            logger.error(f" Capture error: {e}")
         finally:
             self._active = False
             self.is_listening = False
@@ -706,26 +706,26 @@ async def warmup_silero_vad() -> Dict[str, Any]:
 if __name__ == "__main__":
     async def test_silero_vad():
         """Test Silero VAD/STT system"""
-        print("🧪 Testing Silero Bidirectional VAD/STT")
+        print(" Testing Silero Bidirectional VAD/STT")
         print("=" * 50)
 
         try:
             # Test speech capture
-            print("🎤 Testing speech capture...")
+            print(" Testing speech capture...")
             print("Speak now (press Ctrl+C to stop)...")
 
             transcript = await capture_silero_speech()
 
             if transcript:
-                print(f"✅ Captured: {transcript}")
+                print(f" Captured: {transcript}")
 
                 # Show metrics
                 metrics = get_silero_vad_metrics()
-                print(f"📊 Metrics: {metrics}")
+                print(f" Metrics: {metrics}")
             else:
                 print("⏰ No speech captured")
 
-            print("✅ Silero VAD/STT test completed!")
+            print(" Silero VAD/STT test completed!")
 
         except KeyboardInterrupt:
             print("\nGoodbye!")

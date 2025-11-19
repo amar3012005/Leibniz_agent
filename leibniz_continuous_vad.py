@@ -85,7 +85,7 @@ class LeibnizContinuousVAD:
         vad: Existing VAD instance (reuse singleton)
         is_running: Background listener active flag
         audio_stream: Persistent sounddevice stream
-        audio_queue: Audio chunk queue for Gemini streaming
+        thread_audio_queue: Audio chunk queue for Gemini streaming
         send_task: Background audio sender task
         listen_task: Background transcript receiver task
         session: Persistent Gemini Live session
@@ -129,7 +129,7 @@ class LeibnizContinuousVAD:
         self.last_activity_time: float = time.time()
         self.last_receive_time: float = time.time()  # Track receive-specific activity
         
-        logger.info("✅ LeibnizContinuousVAD initialized")
+        logger.info(" LeibnizContinuousVAD initialized")
     
     async def start_continuous_listening(self):
         """
@@ -139,7 +139,7 @@ class LeibnizContinuousVAD:
         and launches background tasks for sending/receiving.
         """
         if self.is_running:
-            logger.warning("⚠️ Continuous VAD already running")
+            logger.warning(" Continuous VAD already running")
             return
         
         try:
@@ -282,10 +282,6 @@ class LeibnizContinuousVAD:
         main loop when user speaks. Pattern from leibniz_vad.py lines 992-1149.
         """
         
-        # Initialize transcript buffer
-        transcript_buffer = TranscriptBuffer()
-        first_speech_detected = False
-        
         while self.is_running:
             # Receive responses from Gemini with timeout to prevent indefinite blocking
                     if not self.session:
@@ -299,8 +295,14 @@ class LeibnizContinuousVAD:
                     if not self.is_running:
                         break
                         
+                    # Initialize transcript buffer outside try block to ensure it's always in scope
+                    transcript_buffer = TranscriptBuffer()
+                    first_speech_detected = False
+                    
                     try:
-                        async with asyncio.timeout(receive_timeout):
+                        
+                        # Python 3.10 compatible timeout for async for loop
+                        async def _receive_with_timeout():
                             async for response in self.session.receive():
                                 # Update activity time on any response
                                 self.last_activity_time = time.time()
@@ -322,7 +324,7 @@ class LeibnizContinuousVAD:
                                         # CRITICAL FIX: Check if agent is currently speaking before processing transcript
                                         # This prevents the agent from transcribing its own TTS output
                                         if self.vad.is_agent_speaking:
-                                            logger.debug(f"🎤 Ignoring transcript during agent speech: '{final_text[:50]}...'")
+                                            logger.debug(f" Ignoring transcript during agent speech: '{final_text[:50]}...'")
                                             continue  # Skip processing this transcript
                                         
                                         transcript_buffer.add_fragment(final_text.strip())
@@ -361,16 +363,24 @@ class LeibnizContinuousVAD:
                                         self.user_transcript_event.set()
                                     
                                     # Reset buffer for next turn
-                                    transcript_buffer = TranscriptBuffer()
+                                    transcript_buffer.fragments = []
+                                    transcript_buffer.pending_partial = ""
+                                    transcript_buffer.last_fragment = ""
+                                    transcript_buffer.total_fragments_received = 0
+                                    transcript_buffer.duplicates_skipped = 0
+                                    transcript_buffer.buffered_words_count = 0
                                     first_speech_detected = False
                                     
                                     # Explicit session restart after turn complete to ensure fresh listening
-                                    logger.debug("🔄 Turn complete - restarting listener for next turn")
-                                    break  # Exit receive loop, restart listening
+                                    logger.debug(" Turn complete - restarting listener for next turn")
+                                    return  # Exit the coroutine, which will break the timeout wait
+                        
+                        # Use asyncio.wait_for for Python 3.10 compatibility
+                        await asyncio.wait_for(_receive_with_timeout(), timeout=receive_timeout)
                     
                     except asyncio.TimeoutError:
                         # Timeout occurred - restart receive loop to prevent indefinite blocking
-                        logger.debug(f"⏱️ Receive timeout after {receive_timeout}s - restarting listener")
+                        logger.debug(f"⏱ Receive timeout after {receive_timeout}s - restarting listener")
                         continue  # Continue outer while loop to restart listening
                     
                     except asyncio.CancelledError:
@@ -406,7 +416,7 @@ class LeibnizContinuousVAD:
                     self.consecutive_timeouts += 1
                     
                     if self.consecutive_timeouts >= 2:
-                        logger.warning(f"⚠️ Watchdog: No activity for {time_since_activity:.1f}s (send) and {time_since_receive:.1f}s (receive) - restarting")
+                        logger.warning(f" Watchdog: No activity for {time_since_activity:.1f}s (send) and {time_since_receive:.1f}s (receive) - restarting")
                         await self.restart_listener()
                         self.consecutive_timeouts = 0
                 else:
@@ -435,7 +445,7 @@ class LeibnizContinuousVAD:
         
         # Check if continuous VAD is actually running before waiting
         if not self.is_running:
-            logger.warning("⚠️ Continuous VAD not running - cannot wait for speech")
+            logger.warning(" Continuous VAD not running - cannot wait for speech")
             return None
         
         # Check if background tasks are still alive
@@ -446,13 +456,13 @@ class LeibnizContinuousVAD:
         )
         
         if not tasks_alive:
-            logger.warning("⚠️ Continuous VAD tasks not alive - detected stuck state")
+            logger.warning(" Continuous VAD tasks not alive - detected stuck state")
             # Trigger automatic restart
             try:
                 await self.restart_listener()
-                logger.info("🔄 Automatically restarted continuous VAD after detecting stuck state")
+                logger.info(" Automatically restarted continuous VAD after detecting stuck state")
             except Exception as e:
-                logger.error(f"❌ Failed to auto-restart continuous VAD: {e}")
+                logger.error(f" Failed to auto-restart continuous VAD: {e}")
                 return None
         
         try:
@@ -465,7 +475,7 @@ class LeibnizContinuousVAD:
             return transcript
         
         except asyncio.TimeoutError:
-            logger.debug(f"⏱️ Timeout waiting for user speech ({timeout}s)")
+            logger.debug(f"⏱ Timeout waiting for user speech ({timeout}s)")
             return None
     
     async def stop_continuous_listening(self):
@@ -516,9 +526,9 @@ class LeibnizContinuousVAD:
                 self.audio_stream.stop()
                 self.audio_stream.close()
                 self.audio_stream = None
-                logger.debug("✅ Audio stream closed")
+                logger.debug(" Audio stream closed")
             except Exception as e:
-                logger.warning(f"⚠️ Error closing audio stream: {e}")
+                logger.warning(f" Error closing audio stream: {e}")
 
         # Clear thread audio queue and set to None
         if self.thread_audio_queue:
@@ -528,7 +538,7 @@ class LeibnizContinuousVAD:
             except queue.Empty:
                 pass
             self.thread_audio_queue = None  # Clear reference to prevent memory leak
-            logger.debug("✅ Audio queue cleared and reference released")
+            logger.debug(" Audio queue cleared and reference released")
 
         # Close dedicated session (not shared singleton)
         # Use __aexit__() to properly exit the context manager (SINDH pattern)
@@ -537,9 +547,9 @@ class LeibnizContinuousVAD:
                 await self.session_context.__aexit__(None, None, None)
                 self.session = None
                 self.session_context = None
-                logger.debug("✅ Dedicated continuous VAD session context exited")
+                logger.debug(" Dedicated continuous VAD session context exited")
             except Exception as e:
-                logger.warning(f"⚠️ Error exiting session context: {e}")
+                logger.warning(f" Error exiting session context: {e}")
                 # Ensure references are cleared even on error
                 self.session = None
                 self.session_context = None
@@ -564,7 +574,7 @@ class LeibnizContinuousVAD:
         ])
         
         if is_critical:
-            logger.error(f"❌ Critical listener error: {error}")
+            logger.error(f" Critical listener error: {error}")
             
             # Close dedicated session (not persistent singleton)
             # Use __aexit__() to properly exit the context manager
@@ -574,7 +584,7 @@ class LeibnizContinuousVAD:
                     self.session = None
                     self.session_context = None
                 except Exception as e:
-                    logger.warning(f"⚠️ Error exiting session context during recovery: {e}")
+                    logger.warning(f" Error exiting session context during recovery: {e}")
                     # Ensure references are cleared even on error
                     self.session = None
                     self.session_context = None
@@ -582,14 +592,14 @@ class LeibnizContinuousVAD:
             # Auto-restart if enabled
             auto_restart = os.getenv("LEIBNIZ_CONTINUOUS_VAD_AUTO_RESTART", "true").lower() == "true"
             if auto_restart and self.is_running:
-                logger.info("🔄 Attempting auto-restart...")
+                logger.info(" Attempting auto-restart...")
                 await self.restart_listener()
             else:
-                logger.warning("⚠️ Auto-restart disabled or listener stopped")
+                logger.warning(" Auto-restart disabled or listener stopped")
                 self.is_running = False
         else:
             # Transient error - log and continue
-            logger.warning(f"⚠️ Transient listener error: {error}")
+            logger.warning(f" Transient listener error: {error}")
     
     async def restart_listener(self):
         """
@@ -598,7 +608,7 @@ class LeibnizContinuousVAD:
         Stops existing tasks, cleans up resources, reinitializes session,
         and restarts background tasks.
         """
-        logger.info("🔄 Restarting continuous VAD...")
+        logger.info(" Restarting continuous VAD...")
         
         # Stop existing tasks gracefully
         self.is_running = False
@@ -636,9 +646,9 @@ class LeibnizContinuousVAD:
         # Reinitialize
         try:
             await self.start_continuous_listening()
-            logger.info("✅ Continuous VAD restarted successfully")
+            logger.info(" Continuous VAD restarted successfully")
         except Exception as e:
-            logger.error(f"❌ Failed to restart continuous VAD: {e}")
+            logger.error(f" Failed to restart continuous VAD: {e}")
             raise
     
     def get_health_status(self) -> Dict[str, Any]:
@@ -659,6 +669,15 @@ class LeibnizContinuousVAD:
             "last_transcript_time": self.last_transcript_time,
             "uptime_seconds": uptime
         }
+    
+    def get_performance_metrics(self) -> Dict[str, Any]:
+        """
+        Return performance metrics (alias for get_health_status for compatibility).
+        
+        Returns:
+            Dict with performance metrics
+        """
+        return self.get_health_status()
 
 
 # Module-level singleton accessor and helper functions
@@ -714,12 +733,12 @@ def validate_continuous_vad_config():
     is_valid = len(errors) == 0
     
     if errors:
-        logger.error(f"❌ Continuous VAD config validation failed: {'; '.join(errors)}")
+        logger.error(f" Continuous VAD config validation failed: {'; '.join(errors)}")
     else:
-        logger.debug("✅ Continuous VAD config validation passed")
+        logger.debug(" Continuous VAD config validation passed")
     
     if warnings:
-        logger.warning(f"⚠️ Continuous VAD config warnings: {'; '.join(warnings)}")
+        logger.warning(f" Continuous VAD config warnings: {'; '.join(warnings)}")
     
     return {
         'valid': is_valid,

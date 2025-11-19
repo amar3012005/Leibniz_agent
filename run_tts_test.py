@@ -33,16 +33,16 @@ def main():
     tts_provider = os.getenv("LEIBNIZ_TTS_PROVIDER", "elevenlabs")  # Default: ElevenLabs (working)
     
     print(f"LEIBNIZ_TTS_PROVIDER: {tts_provider}")
-    print(f"ELEVENLABS_API_KEY: {'Set ✅' if elevenlabs_key else 'Not set'}")
+    print(f"ELEVENLABS_API_KEY: {'Set ' if elevenlabs_key else 'Not set'}")
     print(f"GOOGLE_APPLICATION_CREDENTIALS: {'Set' if google_creds else 'Not set'}")
     print(f"GEMINI_API_KEY: {'Set' if gemini_key else 'Not set'}")
     print()
     
     # Recommend ElevenLabs (proven working)
     if tts_provider == "elevenlabs":
-        print("✅ ElevenLabs TTS - Recommended (proven working)")
+        print(" ElevenLabs TTS - Recommended (proven working)")
         if not elevenlabs_key:
-            print("   ⚠️  ELEVENLABS_API_KEY not set - get from https://elevenlabs.io")
+            print("   ️  ELEVENLABS_API_KEY not set - get from https://elevenlabs.io")
         
         # Check voice_id format
         elevenlabs_voice_id = os.getenv("ELEVENLABS_VOICE_ID", "")
@@ -50,7 +50,7 @@ def main():
             print(f"   Voice ID: {elevenlabs_voice_id}")
             # Voice IDs are long hashes (20+ chars), not names
             if len(elevenlabs_voice_id) < 20 or ' ' in elevenlabs_voice_id:
-                print("   ⚠️  WARNING: Voice ID looks like a name, not a voice_id hash!")
+                print("   ️  WARNING: Voice ID looks like a name, not a voice_id hash!")
                 print("   Voice IDs are long hashes like: EXAVITQu4vr4xnSDxMaL")
                 print("   Voice names like 'Rachel' or 'Sarah' will cause 404 errors")
                 print("   Get voice IDs from: https://elevenlabs.io/app/voice-lab")
@@ -58,7 +58,7 @@ def main():
     
     # Warn about Gemini TTS instability
     if tts_provider == "gemini":
-        print("⚠️  WARNING: Gemini TTS Preview Models - Known Issues")
+        print("️  WARNING: Gemini TTS Preview Models - Known Issues")
         print("   Gemini TTS models are experiencing frequent 500 Internal Server errors")
         print("   This is a server-side issue confirmed as of October 2025")
         print("   Recommendation: Set LEIBNIZ_TTS_PROVIDER=elevenlabs in .env.leibniz")
@@ -66,7 +66,7 @@ def main():
     
     # Check if any provider is configured
     if not (gemini_key or google_creds or elevenlabs_key):
-        print("❌ ERROR: No TTS provider API keys configured!")
+        print(" ERROR: No TTS provider API keys configured!")
         print("   Set at least one of:")
         print("   - ELEVENLABS_API_KEY (recommended - proven working)")
         print("   - GOOGLE_APPLICATION_CREDENTIALS (enterprise stable)")

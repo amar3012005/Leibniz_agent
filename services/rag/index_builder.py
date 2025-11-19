@@ -65,7 +65,7 @@ class IndexBuilder:
         self.documents: List[str] = []
         self.doc_metadata: List[Dict[str, Any]] = []
         
-        logger.info(f"✅ IndexBuilder initialized: model={config.embedding_model_name}")
+        logger.info(f" IndexBuilder initialized: model={config.embedding_model_name}")
     
     def build_index(self) -> bool:
         """
@@ -85,10 +85,10 @@ class IndexBuilder:
         try:
             # Validate knowledge base path
             if not os.path.exists(self.config.knowledge_base_path):
-                logger.error(f"❌ Knowledge base not found: {self.config.knowledge_base_path}")
+                logger.error(f" Knowledge base not found: {self.config.knowledge_base_path}")
                 return False
             
-            logger.info(f"📚 Scanning knowledge base: {self.config.knowledge_base_path}")
+            logger.info(f" Scanning knowledge base: {self.config.knowledge_base_path}")
             
             all_documents = []
             all_metadata = []
@@ -158,19 +158,19 @@ class IndexBuilder:
             
             # Validate documents
             if not all_documents:
-                logger.error("❌ No documents found in knowledge base")
+                logger.error(" No documents found in knowledge base")
                 return False
             
-            logger.info(f"📄 Total documents: {len(all_documents)} from {len(set(m['source'] for m in all_metadata))} files")
+            logger.info(f" Total documents: {len(all_documents)} from {len(set(m['source'] for m in all_metadata))} files")
             
             # Create embeddings
-            logger.info("🔄 Creating embeddings...")
+            logger.info(" Creating embeddings...")
             embeddings_array = self.embeddings.embed_documents(all_documents)
             embeddings_array = np.array(embeddings_array, dtype=np.float32)
             
             # Build FAISS index
             dimension = embeddings_array.shape[1]
-            logger.info(f"🔍 Building FAISS index: dimension={dimension}")
+            logger.info(f" Building FAISS index: dimension={dimension}")
             
             index = faiss.IndexFlatL2(dimension)
             index.add(embeddings_array)
@@ -194,7 +194,7 @@ class IndexBuilder:
             self.documents = all_documents
             self.doc_metadata = all_metadata
             
-            logger.info(f"✅ FAISS index built successfully: {len(all_documents)} chunks")
+            logger.info(f" FAISS index built successfully: {len(all_documents)} chunks")
             logger.info(f"   Index file: {index_path}")
             logger.info(f"   Metadata file: {metadata_path}")
             logger.info(f"   Texts file: {texts_path}")
@@ -202,7 +202,7 @@ class IndexBuilder:
             return True
         
         except Exception as e:
-            logger.error(f"❌ Error building index: {e}", exc_info=True)
+            logger.error(f" Error building index: {e}", exc_info=True)
             return False
     
     def get_content_priority(self, chunk: str, filename: str, category: str) -> int:
@@ -260,7 +260,7 @@ class IndexBuilder:
             
             # Check if files exist
             if not all(os.path.exists(p) for p in [index_path, metadata_path, texts_path]):
-                logger.warning("⚠️ Index files not found")
+                logger.warning("️ Index files not found")
                 return False
             
             # Load FAISS index
@@ -274,11 +274,11 @@ class IndexBuilder:
             with open(texts_path, 'r', encoding='utf-8') as f:
                 self.documents = json.load(f)
             
-            logger.info(f"✅ Loaded existing index: {len(self.documents)} chunks")
+            logger.info(f" Loaded existing index: {len(self.documents)} chunks")
             return True
         
         except Exception as e:
-            logger.error(f"❌ Error loading index: {e}")
+            logger.error(f" Error loading index: {e}")
             return False
     
     def get_index_stats(self) -> Dict[str, Any]:
@@ -375,7 +375,7 @@ def main():
     
     if success:
         stats = builder.get_index_stats()
-        logger.info(f"📊 Index statistics:")
+        logger.info(f" Index statistics:")
         for key, value in stats.items():
             logger.info(f"   {key}: {value}")
         return 0

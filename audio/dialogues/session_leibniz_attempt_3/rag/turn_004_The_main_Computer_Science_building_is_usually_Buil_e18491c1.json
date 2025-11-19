@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_3",
+  "turn_number": 4,
+  "dialogue_type": "rag",
+  "text": "The main Computer Science building is usually Building 18, the main one on Appelstraße. Check the campus map for specifics, or ask the service desk for the exact room you need.",
+  "audio_file": "turn_004_The_main_Computer_Science_building_is_usually_Buil_e18491c1.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_3_4_vaa1jtg6.wav",
+  "timestamp": 1763417626.600249,
+  "text_length": 176,
+  "text_hash": "e18491c1"
+}

@@ -97,11 +97,11 @@ async def test_service_initialization() -> Dict[str, Any]:
         results["summary"]["all_services_ready"] = all_ready
         
         if all_ready:
-            logger.info("✅ All services ready")
+            logger.info(" All services ready")
         else:
             missing = [field for field in required_fields if not status.get(field, False)]
             results["issues"].append(f"Services not ready: {missing}")
-            logger.warning(f"❌ Services not ready: {missing}")
+            logger.warning(f" Services not ready: {missing}")
         
         # Log service details
         logger.info(f"Intent parser ready: {status.get('intent_parser_ready', False)}")
@@ -177,7 +177,7 @@ async def test_pre_warming_effectiveness() -> Dict[str, Any]:
         logger.info(f"Cold start: {cold_start_time:.2f}s")
         logger.info(f"Warm start: {warm_start_time:.2f}s")
         logger.info(f"Reduction: {latency_reduction:.2f}s ({reduction_percentage:.1f}%)")
-        logger.info(f"Effective: {'Yes ✅' if prewarm_effective else 'No ❌'}")
+        logger.info(f"Effective: {'Yes ' if prewarm_effective else 'No '}")
         
         # Test 2: Pre-warming during TTS playback
         logger.info("\nTesting pre-warming during TTS...")
@@ -214,7 +214,7 @@ async def test_pre_warming_effectiveness() -> Dict[str, Any]:
         
         logger.info(f"Audio duration: {audio_duration:.2f}s")
         logger.info(f"Pre-warm time: {prewarm_time:.2f}s")
-        logger.info(f"Completed early: {'Yes ✅' if prewarm_completed_early else 'No ❌'}")
+        logger.info(f"Completed early: {'Yes ' if prewarm_completed_early else 'No '}")
         
         # Calculate final averages
         if results["summary"]["total_tests"] > 0:
@@ -535,7 +535,7 @@ async def test_response_time_benchmarks() -> Dict[str, Any]:
             
             logger.info(f"Average: {avg_time:.3f}s")
             logger.info(f"Min: {min_time:.3f}s, Max: {max_time:.3f}s, P95: {p95_time:.3f}s")
-            logger.info(f"Target met: {'Yes ✅' if target_met else 'No ❌'}")
+            logger.info(f"Target met: {'Yes ' if target_met else 'No '}")
             
             if not target_met:
                 results["issues"].append(f"{operation} avg time {avg_time:.3f}s exceeds target {target_time:.3f}s")
@@ -616,7 +616,7 @@ async def test_concurrent_operations() -> Dict[str, Any]:
         logger.info(f"Failed: {failed_requests}")
         logger.info(f"Total time: {total_time:.2f}s")
         logger.info(f"Throughput: {throughput:.1f} req/s")
-        logger.info(f"Target met: {'Yes ✅' if throughput >= THROUGHPUT_TARGET else 'No ❌'}")
+        logger.info(f"Target met: {'Yes ' if throughput >= THROUGHPUT_TARGET else 'No '}")
         
         if throughput < THROUGHPUT_TARGET:
             results["issues"].append(f"Throughput {throughput:.1f} req/s below target {THROUGHPUT_TARGET} req/s")
@@ -722,7 +722,7 @@ def print_report_summary(report: Dict):
     
     print(f"\nOverall Performance: {report['summary']['overall_performance'].upper()}")
     print(f"Initialization Time: {report['summary']['initialization_time']:.2f}s")
-    print(f"All Services Ready: {'Yes ✅' if report['summary']['all_services_ready'] else 'No ❌'}")
+    print(f"All Services Ready: {'Yes ' if report['summary']['all_services_ready'] else 'No '}")
     
     print(f"\nPre-warming:")
     print(f"  Effectiveness: {report['summary']['prewarming_effective']:.1%}")
@@ -730,11 +730,11 @@ def print_report_summary(report: Dict):
     
     print(f"\nCaching:")
     print(f"  Intent Hit Rate: {report['summary']['cache_hit_rate']:.1%} (target: {CACHE_HIT_RATE_TARGET:.1%})")
-    print(f"  Cache Working: {'Yes ✅' if report['caching']['summary']['cache_working'] else 'No ❌'}")
+    print(f"  Cache Working: {'Yes ' if report['caching']['summary']['cache_working'] else 'No '}")
     
     print(f"\nPerformance:")
     print(f"  Targets Met: {report['summary']['performance_targets_met']:.1%}")
-    print(f"  Concurrent Handling: {'Yes ✅' if report['summary']['concurrent_handling'] else 'No ❌'}")
+    print(f"  Concurrent Handling: {'Yes ' if report['summary']['concurrent_handling'] else 'No '}")
     
     if report["issues"]:
         print(f"\nIssues Found ({len(report['issues'])}):")

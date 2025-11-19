@@ -49,7 +49,7 @@ async def test_gemini_provider_initialization():
         
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
-            print("❌ GEMINI_API_KEY not found in environment")
+            print(" GEMINI_API_KEY not found in environment")
             print("   Set GEMINI_API_KEY in .env.leibniz or environment")
             print("   Get key from: https://aistudio.google.com/apikey")
             return False
@@ -61,13 +61,13 @@ async def test_gemini_provider_initialization():
             model="gemini-2.5-flash-preview-tts"
         )
         
-        print(f"✅ Provider initialized successfully")
+        print(f" Provider initialized successfully")
         print(f"   Model: {provider.model}")
         print(f"   Sample rate: {provider.sample_rate}Hz")
         
         return True
     except Exception as e:
-        print(f"❌ Initialization failed: {e}")
+        print(f" Initialization failed: {e}")
         import traceback
         traceback.print_exc()
         import traceback
@@ -90,7 +90,7 @@ async def test_gemini_file_synthesis():
         
         # Test text
         test_text = "Hello! Welcome to Leibniz University. How can I help you today?"
-        print(f"📝 Synthesizing: '{test_text}'")
+        print(f" Synthesizing: '{test_text}'")
         
         # Synthesize
         audio_bytes = await provider.synthesize(
@@ -99,7 +99,7 @@ async def test_gemini_file_synthesis():
             emotion="helpful"
         )
         
-        print(f"✅ Synthesis successful: {len(audio_bytes)} bytes")
+        print(f" Synthesis successful: {len(audio_bytes)} bytes")
         
         # Save to WAV file
         output_file = Path(__file__).parent / "test_gemini_output.wav"
@@ -109,12 +109,12 @@ async def test_gemini_file_synthesis():
             wf.setframerate(24000)  # 24kHz
             wf.writeframes(audio_bytes)
         
-        print(f"💾 Saved to: {output_file}")
+        print(f" Saved to: {output_file}")
         print(f"   Size: {output_file.stat().st_size} bytes")
         
         return True
     except Exception as e:
-        print(f"❌ Synthesis failed: {e}")
+        print(f" Synthesis failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -133,7 +133,7 @@ async def test_gemini_streaming():
         provider = GeminiLiveTTSProvider(api_key=api_key)
         
         test_text = "This is a streaming test for Gemini Live TTS integration."
-        print(f"📝 Streaming: '{test_text}'")
+        print(f" Streaming: '{test_text}'")
         
         chunks = []
         chunk_count = 0
@@ -148,11 +148,11 @@ async def test_gemini_streaming():
             print(f"   Chunk {chunk_count}: {len(chunk)} bytes")
         
         total_bytes = sum(len(c) for c in chunks)
-        print(f"✅ Streaming complete: {chunk_count} chunks, {total_bytes} total bytes")
+        print(f" Streaming complete: {chunk_count} chunks, {total_bytes} total bytes")
         
         return True
     except Exception as e:
-        print(f"❌ Streaming failed: {e}")
+        print(f" Streaming failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -180,7 +180,7 @@ async def test_emotion_variations():
         }
         
         for emotion, text in emotions.items():
-            print(f"\n🎭 Testing emotion: {emotion}")
+            print(f"\n Testing emotion: {emotion}")
             print(f"   Text: '{text}'")
             
             audio_bytes = await provider.synthesize(
@@ -189,13 +189,13 @@ async def test_emotion_variations():
                 emotion=emotion
             )
             
-            print(f"   ✅ Synthesized: {len(audio_bytes)} bytes")
+            print(f"    Synthesized: {len(audio_bytes)} bytes")
         
-        print(f"\n✅ All emotion tests passed")
+        print(f"\n All emotion tests passed")
         return True
         
     except Exception as e:
-        print(f"❌ Emotion test failed: {e}")
+        print(f" Emotion test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -219,7 +219,7 @@ async def test_leibniz_tts_integration():
             enable_cache=True
         )
         
-        print("📝 Initializing LeibnizTTS with Gemini as primary provider...")
+        print(" Initializing LeibnizTTS with Gemini as primary provider...")
         tts = LeibnizTTS(config=config)
         
         # Check which providers were initialized
@@ -231,14 +231,14 @@ async def test_leibniz_tts_integration():
         if tts.gemini_provider:
             providers_initialized.append("Gemini Live")
         
-        print(f"✅ LeibnizTTS initialized")
+        print(f" LeibnizTTS initialized")
         print(f"   Providers: {', '.join(providers_initialized)}")
         
         # Test synthesis
         test_text = "Welcome to Leibniz University! I'm Lexi, your virtual assistant."
         output_file = Path(__file__).parent / "test_leibniz_gemini_output.wav"
         
-        print(f"\n📝 Synthesizing with emotion: helpful")
+        print(f"\n Synthesizing with emotion: helpful")
         print(f"   Text: '{test_text}'")
         
         result = await tts.synthesize_to_file(
@@ -248,18 +248,18 @@ async def test_leibniz_tts_integration():
         )
         
         if result['success']:
-            print(f"✅ Synthesis successful")
+            print(f" Synthesis successful")
             print(f"   Provider used: {result['provider']}")
             print(f"   Cached: {result['cached']}")
             print(f"   Duration: {result['duration']:.2f}s")
             print(f"   Elapsed: {result['elapsed']:.3f}s")
             print(f"   File: {output_file}")
         else:
-            print(f"❌ Synthesis failed: {result.get('error', 'Unknown error')}")
+            print(f" Synthesis failed: {result.get('error', 'Unknown error')}")
             return False
         
         # Test again to verify caching
-        print(f"\n📝 Testing cache (same text)...")
+        print(f"\n Testing cache (same text)...")
         result2 = await tts.synthesize_to_file(
             text=test_text,
             outfile=str(output_file),
@@ -267,15 +267,15 @@ async def test_leibniz_tts_integration():
         )
         
         if result2['cached']:
-            print(f"✅ Cache hit confirmed")
+            print(f" Cache hit confirmed")
             print(f"   Elapsed: {result2['elapsed']:.3f}s (should be very fast)")
         else:
-            print(f"⚠️ Expected cache hit but got cache miss")
+            print(f"️ Expected cache hit but got cache miss")
         
         return True
         
     except Exception as e:
-        print(f"❌ Integration test failed: {e}")
+        print(f" Integration test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -290,11 +290,11 @@ async def main():
     # Check prerequisites
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        print("\n❌ GEMINI_API_KEY not found in environment")
+        print("\n GEMINI_API_KEY not found in environment")
         print("   Please set GEMINI_API_KEY in .env.leibniz or environment")
         return
     
-    print(f"\n✅ GEMINI_API_KEY found: {api_key[:10]}...")
+    print(f"\n GEMINI_API_KEY found: {api_key[:10]}...")
     
     # Run tests
     tests = [
@@ -311,7 +311,7 @@ async def main():
         try:
             results[test_name] = await test_func()
         except Exception as e:
-            print(f"\n❌ Test '{test_name}' crashed: {e}")
+            print(f"\n Test '{test_name}' crashed: {e}")
             import traceback
             traceback.print_exc()
             results[test_name] = False
@@ -325,7 +325,7 @@ async def main():
     total = len(results)
     
     for test_name, result in results.items():
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = " PASS" if result else " FAIL"
         print(f"{status}: {test_name}")
     
     print(f"\n{'='*80}")
@@ -333,9 +333,9 @@ async def main():
     print(f"{'='*80}")
     
     if passed == total:
-        print("\n🎉 All tests passed! Gemini Live TTS integration is working correctly.")
+        print("\n All tests passed! Gemini Live TTS integration is working correctly.")
     else:
-        print(f"\n⚠️ {total - passed} test(s) failed. Please review errors above.")
+        print(f"\n️ {total - passed} test(s) failed. Please review errors above.")
 
 
 if __name__ == "__main__":

@@ -115,8 +115,8 @@ def compare_to_tara_benchmark(metric_name: str, actual: float, tara_target: floa
     deviation = ((actual - tara_target) / tara_target) * 100
     
     logger.info(
-        f"📊 {metric_name}: {actual:.2f}s vs TARA {tara_target:.2f}s "
-        f"({'✅' if within_target else '❌'} {deviation:+.1f}%)"
+        f" {metric_name}: {actual:.2f}s vs TARA {tara_target:.2f}s "
+        f"({'' if within_target else ''} {deviation:+.1f}%)"
     )
     
     return within_target
@@ -140,7 +140,7 @@ class TestCaptureAndTranscribe:
         assert audio_file == "temp.wav"
         assert transcript == "hello there"
         
-        logger.info("✅ Basic capture and transcribe verified")
+        logger.info(" Basic capture and transcribe verified")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -162,7 +162,7 @@ class TestCaptureAndTranscribe:
         call_kwargs = mock_capture.call_args[1]
         assert 'streaming_callback' in call_kwargs
         
-        logger.info("✅ Streaming callback passed through")
+        logger.info(" Streaming callback passed through")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -182,7 +182,7 @@ class TestCaptureAndTranscribe:
         call_kwargs = mock_capture.call_args[1]
         assert 'context' in call_kwargs
         
-        logger.info("✅ Context passed to VAD")
+        logger.info(" Context passed to VAD")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -197,7 +197,7 @@ class TestCaptureAndTranscribe:
         assert audio_file is None
         assert transcript is None
         
-        logger.info("✅ Timeout handled gracefully")
+        logger.info(" Timeout handled gracefully")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -213,7 +213,7 @@ class TestCaptureAndTranscribe:
         # Should match exactly (no re-normalization)
         assert transcript == normalized_text
         
-        logger.info("✅ No redundant normalization")
+        logger.info(" No redundant normalization")
 
 
 # Test Class: TestTranscribeAndClassify
@@ -240,7 +240,7 @@ class TestTranscribeAndClassify:
         # Verify intent is reasonable
         assert intent_msg.intent in ["GREETING", "UNCLEAR"]
         
-        logger.info(f"✅ Classification: {intent_msg.intent}")
+        logger.info(f" Classification: {intent_msg.intent}")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -256,7 +256,7 @@ class TestTranscribeAndClassify:
         assert transcript_msg.transcript == ""
         assert intent_msg.intent == "UNCLEAR"
         
-        logger.info("✅ No input handled")
+        logger.info(" No input handled")
 
 
 # Test Class: TestSpeakFriendlyIntegration
@@ -278,7 +278,7 @@ class TestSpeakFriendlyIntegration:
         # Verify set_leibniz_agent_speaking called
         assert mock_set_speaking.call_count >= 2  # True before, False after
         
-        logger.info("✅ Agent speaking state managed")
+        logger.info(" Agent speaking state managed")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -294,7 +294,7 @@ class TestSpeakFriendlyIntegration:
         # Should return error result
         assert result is not None
         
-        logger.info("✅ TTS error handled")
+        logger.info(" TTS error handled")
 
 
 # Test Class: TestDynamicTimeoutBehavior
@@ -310,7 +310,7 @@ class TestDynamicTimeoutBehavior:
         vad.set_dynamic_timeout(0, "greeting")
         
         assert vad._current_timeout == 12.0
-        logger.info("✅ Greeting timeout: 12s")
+        logger.info(" Greeting timeout: 12s")
     
     @pytest.mark.unit
     def test_decision_timeout(self):
@@ -321,7 +321,7 @@ class TestDynamicTimeoutBehavior:
         vad.set_dynamic_timeout(0, "decision")
         
         assert vad._current_timeout == 15.0
-        logger.info("✅ Decision timeout: 15s")
+        logger.info(" Decision timeout: 15s")
     
     @pytest.mark.unit
     def test_complex_query_timeout(self):
@@ -332,7 +332,7 @@ class TestDynamicTimeoutBehavior:
         vad.set_dynamic_timeout(0, "complex_query")
         
         assert vad._current_timeout == 18.0
-        logger.info("✅ Complex query timeout: 18s")
+        logger.info(" Complex query timeout: 18s")
     
     @pytest.mark.unit
     def test_retry_timeout(self):
@@ -343,7 +343,7 @@ class TestDynamicTimeoutBehavior:
         vad.set_dynamic_timeout(0, "retry")
         
         assert vad._current_timeout == 5.0
-        logger.info("✅ Retry timeout: 5s")
+        logger.info(" Retry timeout: 5s")
 
 
 # Test Class: TestBargeInScenarios
@@ -370,7 +370,7 @@ class TestBargeInScenarios:
         clear_leibniz_barge_in()
         assert check_leibniz_barge_in() is False
         
-        logger.info("✅ Barge-in flag lifecycle verified")
+        logger.info(" Barge-in flag lifecycle verified")
 
 
 # Test Class: TestFullConversationFlows (Comment 10)
@@ -409,7 +409,7 @@ class TestFullConversationFlows:
                         # TTS response
                         await speak_friendly(response)
                         
-                        logger.info("✅ Full RAG flow: capture → classify → RAG → TTS")
+                        logger.info(" Full RAG flow: capture → classify → RAG → TTS")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -437,7 +437,7 @@ class TestFullConversationFlows:
                     booking_result = await handle_appointment_booking(transcript, {})
                     assert booking_result['state'] in ["asking_date", "asking_time", "confirming"]
                     
-                    logger.info(f"✅ Appointment Booking: {booking_result['state']}")
+                    logger.info(f" Appointment Booking: {booking_result['state']}")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -463,7 +463,7 @@ class TestFullConversationFlows:
         vad.set_dynamic_timeout(0, "post_service")
         assert vad._current_timeout == 8.0
         
-        logger.info("✅ Dynamic timeout transitions: 12s → 15s → 18s → 8s")
+        logger.info(" Dynamic timeout transitions: 12s → 15s → 18s → 8s")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -486,7 +486,7 @@ class TestFullConversationFlows:
         vad.consecutive_timeouts = 0
         assert vad.consecutive_timeouts == 0
         
-        logger.info("✅ No-input escalation: 0 → 1 → 2 → 3 → 0 (reset)")
+        logger.info(" No-input escalation: 0 → 1 → 2 → 3 → 0 (reset)")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -524,7 +524,7 @@ class TestFullConversationFlows:
             # Wait for TTS
             await tts_task
             
-            logger.info("✅ Barge-in during TTS: detected → interrupted → recovered")
+            logger.info(" Barge-in during TTS: detected → interrupted → recovered")
     
     @pytest.mark.asyncio
     @pytest.mark.e2e
@@ -544,7 +544,7 @@ class TestFullConversationFlows:
         assert 'conversation_state' in metrics
         assert 'barge_in_detected' in metrics
         
-        logger.info(f"✅ Session metrics: {metrics}")
+        logger.info(f" Session metrics: {metrics}")
 
 
 # Test Class: TestPerformanceVsTaraPro (Comment 11)
@@ -572,7 +572,7 @@ class TestPerformanceVsTaraPro:
         
         # Target <100ms (TARA: 50-80ms)
         # Relaxed for mocked environment
-        logger.info(f"📊 Warm capture latency: {warm_time*1000:.1f}ms (Target: <100ms)")
+        logger.info(f" Warm capture latency: {warm_time*1000:.1f}ms (Target: <100ms)")
         
         # Just verify it's reasonable
         assert warm_time < 1.0  # Should be instant in mocked env
@@ -608,7 +608,7 @@ class TestPerformanceVsTaraPro:
         else:
             improvement = 0
         
-        logger.info(f"📊 Prewarm impact: Cold={cold_time*1000:.1f}ms, Warm={warm_time*1000:.1f}ms, Improvement={improvement:.1f}%")
+        logger.info(f" Prewarm impact: Cold={cold_time*1000:.1f}ms, Warm={warm_time*1000:.1f}ms, Improvement={improvement:.1f}%")
     
     @pytest.mark.asyncio
     @pytest.mark.benchmark
@@ -661,7 +661,7 @@ class TestPerformanceVsTaraPro:
             
             total_time = time.time() - start_total
             
-            logger.info(f"📊 E2E Breakdown: Capture={capture_time*1000:.1f}ms, Intent={intent_time*1000:.1f}ms, RAG={rag_time*1000:.1f}ms, TTS={tts_time*1000:.1f}ms, Total={total_time*1000:.1f}ms")
+            logger.info(f" E2E Breakdown: Capture={capture_time*1000:.1f}ms, Intent={intent_time*1000:.1f}ms, RAG={rag_time*1000:.1f}ms, TTS={tts_time*1000:.1f}ms, Total={total_time*1000:.1f}ms")
             
             # TARA Pro target: <10s total
             assert total_time < 10.0
@@ -690,7 +690,7 @@ class TestPerformanceVsTaraPro:
         assert is_detected is True
         
         # Target <500ms (should be instant in our impl)
-        logger.info(f"📊 Barge-in detection: {detection_time*1000:.3f}ms (Target: <500ms)")
+        logger.info(f" Barge-in detection: {detection_time*1000:.3f}ms (Target: <500ms)")
         assert detection_time < 0.5
         
         # Cleanup
@@ -726,7 +726,7 @@ class TestPerformanceVsTaraPro:
         avg_warm = sum(times) / len(times)
         improvement = ((cold - avg_warm) / cold * 100) if cold > 0 else 0
         
-        logger.info(f"📊 Session reuse: Cold={cold*1000:.1f}ms, AvgWarm={avg_warm*1000:.3f}ms, Improvement={improvement:.1f}%")
+        logger.info(f" Session reuse: Cold={cold*1000:.1f}ms, AvgWarm={avg_warm*1000:.3f}ms, Improvement={improvement:.1f}%")
 
 
 # Test Class: TestIntegrationWithPersistentServices
@@ -742,7 +742,7 @@ class TestIntegrationWithPersistentServices:
         # Should not crash
         await trigger_prewarm_on_speech_detection()
         
-        logger.info("✅ Prewarm trigger working")
+        logger.info(" Prewarm trigger working")
 
 
 # Pytest fixtures

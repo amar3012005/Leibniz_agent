@@ -83,7 +83,7 @@ class GoogleCloudTTSProvider:
         )
         self.client = self.texttospeech.TextToSpeechClient(credentials=credentials)
         
-        logger.info(f"✅ Google Cloud TTS initialized (voice: {self.config.google_voice})")
+        logger.info(f" Google Cloud TTS initialized (voice: {self.config.google_voice})")
     
     def _escape_ssml(self, text: str) -> str:
         """
@@ -273,11 +273,11 @@ class GoogleCloudTTSProvider:
             # Wrap LINEAR16 PCM in WAV header
             wav_audio = self._wrap_pcm_in_wav(response.audio_content, self.config.sample_rate)
             
-            logger.debug(f"✅ Google TTS synthesized {len(text)} chars → {len(wav_audio)} bytes")
+            logger.debug(f" Google TTS synthesized {len(text)} chars → {len(wav_audio)} bytes")
             return wav_audio
         
         except Exception as e:
-            logger.error(f"❌ Google TTS synthesis failed: {e}")
+            logger.error(f" Google TTS synthesis failed: {e}")
             raise
     
     async def stream_synthesize(
@@ -339,11 +339,11 @@ class GoogleCloudTTSProvider:
                         "description": f"{lang_code} {self.texttospeech.SsmlVoiceGender(voice.ssml_gender).name.title()} {voice.name.split('-')[-1]}"
                     }
             
-            logger.info(f"📋 Google TTS: {len(voices)} voices available")
+            logger.info(f" Google TTS: {len(voices)} voices available")
             return voices
         
         except Exception as e:
-            logger.error(f"❌ Failed to list Google voices: {e}")
+            logger.error(f" Failed to list Google voices: {e}")
             return {}
     
     def validate_config(self) -> Tuple[bool, Optional[str]]:

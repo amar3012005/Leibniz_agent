@@ -34,7 +34,7 @@ class LeibnizProductionRAG:
     """Production RAG system with optimized HuggingFace Phi-2"""
     
     def __init__(self, knowledge_base_dir="leibniz_knowledge_base"):
-        logging.info("🚀 Leibniz Production RAG (Optimized HF Phi-2)\n")
+        logging.info(" Leibniz Production RAG (Optimized HF Phi-2)\n")
         
         self.knowledge_base_dir = knowledge_base_dir
         self.top_k = 5
@@ -46,27 +46,27 @@ class LeibnizProductionRAG:
         self._load_knowledge_base()
         self._build_faiss_index()
         
-        logging.info("\n✅ PRODUCTION RAG SYSTEM READY\n")
+        logging.info("\n PRODUCTION RAG SYSTEM READY\n")
     
     def _load_embedding_model(self):
         """Load sentence transformer"""
-        logging.info("📥 Loading embedding model...")
+        logging.info(" Loading embedding model...")
         start = time.time()
         self.embedder = SentenceTransformer(
             "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
             device="cuda"
         )
-        logging.info(f"✅ Embedder loaded in {time.time()-start:.2f}s")
+        logging.info(f" Embedder loaded in {time.time()-start:.2f}s")
         
         # Warmup
-        logging.info("🔥 Warming up embedder...")
+        logging.info(" Warming up embedder...")
         start = time.time()
         _ = self.embedder.encode(["warmup"], show_progress_bar=False)
-        logging.info(f"✅ Warmed up in {time.time()-start:.2f}s\n")
+        logging.info(f" Warmed up in {time.time()-start:.2f}s\n")
     
     def _load_phi2_model(self):
         """Load HuggingFace Phi-2 with optimized settings"""
-        logging.info("📥 Loading Phi-2 model (HuggingFace)...")
+        logging.info(" Loading Phi-2 model (HuggingFace)...")
         start = time.time()
         
         self.tokenizer = AutoTokenizer.from_pretrained(
@@ -83,19 +83,19 @@ class LeibnizProductionRAG:
         
         self.model.eval()  # Set to evaluation mode
         
-        logging.info(f"✅ Phi-2 loaded in {time.time()-start:.2f}s")
+        logging.info(f" Phi-2 loaded in {time.time()-start:.2f}s")
         
         # Warmup
-        logging.info("🔥 Warming up Phi-2...")
+        logging.info(" Warming up Phi-2...")
         start = time.time()
         inputs = self.tokenizer("Test warmup", return_tensors="pt").to("cuda")
         with torch.no_grad():
             _ = self.model.generate(**inputs, max_new_tokens=5, do_sample=False)
-        logging.info(f"✅ Warmed up in {time.time()-start:.2f}s\n")
+        logging.info(f" Warmed up in {time.time()-start:.2f}s\n")
     
     def _load_knowledge_base(self):
         """Load markdown knowledge base"""
-        logging.info("📚 Loading knowledge base...")
+        logging.info(" Loading knowledge base...")
         self.documents = []
         
         for root, _, files in os.walk(self.knowledge_base_dir):
@@ -108,9 +108,9 @@ class LeibnizProductionRAG:
                             chunks = self._chunk_text(content, file)
                             self.documents.extend(chunks)
                     except Exception as e:
-                        logging.warning(f"⚠️ Could not load {file}: {e}")
+                        logging.warning(f"️ Could not load {file}: {e}")
         
-        logging.info(f"✅ Loaded {len(self.documents)} chunks\n")
+        logging.info(f" Loaded {len(self.documents)} chunks\n")
     
     def _chunk_text(self, text: str, source: str) -> List[Dict]:
         """Split text into chunks"""
@@ -134,7 +134,7 @@ class LeibnizProductionRAG:
     
     def _build_faiss_index(self):
         """Build FAISS vector index"""
-        logging.info("🔨 Building FAISS index...")
+        logging.info(" Building FAISS index...")
         start = time.time()
         
         texts = [doc["text"] for doc in self.documents]
@@ -143,7 +143,7 @@ class LeibnizProductionRAG:
         self.faiss_index = faiss.IndexFlatL2(embeddings.shape[1])
         self.faiss_index.add(embeddings.astype('float32'))
         
-        logging.info(f"✅ Index built in {time.time()-start:.2f}s ({self.faiss_index.ntotal} vectors)\n")
+        logging.info(f" Index built in {time.time()-start:.2f}s ({self.faiss_index.ntotal} vectors)\n")
     
     def retrieve(self, query: str) -> Tuple[List[Dict], float]:
         """Retrieve relevant documents"""
@@ -221,9 +221,9 @@ Answer (friendly, 2-3 sentences):"""
         """Run full query"""
         logging.info("="*60)
         if total > 0:
-            logging.info(f"🧪 Query {idx}/{total}")
+            logging.info(f" Query {idx}/{total}")
         logging.info("="*60)
-        logging.info(f"❓ {question}\n")
+        logging.info(f" {question}\n")
         
         # Retrieve
         docs, retrieval_ms = self.retrieve(question)
@@ -234,7 +234,7 @@ Answer (friendly, 2-3 sentences):"""
         
         total_ms = retrieval_ms + generation_ms
         
-        logging.info(f"💬 Answer ({len(answer)} chars):")
+        logging.info(f" Answer ({len(answer)} chars):")
         logging.info(f"   {answer}\n")
         logging.info(f"⏱️  Retrieval: {retrieval_ms:.1f}ms | Generation: {generation_ms:.1f}ms | Total: {total_ms:.1f}ms\n")
         
@@ -253,7 +253,7 @@ Answer (friendly, 2-3 sentences):"""
         
         # Summary
         logging.info("="*60)
-        logging.info("📊 PERFORMANCE SUMMARY")
+        logging.info(" PERFORMANCE SUMMARY")
         logging.info("="*60)
         
         avg_ret = np.mean([r["retrieval_ms"] for r in self.results])

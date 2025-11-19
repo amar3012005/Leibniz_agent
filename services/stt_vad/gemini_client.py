@@ -23,6 +23,11 @@ from leibniz_agent.services.stt_vad.config import VADConfig
 logger = logging.getLogger(__name__)
 
 
+class GeminiQuotaExceededError(Exception):
+    """Raised when Gemini API quota is exceeded"""
+    pass
+
+
 class GeminiLiveSession:
     """
     Manages Gemini Live API session lifecycle with singleton pattern.
@@ -73,44 +78,58 @@ class GeminiLiveSession:
                     "Set it in .env.leibniz or docker-compose environment."
                 )
             cls._client = genai.Client(api_key=api_key)
-            logger.info("✅ Gemini client initialized")
+            logger.info(" Gemini client initialized")
         
         # ALWAYS create new session for each capture (no pooling)
         # This is required because session.receive() is single-use
-        logger.info("🌐 Creating new Gemini Live session")
+        logger.info(" Creating new Gemini Live session")
         
         start_time = time.time()
         
-        # Session configuration for English transcription
-        session_config = {
-            "response_modalities": ["TEXT"],  # TEXT only for transcription
-            "input_audio_transcription": {}   # Enable user speech transcription
-        }
-        
-        # Add language config
-        if config.language_code:
-            session_config["speech_config"] = {
-                "language_code": config.language_code  # en-US
+        try:
+            # Session configuration for English transcription
+            session_config = {
+                "response_modalities": ["TEXT"],  # TEXT only for transcription
+                "input_audio_transcription": {}   # Enable user speech transcription
             }
-        
-        # Connect to Gemini Live (returns context manager) - STORE CONTEXT!
-        cls._session_context = cls._client.aio.live.connect(
-            model=config.model_name,
-            config=session_config
-        )
-        cls._session = await cls._session_context.__aenter__()
-        cls._session_loop = asyncio.get_running_loop()
-        
-        # Track stats
-        cls._creation_time = time.time()
-        cls._last_activity = time.time()
-        cls._total_uses += 1
-        cls._config = config
-        
-        connection_time = time.time() - start_time
-        logger.info(f"✅ Gemini session ready in {connection_time:.3f}s")
-        
-        return cls._session
+            
+            # Add language config
+            if config.language_code:
+                session_config["speech_config"] = {
+                    "language_code": config.language_code  # en-US
+                }
+            
+            # Connect to Gemini Live (returns context manager) - STORE CONTEXT!
+            cls._session_context = cls._client.aio.live.connect(
+                model=config.model_name,
+                config=session_config
+            )
+            cls._session = await cls._session_context.__aenter__()
+            cls._session_loop = asyncio.get_running_loop()
+            
+            # Track stats
+            cls._creation_time = time.time()
+            cls._last_activity = time.time()
+            cls._total_uses += 1
+            cls._config = config
+            
+            connection_time = time.time() - start_time
+            logger.info(f" Gemini session ready in {connection_time:.3f}s")
+            
+            return cls._session
+            
+        except Exception as e:
+            error_msg = str(e).lower()
+            
+            # Check for quota exceeded errors
+            if ("quota" in error_msg or "1011" in error_msg or 
+                "billing" in error_msg or "exceeded" in error_msg or
+                "current quota" in error_msg):
+                logger.error(f" Gemini API quota exceeded: {e}")
+                raise GeminiQuotaExceededError(f"Gemini API quota exceeded: {e}")
+            else:
+                logger.error(f" Gemini session creation failed: {e}")
+                raise
     
     @classmethod
     async def close_session(cls):
@@ -123,7 +142,7 @@ class GeminiLiveSession:
         if cls._session_context:
             try:
                 await cls._session_context.__aexit__(None, None, None)
-                logger.info("🔒 Gemini session closed gracefully")
+                logger.info(" Gemini session closed gracefully")
             except Exception as e:
                 logger.error(f"Error closing session: {e}")
             finally:
@@ -166,8 +185,8 @@ class GeminiLiveSession:
         Creates session in background without blocking.
         """
         try:
-            logger.info("🔥 Triggering session warmup")
+            logger.info(" Triggering session warmup")
             await cls.get_session(config)
-            logger.info("✅ Session warmup complete")
+            logger.info(" Session warmup complete")
         except Exception as e:
-            logger.error(f"❌ Session warmup failed: {e}")
+            logger.error(f" Session warmup failed: {e}")

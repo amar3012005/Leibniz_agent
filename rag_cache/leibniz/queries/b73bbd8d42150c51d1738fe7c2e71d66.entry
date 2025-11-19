@@ -1,0 +1,9 @@
+{
+  "answer": "Typically: High school diploma/GED, specific math/science grades, standardized test scores (SAT/ACT), and application essays. Check the university's website for exact details.",
+  "metadata": {
+    "method": "leibniz_rag_hybrid",
+    "pattern": "admission_requirements",
+    "relevance_score": 0.0,
+    "processing_time_ms": 0
+  }
+}

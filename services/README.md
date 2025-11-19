@@ -85,7 +85,7 @@ The Leibniz Agent is decomposed into **7 independent services**:
 | **Intent** | 8002 | Intent classification, entity extraction | ✅ **Phase 3 Complete** |
 | **RAG** | 8003 | Knowledge base retrieval, document search | 🔜 Phase 4 |
 | **TTS** | 8004 | Text-to-speech synthesis (ElevenLabs/Google/Gemini) | 🔜 Phase 5 |
-| **Appointment** | 8005 | Appointment scheduling FSM | 🔜 Phase 6 |
+| **Appointment** | 8005 | Appointment scheduling FSM | ✅ **Phase 6 Complete** |
 | **Orchestrator** | 8000 | Main coordinator, session management | 🔜 Phase 7 |
 
 ---
@@ -767,7 +767,110 @@ curl http://localhost:8002/metrics
 
 ---
 
-### Phase 4-7: Remaining Services
+### Phase 6: Appointment FSM Service ✅ COMPLETE
+
+**Goal**: Extract appointment booking FSM into standalone service with Redis session persistence.
+
+**Source File**:
+- `leibniz_agent/leibniz_appointment_fsm.py`
+
+**Completed Structure**:
+```
+leibniz_agent/services/appointment/
+├── __init__.py
+├── app.py                     # FastAPI HTTP REST API
+├── fsm_manager.py             # 17-state FSM logic with validation
+├── models.py                  # Pydantic models and enums
+├── config.py                  # Service configuration
+├── validation.py              # Input validation utilities
+├── requirements.txt
+├── Dockerfile
+├── tests/
+│   ├── __init__.py
+│   ├── test_fsm_flow.py       # FSM logic and validation tests
+│   └── test_api_integration.py # API endpoint tests
+└── README.md                  # Service documentation
+```
+
+**API Endpoints**:
+- `POST /api/v1/session/create`: Create new appointment session
+- `POST /api/v1/session/{session_id}/process`: Process user input
+- `GET /api/v1/session/{session_id}/status`: Get session status
+- `DELETE /api/v1/session/{session_id}`: Delete session
+- `GET /health`: Service health check
+- `GET /metrics`: Session statistics
+- `POST /admin/clear_sessions`: Admin session cleanup
+
+**Configuration**:
+
+Add to your `.env.leibniz` file:
+
+```bash
+# Appointment FSM Service
+LEIBNIZ_APPOINTMENT_SERVICE_PORT=8005
+APPOINTMENT_SESSION_TTL=1800          # 30 minutes session timeout
+APPOINTMENT_MAX_RETRIES=3             # Max retries for invalid inputs
+APPOINTMENT_MAX_CONFIRMATION_ATTEMPTS=2  # Max confirmation attempts
+```
+
+**Testing**:
+
+```powershell
+# Start service (local development)
+cd leibniz_agent/services/appointment
+python app.py
+# Service runs on http://localhost:8005
+
+# Start service (Docker)
+docker-compose -f docker-compose.leibniz.yml up -d appointment
+
+# Run tests
+pytest leibniz_agent/services/appointment/tests/ -v
+
+# Test complete appointment flow
+curl -X POST http://localhost:8005/api/v1/session/create
+# Returns: {"session_id": "uuid", "state": "AWAITING_NAME", "response": "..."}
+
+# Process name input
+curl -X POST http://localhost:8005/api/v1/session/{session_id}/process \
+  -H "Content-Type: application/json" \
+  -d '{"user_input": "John Doe"}'
+
+# Continue through full flow: email, phone, department, appointment type, datetime, confirmation
+
+# Check health
+curl http://localhost:8005/health
+
+# Get metrics
+curl http://localhost:8005/metrics
+```
+
+**Key Features**:
+
+1. **17-State FSM**: Complete appointment booking conversation flow
+   - Name → Email → Phone → Department → Appointment Type → DateTime → Confirmation
+
+2. **Redis Session Persistence**: 30-minute TTL sessions with automatic cleanup
+
+3. **Comprehensive Validation**: Name, email, phone, datetime parsing with retry logic
+
+4. **Natural Language Processing**: Flexible datetime parsing ("tomorrow at 2pm", "next Monday")
+
+5. **Department/Appointment Types**: Predefined lists with fuzzy matching
+
+6. **Error Handling**: Graceful degradation, retry limits, session recovery
+
+**Expected Performance**:
+- **Session Creation**: <10ms
+- **Input Processing**: 50-200ms (validation + FSM logic)
+- **Session Retrieval**: <5ms (Redis cached)
+- **Concurrent Sessions**: 1000+ simultaneous sessions
+
+**Status**: ✅ Service deployed and ready for integration (port 8005)
+
+---
+
+### Phase 4-5,7: Remaining Services
 
 Follow the same pattern for:
 - **Phase 3**: Intent classification service
@@ -810,6 +913,6 @@ When adding new services:
 
 ---
 
-**Status**: Phase 1 Complete ✅  
+**Status**: Phase 6 Complete ✅  
 **Last Updated**: October 31, 2025  
 **Maintainer**: Leibniz Agent Team

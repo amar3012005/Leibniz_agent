@@ -58,7 +58,7 @@ async def test_translation():
     
     translator = get_semantic_translator()
     
-    print(f"\n🧪 Testing {len(test_cases)} translation scenarios...\n")
+    print(f"\n Testing {len(test_cases)} translation scenarios...\n")
     
     passed = 0
     failed = 0
@@ -75,7 +75,7 @@ async def test_translation():
                 fsm_state=fsm_state
             )
             
-            print(f"  ✅ Translated: '{result['translated_text']}'")
+            print(f"   Translated: '{result['translated_text']}'")
             print(f"  Language: {result['detected_language']}")
             print(f"  Confidence: {result['confidence']:.2f}")
             
@@ -85,7 +85,7 @@ async def test_translation():
             passed += 1
             
         except Exception as e:
-            print(f"  ❌ Error: {e}")
+            print(f"   Error: {e}")
             failed += 1
         
         print()
@@ -121,7 +121,7 @@ async def test_language_detection():
     for text, expected_lang in test_texts:
         detected_lang, confidence = translator.detect_language(text)
         
-        match = "✅" if detected_lang == expected_lang or (expected_lang == "mixed" and detected_lang != "english") else "❌"
+        match = "" if detected_lang == expected_lang or (expected_lang == "mixed" and detected_lang != "english") else ""
         
         print(f"{match} '{text[:40]}...'")
         print(f"   Expected: {expected_lang}, Got: {detected_lang} (confidence: {confidence:.2f})")
@@ -134,10 +134,10 @@ async def main():
         await test_language_detection()
         await test_translation()
         
-        print("\n✅ All tests completed successfully!")
+        print("\n All tests completed successfully!")
         
     except Exception as e:
-        print(f"\n❌ Test suite failed: {e}")
+        print(f"\n Test suite failed: {e}")
         import traceback
         traceback.print_exc()
         return 1

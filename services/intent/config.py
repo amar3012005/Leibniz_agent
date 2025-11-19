@@ -64,14 +64,14 @@ class IntentConfig:
         # Warn if Gemini API key is missing
         if not self.gemini_api_key:
             logger.warning(
-                "⚠️ GEMINI_API_KEY not set. Gemini fallback will be disabled. "
+                "️ GEMINI_API_KEY not set. Gemini fallback will be disabled. "
                 "Only fast pattern matching will be available."
             )
         
         # Log configuration if enabled
         if self.log_classifications:
             logger.info(
-                f"✅ IntentConfig loaded: model={self.gemini_model}, "
+                f" IntentConfig loaded: model={self.gemini_model}, "
                 f"threshold={self.confidence_threshold}, timeout={self.gemini_timeout}s, "
                 f"target_fast_route={self.fast_route_target}"
             )

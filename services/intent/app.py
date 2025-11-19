@@ -19,8 +19,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import redis.asyncio as redis
 
-from config import IntentConfig
-from intent_classifier import IntentClassifier
+from leibniz_agent.services.intent.config import IntentConfig
+from leibniz_agent.services.intent.intent_classifier import IntentClassifier
 
 # Configure logging
 logging.basicConfig(
@@ -126,14 +126,14 @@ async def lifespan(app: FastAPI):
     """
     global redis_client, classifier, config
     
-    logger.info("🚀 Starting Intent Classification service...")
+    logger.info(" Starting Intent Classification service...")
     
     # Load configuration
     try:
         config = IntentConfig.from_env()
-        logger.info("✅ Configuration loaded")
+        logger.info(" Configuration loaded")
     except Exception as e:
-        logger.error(f"❌ Failed to load configuration: {e}")
+        logger.error(f" Failed to load configuration: {e}")
         raise
     
     # Initialize Redis client
@@ -143,34 +143,34 @@ async def lifespan(app: FastAPI):
             timeout=5.0
         )
         await asyncio.wait_for(redis_client.ping(), timeout=2.0)
-        logger.info(f"✅ Redis connected: {REDIS_URL}")
+        logger.info(f" Redis connected: {REDIS_URL}")
     except asyncio.TimeoutError:
-        logger.warning("⚠️ Redis connection timeout - continuing without cache")
+        logger.warning("️ Redis connection timeout - continuing without cache")
         redis_client = None
     except Exception as e:
-        logger.warning(f"⚠️ Redis connection failed: {e} - continuing without cache")
+        logger.warning(f"️ Redis connection failed: {e} - continuing without cache")
         redis_client = None
     
     # Initialize intent classifier
     try:
         classifier = IntentClassifier(config)
-        logger.info("✅ Intent classifier initialized")
+        logger.info(" Intent classifier initialized")
     except Exception as e:
-        logger.error(f"❌ Failed to initialize classifier: {e}")
+        logger.error(f" Failed to initialize classifier: {e}")
         raise
     
-    logger.info("✅ Intent Classification service ready")
+    logger.info(" Intent Classification service ready")
     
     yield
     
     # Shutdown
-    logger.info("🛑 Shutting down Intent Classification service...")
+    logger.info(" Shutting down Intent Classification service...")
     
     if redis_client:
         await redis_client.close()
-        logger.info("✅ Redis connection closed")
+        logger.info(" Redis connection closed")
     
-    logger.info("✅ Service stopped")
+    logger.info(" Service stopped")
 
 
 # ============================================================================
@@ -217,10 +217,10 @@ async def classify_intent_endpoint(request: ClassifyRequest):
                 import json
                 result = json.loads(cached_result)
                 result["cached"] = True
-                logger.info(f"✅ CACHE HIT: {request.text[:50]}")
+                logger.info(f" CACHE HIT: {request.text[:50]}")
                 return ClassifyResponse(**result)
         except Exception as e:
-            logger.warning(f"⚠️ Cache read failed: {e}")
+            logger.warning(f"️ Cache read failed: {e}")
     
     # Cache miss - perform classification
     try:
@@ -243,14 +243,14 @@ async def classify_intent_endpoint(request: ClassifyRequest):
                         "response_time": result["response_time"]
                     })
                 )
-                logger.info(f"✅ CACHED: {request.text[:50]} → {result['intent']}")
+                logger.info(f" CACHED: {request.text[:50]} → {result['intent']}")
             except Exception as e:
-                logger.warning(f"⚠️ Cache write failed: {e}")
+                logger.warning(f"️ Cache write failed: {e}")
         
         return ClassifyResponse(**result)
     
     except Exception as e:
-        logger.error(f"❌ Classification error: {e}")
+        logger.error(f" Classification error: {e}")
         raise HTTPException(status_code=500, detail=f"Classification failed: {str(e)}")
 
 
@@ -353,11 +353,11 @@ async def clear_cache():
             if cursor == 0:
                 break
         
-        logger.info(f"✅ Cache cleared: {keys_deleted} keys deleted")
+        logger.info(f" Cache cleared: {keys_deleted} keys deleted")
         return ClearCacheResponse(message="Cache cleared successfully", keys_deleted=keys_deleted)
     
     except Exception as e:
-        logger.error(f"❌ Cache clear failed: {e}")
+        logger.error(f" Cache clear failed: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to clear cache: {str(e)}")
 
 

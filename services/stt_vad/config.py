@@ -161,7 +161,7 @@ class VADConfig:
         # Normalize language code to en-US
         if self.language_code not in ["en-US", "en"]:
             logger.warning(
-                f"⚠️ STT/VAD service configured for English-only. "
+                f"️ STT/VAD service configured for English-only. "
                 f"Got language_code='{self.language_code}', normalizing to 'en-US'. "
                 f"For multilingual support, use TARA agent."
             )
@@ -182,7 +182,7 @@ class VADConfig:
         # Log configuration if verbose
         if self.verbose:
             logger.info(
-                f"✅ VADConfig loaded: model={self.model_name}, "
+                f" VADConfig loaded: model={self.model_name}, "
                 f"sample_rate={self.sample_rate}Hz, timeout={self.initial_timeout_s}s, "
                 f"language={self.language_code}"
             )

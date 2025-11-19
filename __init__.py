@@ -177,7 +177,6 @@ from leibniz_agent.leibniz_persistent_services import (
     process_leibniz_rag_query,
     get_leibniz_service_status,
     prewarm_leibniz_during_tts,
-    trigger_prewarm_on_speech_detection,
 )
 
 from leibniz_agent.leibniz_appointment_fsm import (
@@ -285,7 +284,6 @@ __all__ = [
     "process_leibniz_rag_query",
     "get_leibniz_service_status",
     "prewarm_leibniz_during_tts",
-    "trigger_prewarm_on_speech_detection",
     
     # Appointment Booking FSM
     "LeibnizAppointmentFSM",

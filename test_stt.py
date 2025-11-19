@@ -33,7 +33,7 @@ async def main():
     
     # Check if running correctly as module
     if __package__ is None:
-        print("⚠️  WARNING: This test may fail with import errors")
+        print("️  WARNING: This test may fail with import errors")
         print("   Recommended: Run as 'python -m leibniz_agent.test_stt' from parent directory")
         print("   Or use: python leibniz_agent/run_stt_test.py")
         print()
@@ -43,7 +43,7 @@ async def main():
     print("="*70)
     
     # List available audio devices
-    print("\n🎤 Available Audio Input Devices:")
+    print("\n Available Audio Input Devices:")
     print("="*70)
     devices = sd.query_devices()
     
@@ -57,16 +57,16 @@ async def main():
             print(f"  [{i}] {device['name']}{default_marker}")
             print(f"      Channels: {device['max_input_channels']}, Sample Rate: {device['default_samplerate']}")
     
-    print("\n💡 To use a specific device, set AUDIO_INPUT_DEVICE in .env.leibniz")
+    print("\n To use a specific device, set AUDIO_INPUT_DEVICE in .env.leibniz")
     print("   Example: AUDIO_INPUT_DEVICE=1")
-    print("\n📝 .env.leibniz file location:")
+    print("\n .env.leibniz file location:")
     env_path = Path(__file__).parent / ".env.leibniz"
     print(f"   {env_path}")
     
     device_config = os.getenv('AUDIO_INPUT_DEVICE', 'default')
     print(f"\nCurrent device setting: {device_config}")
     if device_config == 'default':
-        print("⚠️  WARNING: Using system default device")
+        print("️  WARNING: Using system default device")
         print("   If test fails with 'no speech detected', set AUDIO_INPUT_DEVICE explicitly")
         print("   Windows users: Run this command to list devices:")
         print('   python -c "import sounddevice as sd; print(sd.query_devices())"')
@@ -90,9 +90,9 @@ async def main():
     
     # Test speech recognition
     print("\n2. Starting speech recognition test...")
-    print("   🎤 Please speak now (will listen for speech)...")
-    print("   💡 Try saying: 'Hello, this is a test of the speech recognition system'")
-    print("   💡 The system will stop listening after {:.1f}s of silence".format(config.silence_timeout))
+    print("    Please speak now (will listen for speech)...")
+    print("    Try saying: 'Hello, this is a test of the speech recognition system'")
+    print("    The system will stop listening after {:.1f}s of silence".format(config.silence_timeout))
     print()
     
     transcript_received = False
@@ -103,20 +103,20 @@ async def main():
         
         # Handle Optional[str] return type
         if transcript is None:
-            print(f"\n❌ Speech capture failed (returned None)")
+            print(f"\n Speech capture failed (returned None)")
             print("   Possible causes:")
             print("   - Microphone error or permission denied")
             print("   - WebSocket connection failure")
             print("   - API rate limit or quota exceeded")
         elif transcript:
             transcript_received = True
-            print(f"\n✅ Transcript received!")
+            print(f"\n Transcript received!")
             print(f"   Text: '{transcript}'")
         else:
-            print(f"\n⚠️ No speech detected (empty string)")
+            print(f"\n️ No speech detected (empty string)")
             
     except Exception as e:
-        print(f"\n❌ Recognition error: {e}")
+        print(f"\n Recognition error: {e}")
         import traceback
         traceback.print_exc()
     
@@ -131,14 +131,14 @@ async def main():
         if metrics.get('avg_capture_time_s'):
             print(f"   Average capture time: {metrics['avg_capture_time_s']:.2f}s")
     except Exception as e:
-        print(f"   ⚠️ Metrics error: {e}")
+        print(f"   ️ Metrics error: {e}")
     
     # Summary
     print("\n" + "="*70)
     if transcript_received:
-        print("✅ STT TEST PASSED - Speech recognized successfully!")
+        print(" STT TEST PASSED - Speech recognized successfully!")
     else:
-        print("⚠️ STT TEST INCOMPLETE - No speech recognized")
+        print("️ STT TEST INCOMPLETE - No speech recognized")
         print("\nTroubleshooting:")
         print("  1. Check microphone is connected and working")
         print("  2. Verify GEMINI_API_KEY is set in .env.leibniz")
@@ -147,7 +147,7 @@ async def main():
         print("  5. Try running as module: python -m leibniz_agent.test_stt")
         print("  6. Check .env.leibniz file exists and has GEMINI_API_KEY set")
         print("  7. Verify you're in the parent directory (SINDH-Orchestra-Complete)")
-        print("\n📖 For detailed instructions, see TESTING_GUIDE.md")
+        print("\n For detailed instructions, see TESTING_GUIDE.md")
     print("="*70)
 
 

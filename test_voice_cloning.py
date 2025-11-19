@@ -1,5 +1,5 @@
 """
-🎤 Voice Cloning Test Script for Leibniz/TARA Agents
+ Voice Cloning Test Script for Leibniz/TARA Agents
 Tests XTTS v2 voice cloning with a 1-minute speaker sample
 
 Requirements:
@@ -68,12 +68,12 @@ de 9 AM a 5 PM. Puede contactarlos por correo electrónico en registrar@leibniz.
 def check_speaker_sample(sample_path: str) -> dict:
     """Validate speaker sample audio file"""
     print("\n" + "="*70)
-    print("🔍 Validating Speaker Sample")
+    print(" Validating Speaker Sample")
     print("="*70)
     
     if not os.path.exists(sample_path):
-        print(f"❌ Speaker sample not found: {sample_path}")
-        print("\n📝 To use voice cloning:")
+        print(f" Speaker sample not found: {sample_path}")
+        print("\n To use voice cloning:")
         print("   1. Record 1 minute of clear speech (no background noise)")
         print("   2. Save as WAV file (mono, 16-22kHz recommended)")
         print(f"   3. Place file at: {sample_path}")
@@ -92,7 +92,7 @@ def check_speaker_sample(sample_path: str) -> dict:
         # Check if stereo (need to convert to mono)
         is_stereo = channels == 2
         
-        print(f"✅ Speaker sample found: {os.path.basename(sample_path)}")
+        print(f" Speaker sample found: {os.path.basename(sample_path)}")
         print(f"   Duration: {duration:.1f} seconds ({duration/60:.1f} minutes)")
         print(f"   Sample rate: {sample_rate} Hz")
         print(f"   Channels: {channels} ({'stereo' if is_stereo else 'mono'})")
@@ -103,33 +103,33 @@ def check_speaker_sample(sample_path: str) -> dict:
         warnings = []
         
         if duration < 6:
-            warnings.append(f"⚠️  Duration too short ({duration:.1f}s) - recommend 6-60 seconds")
+            warnings.append(f"️  Duration too short ({duration:.1f}s) - recommend 6-60 seconds")
         elif duration > 120:
-            warnings.append(f"⚠️  Duration very long ({duration:.1f}s) - recommend 6-60 seconds")
+            warnings.append(f"️  Duration very long ({duration:.1f}s) - recommend 6-60 seconds")
         
         if sample_rate < 16000:
-            warnings.append(f"⚠️  Low sample rate ({sample_rate}Hz) - recommend 16000-22050 Hz")
+            warnings.append(f"️  Low sample rate ({sample_rate}Hz) - recommend 16000-22050 Hz")
         
         if is_stereo:
-            warnings.append("⚠️  Stereo audio detected - will convert to mono")
+            warnings.append("️  Stereo audio detected - will convert to mono")
             # Convert to mono
             audio_data = np.mean(audio_data, axis=1)
             mono_path = sample_path.replace(".wav", "_mono.wav")
             sf.write(mono_path, audio_data, sample_rate)
-            print(f"   ✅ Converted to mono: {mono_path}")
+            print(f"    Converted to mono: {mono_path}")
             sample_path = mono_path
         
         # Check signal quality (noise level)
         rms = np.sqrt(np.mean(audio_data**2))
         if rms < 0.01:
-            warnings.append(f"⚠️  Very quiet audio (RMS: {rms:.4f}) - may affect quality")
+            warnings.append(f"️  Very quiet audio (RMS: {rms:.4f}) - may affect quality")
         
         if warnings:
-            print("\n⚠️  Quality Warnings:")
+            print("\n️  Quality Warnings:")
             for warning in warnings:
                 print(f"   {warning}")
         else:
-            print("\n✅ Audio quality looks good!")
+            print("\n Audio quality looks good!")
         
         return {
             "valid": True,
@@ -141,7 +141,7 @@ def check_speaker_sample(sample_path: str) -> dict:
         }
     
     except Exception as e:
-        print(f"❌ Error reading audio file: {e}")
+        print(f" Error reading audio file: {e}")
         return {"valid": False, "reason": str(e)}
 
 
@@ -149,7 +149,7 @@ def test_voice_cloning(speaker_sample_path: str, language: str = "en"):
     """Test XTTS v2 voice cloning with speaker sample"""
     
     print("\n" + "="*70)
-    print(f"🎤 Testing Voice Cloning - Language: {language.upper()}")
+    print(f" Testing Voice Cloning - Language: {language.upper()}")
     print("="*70)
     
     # Create output directory
@@ -157,14 +157,14 @@ def test_voice_cloning(speaker_sample_path: str, language: str = "en"):
     
     try:
         # Load XTTS v2 model
-        print("\n📦 Loading XTTS v2 model...")
+        print("\n Loading XTTS v2 model...")
         print(f"   Device: {DEVICE}")
         
         start_load = time.time()
         tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(DEVICE)
         load_time = time.time() - start_load
         
-        print(f"✅ Model loaded in {load_time:.2f}s")
+        print(f" Model loaded in {load_time:.2f}s")
         
         # Test each text type
         results = []
@@ -176,8 +176,8 @@ def test_voice_cloning(speaker_sample_path: str, language: str = "en"):
             text = texts[language]
             
             print(f"\n{'─'*70}")
-            print(f"🎙️  Test: {test_type.upper()}")
-            print(f"📝 Text: {text[:80]}{'...' if len(text) > 80 else ''}")
+            print(f"️  Test: {test_type.upper()}")
+            print(f" Text: {text[:80]}{'...' if len(text) > 80 else ''}")
             print(f"{'─'*70}")
             
             output_file = os.path.join(
@@ -204,7 +204,7 @@ def test_voice_cloning(speaker_sample_path: str, language: str = "en"):
                 audio_data, sample_rate = sf.read(output_file)
                 duration = len(audio_data) / sample_rate
                 
-                print(f"✅ Success!")
+                print(f" Success!")
                 print(f"   Output: {os.path.basename(output_file)}")
                 print(f"   Duration: {duration:.1f}s")
                 print(f"   Synthesis time: {synth_time:.2f}s")
@@ -222,7 +222,7 @@ def test_voice_cloning(speaker_sample_path: str, language: str = "en"):
                 })
                 
             except Exception as e:
-                print(f"❌ Synthesis failed: {e}")
+                print(f" Synthesis failed: {e}")
                 results.append({
                     "test_type": test_type,
                     "language": language,
@@ -233,7 +233,7 @@ def test_voice_cloning(speaker_sample_path: str, language: str = "en"):
         return results
     
     except Exception as e:
-        print(f"❌ Model loading failed: {e}")
+        print(f" Model loading failed: {e}")
         import traceback
         traceback.print_exc()
         return []
@@ -243,7 +243,7 @@ def print_summary(all_results: dict):
     """Print comprehensive summary of all tests"""
     
     print("\n\n" + "="*70)
-    print("📊 VOICE CLONING TEST SUMMARY")
+    print(" VOICE CLONING TEST SUMMARY")
     print("="*70)
     
     total_tests = 0
@@ -254,7 +254,7 @@ def print_summary(all_results: dict):
         total_tests += len(results)
         successful_tests += lang_successful
         
-        print(f"\n🌐 Language: {lang.upper()}")
+        print(f"\n Language: {lang.upper()}")
         print(f"   Tests: {lang_successful}/{len(results)} successful")
         
         successful_results = [r for r in results if r.get("success", False)]
@@ -266,16 +266,16 @@ def print_summary(all_results: dict):
             print(f"   Avg real-time factor: {avg_rtf:.2f}x")
             
             if avg_rtf < 1.0:
-                print(f"   ✅ Faster than real-time! (can stream)")
+                print(f"    Faster than real-time! (can stream)")
             else:
-                print(f"   ⚠️  Slower than real-time (batch processing only)")
+                print(f"   ️  Slower than real-time (batch processing only)")
     
     print(f"\n{'─'*70}")
     print(f"Overall: {successful_tests}/{total_tests} tests successful")
     print(f"{'─'*70}")
     
-    print(f"\n📂 All outputs saved to: {OUTPUT_DIR}")
-    print("\n💡 Next Steps:")
+    print(f"\n All outputs saved to: {OUTPUT_DIR}")
+    print("\n Next Steps:")
     print("   1. Listen to generated samples in output directory")
     print("   2. Verify voice quality matches your speaker sample")
     print("   3. If satisfied, integrate into Leibniz/TARA TTS pipeline")
@@ -286,11 +286,11 @@ def print_integration_guide(speaker_sample_path: str):
     """Print integration guide for production use"""
     
     print("\n\n" + "="*70)
-    print("🚀 PRODUCTION INTEGRATION GUIDE")
+    print(" PRODUCTION INTEGRATION GUIDE")
     print("="*70)
     
     print("""
-📝 Step 1: Update leibniz_tts.py (or tara_tts.py)
+ Step 1: Update leibniz_tts.py (or tara_tts.py)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 import torch
@@ -306,7 +306,7 @@ class VoiceClonedTTS:
         # Load XTTS v2 model (one-time at startup)
         print(f"Loading XTTS v2 voice cloning model...")
         self.tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(self.device)
-        print(f"✅ Model loaded on {self.device}")
+        print(f" Model loaded on {self.device}")
     
     def synthesize_to_file(self, text: str, output_path: str) -> str:
         \"\"\"Synthesize text using cloned voice\"\"\"
@@ -329,7 +329,7 @@ class VoiceClonedTTS:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📝 Step 2: Update leibniz_pro.py (main orchestrator)
+ Step 2: Update leibniz_pro.py (main orchestrator)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Replace ElevenLabs/Google TTS with voice-cloned TTS
@@ -352,7 +352,7 @@ play_audio(output_path)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📝 Step 3: For TARA (Multilingual Support)
+ Step 3: For TARA (Multilingual Support)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # XTTS v2 supports 16 languages with same speaker voice!
@@ -379,14 +379,14 @@ tts_engine.synthesize_to_file(response_text, output_path)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
     
-    print(f"\n🎤 Your speaker sample: {speaker_sample_path}")
-    print(f"📂 Test outputs: {OUTPUT_DIR}")
-    print("\n✅ Ready for production deployment!")
+    print(f"\n Your speaker sample: {speaker_sample_path}")
+    print(f" Test outputs: {OUTPUT_DIR}")
+    print("\n Ready for production deployment!")
 
 
 def main():
     print("="*70)
-    print("🎤 VOICE CLONING TEST - LEIBNIZ/TARA AGENTS")
+    print(" VOICE CLONING TEST - LEIBNIZ/TARA AGENTS")
     print("="*70)
     print(f"Device: {DEVICE}")
     print(f"Model: XTTS v2 (Multilingual Voice Cloning)")
@@ -396,11 +396,11 @@ def main():
     sample_info = check_speaker_sample(SPEAKER_SAMPLE_PATH)
     
     if not sample_info["valid"]:
-        print("\n❌ Cannot proceed without valid speaker sample.")
-        print("\n💡 Auto-generating 10-second test sample...")
+        print("\n Cannot proceed without valid speaker sample.")
+        print("\n Auto-generating 10-second test sample...")
         
         # Auto-generate test sample (no user input needed)
-        print("\n📝 Generating test sample...")
+        print("\n Generating test sample...")
         # Generate simple voice-like audio
         sample_rate = 22050
         duration = 10  # 10 seconds for better quality
@@ -427,8 +427,8 @@ def main():
         
         os.makedirs(os.path.dirname(SPEAKER_SAMPLE_PATH), exist_ok=True)
         sf.write(SPEAKER_SAMPLE_PATH, audio, sample_rate)
-        print(f"✅ Test sample created: {SPEAKER_SAMPLE_PATH}")
-        print("⚠️  This is synthetic - replace with real voice for production!")
+        print(f" Test sample created: {SPEAKER_SAMPLE_PATH}")
+        print("️  This is synthetic - replace with real voice for production!")
         
         sample_info = check_speaker_sample(SPEAKER_SAMPLE_PATH)
     
@@ -438,7 +438,7 @@ def main():
     speaker_path = sample_info["path"]
     
     # Step 2: Choose languages to test (auto-select English for quick test)
-    print("\n📋 Auto-selecting: English only (quick test)")
+    print("\n Auto-selecting: English only (quick test)")
     print("   (Edit script to test other languages: hi, es, etc.)")
     
     languages = ["en"]  # Auto-select English
@@ -466,13 +466,13 @@ def main():
     run_integration = os.getenv('TEST_INTEGRATION', 'false').lower() == 'true'
     if run_integration:
         print("\n" + "="*70)
-        print("🔗 TESTING LEIBNIZ TTS INTEGRATION")
+        print(" TESTING LEIBNIZ TTS INTEGRATION")
         print("="*70)
         import asyncio
         asyncio.run(test_leibniz_integration())
     
     print("\n" + "="*70)
-    print("✅ Voice cloning test complete!")
+    print(" Voice cloning test complete!")
     print("="*70)
 
 
@@ -497,12 +497,12 @@ async def test_leibniz_integration():
         )
         
         # Get TTS instance
-        print(f"\n🔄 Initializing Leibniz TTS with XTTS provider...")
+        print(f"\n Initializing Leibniz TTS with XTTS provider...")
         tts = LeibnizTTS(config=config)
         
         # Test synthesis
         test_text = "Hello! This is a test of the XTTS local provider integration."
-        print(f"📝 Synthesizing: {test_text}")
+        print(f" Synthesizing: {test_text}")
         
         # Create output directory
         output_file = os.path.join(OUTPUT_DIR, "integration_test.wav")
@@ -510,19 +510,19 @@ async def test_leibniz_integration():
         result = await tts.synthesize_to_file(text=test_text, outfile=output_file, emotion="helpful")
         
         if result['success']:
-            print(f"\n✅ Integration test successful!")
+            print(f"\n Integration test successful!")
             print(f"   Audio file: {result['file']}")
             print(f"   Duration: {result['duration']:.2f}s")
             print(f"   Provider: {result['provider']}")
             print(f"   Cached: {result.get('cached', False)}")
         else:
-            print(f"\n❌ Integration test failed: {result.get('error')}")
+            print(f"\n Integration test failed: {result.get('error')}")
     except ImportError as e:
-        print(f"\n⚠️ Integration test skipped - Leibniz TTS not available: {e}")
+        print(f"\n️ Integration test skipped - Leibniz TTS not available: {e}")
         print("   This is normal if running from leibniz_agent/ directory.")
         print("   Run from repository root for integration test.")
     except Exception as e:
-        print(f"\n❌ Integration test error: {e}")
+        print(f"\n Integration test error: {e}")
         import traceback
         traceback.print_exc()
 

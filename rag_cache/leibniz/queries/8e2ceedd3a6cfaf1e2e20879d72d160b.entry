@@ -1,0 +1,9 @@
+{
+  "answer": "For the Master's program, language proficiency is required. The application process involves specific steps, including how to apply.",
+  "metadata": {
+    "method": "leibniz_rag_hybrid",
+    "pattern": "admission_requirements",
+    "relevance_score": 0.0,
+    "processing_time_ms": 0
+  }
+}

@@ -144,7 +144,7 @@ class LeibnizSemanticExtractor:
             'detected_action': detected_action
         }
         
-        logger.debug(f"⚡ Semantic context extracted in {extraction_time:.1f}ms: '{user_goal}'")
+        logger.debug(f" Semantic context extracted in {extraction_time:.1f}ms: '{user_goal}'")
         
         return result
     

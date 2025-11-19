@@ -22,8 +22,8 @@ Usage:
     python leibniz_agent/tests/test_first_chunk_latency.py
     
 Expected Output:
-    ✅ PASS: All 10 queries within 700ms budget (avg: 550ms)
-    ❌ FAIL: 3/10 queries exceeded budget (max: 850ms)
+     PASS: All 10 queries within 700ms budget (avg: 550ms)
+     FAIL: 3/10 queries exceeded budget (max: 850ms)
 """
 
 import asyncio
@@ -81,7 +81,7 @@ async def warmup_services():
     - RAG system (FAISS index, embeddings, Gemini model)
     - Intent parser (Gemini classification)
     """
-    logger.info("🔥 Warming up services...")
+    logger.info(" Warming up services...")
     
     try:
         # Import services
@@ -104,11 +104,11 @@ async def warmup_services():
         logger.info("  - Warming up Intent Parser...")
         await services.intent_parser.classify_intent("Test query for warmup")
         
-        logger.info("✅ All services warmed up")
+        logger.info(" All services warmed up")
         return services
         
     except Exception as e:
-        logger.error(f"❌ Warmup failed: {e}")
+        logger.error(f" Warmup failed: {e}")
         raise
 
 
@@ -119,7 +119,7 @@ async def measure_single_query(services, query: str) -> LatencyMeasurement:
     Returns:
         LatencyMeasurement with timestamps and computed metrics
     """
-    logger.info(f"📊 Testing: '{query[:60]}...'")
+    logger.info(f" Testing: '{query[:60]}...'")
     
     # Timestamps
     t_classification_start = time.time()
@@ -132,7 +132,7 @@ async def measure_single_query(services, query: str) -> LatencyMeasurement:
         t_classification_done = time.time()
         classification_time_ms = (t_classification_done - t_classification_start) * 1000
         
-        logger.debug(f"  ✓ Classification done: {classification_time_ms:.1f}ms")
+        logger.debug(f"   Classification done: {classification_time_ms:.1f}ms")
         
         # Step 2: RAG Query with Streaming (capture first sentence callback)
         first_callback_time = None
@@ -142,7 +142,7 @@ async def measure_single_query(services, query: str) -> LatencyMeasurement:
             nonlocal first_callback_time
             if first_callback_time is None and text.strip():
                 first_callback_time = time.time()
-                logger.debug(f"  ✓ First sentence callback: '{text[:50]}...'")
+                logger.debug(f"   First sentence callback: '{text[:50]}...'")
         
         # Extract context from intent result
         context = {
@@ -168,7 +168,7 @@ async def measure_single_query(services, query: str) -> LatencyMeasurement:
         
         logger.info(
             f"  ⏱️  First Chunk Latency: {first_chunk_latency_ms:.1f}ms "
-            f"({'✅ PASS' if passed else '❌ FAIL'})"
+            f"({' PASS' if passed else ' FAIL'})"
         )
         
         return LatencyMeasurement(
@@ -183,7 +183,7 @@ async def measure_single_query(services, query: str) -> LatencyMeasurement:
         )
         
     except Exception as e:
-        logger.error(f"❌ Query failed: {e}")
+        logger.error(f" Query failed: {e}")
         # Return failed measurement
         return LatencyMeasurement(
             query=query,
@@ -263,22 +263,22 @@ async def run_benchmark() -> Dict[str, Any]:
         logger.info(f"  - Leibniz Avg: {avg_latency:.1f}ms")
         
         if avg_latency <= TARA_BASELINE_MAX_MS:
-            logger.info(f"  - ✅ Within TARA baseline range")
+            logger.info(f"  -  Within TARA baseline range")
         elif avg_latency <= LATENCY_BUDGET_MS:
-            logger.info(f"  - ⚠️  Above TARA baseline but within budget")
+            logger.info(f"  - ️  Above TARA baseline but within budget")
         else:
-            logger.info(f"  - ❌ EXCEEDS budget")
+            logger.info(f"  -  EXCEEDS budget")
         
         # Final verdict
         logger.info("\n" + "=" * 80)
         if failed_count == 0:
-            logger.info("✅ BENCHMARK PASSED: All queries within budget")
+            logger.info(" BENCHMARK PASSED: All queries within budget")
             overall_pass = True
         elif failed_count <= NUM_TEST_QUERIES * 0.1:  # Allow 10% failure tolerance
-            logger.info(f"⚠️  BENCHMARK WARNING: {failed_count} queries exceeded budget (within tolerance)")
+            logger.info(f"️  BENCHMARK WARNING: {failed_count} queries exceeded budget (within tolerance)")
             overall_pass = True
         else:
-            logger.info(f"❌ BENCHMARK FAILED: {failed_count} queries exceeded budget")
+            logger.info(f" BENCHMARK FAILED: {failed_count} queries exceeded budget")
             overall_pass = False
         logger.info("=" * 80)
         
@@ -298,7 +298,7 @@ async def run_benchmark() -> Dict[str, Any]:
             'measurements': measurements
         }
     else:
-        logger.error("❌ No valid measurements collected")
+        logger.error(" No valid measurements collected")
         return {
             'passed': False,
             'total_queries': NUM_TEST_QUERIES,
@@ -318,7 +318,7 @@ async def main():
         return exit_code
         
     except Exception as e:
-        logger.error(f"❌ Benchmark failed with error: {e}")
+        logger.error(f" Benchmark failed with error: {e}")
         import traceback
         traceback.print_exc()
         return 1

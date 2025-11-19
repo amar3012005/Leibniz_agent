@@ -97,7 +97,7 @@ try:
     AIOHTTP_AVAILABLE = True
 except ImportError:
     AIOHTTP_AVAILABLE = False
-    print("⚠️ aiohttp not available. Install with: pip install aiohttp")
+    print(" aiohttp not available. Install with: pip install aiohttp")
 
 # Import Leibniz config
 from leibniz_agent.leibniz_config import get_leibniz_config
@@ -214,9 +214,9 @@ class TTSCache:
             try:
                 with open(self.index_file, 'r', encoding='utf-8') as f:
                     self.cache_index = json.load(f)
-                print(f"📦 Loaded TTS cache index: {len(self.cache_index)} entries")
+                print(f" Loaded TTS cache index: {len(self.cache_index)} entries")
             except Exception as e:
-                print(f"⚠️ Failed to load cache index: {e}")
+                print(f" Failed to load cache index: {e}")
                 self.cache_index = {}
         else:
             self.cache_index = {}
@@ -227,7 +227,7 @@ class TTSCache:
             with open(self.index_file, 'w', encoding='utf-8') as f:
                 json.dump(self.cache_index, f, indent=2)
         except Exception as e:
-            print(f"⚠️ Failed to save cache index: {e}")
+            print(f" Failed to save cache index: {e}")
     
     def get_cache_key(
         self,
@@ -388,7 +388,7 @@ class TTSCache:
                 # Remove from index
                 del self.cache_index[cache_key]
             
-            print(f"🧹 Cleaned up {entries_to_remove} old cache entries")
+            print(f" Cleaned up {entries_to_remove} old cache entries")
     
     def clear_cache(self):
         """Clear all cached audio files"""
@@ -401,7 +401,7 @@ class TTSCache:
         self._save_cache_index()
         self.hits = 0
         self.misses = 0
-        print("🧹 Cache cleared")
+        print(" Cache cleared")
     
     def get_stats(self) -> Dict[str, Any]:
         """Get cache statistics"""
@@ -480,7 +480,7 @@ class LemonFoxTTSProvider:
         self.logger = logging.getLogger(__name__)
         
         self.logger.info(
-            f"✅ LemonFox TTS initialized (voice: {voice}, language: {language})"
+            f" LemonFox TTS initialized (voice: {voice}, language: {language})"
         )
     
     async def __aenter__(self):
@@ -545,7 +545,7 @@ class LemonFoxTTSProvider:
         }
         
         self.logger.debug(
-            f"🎤 LemonFox TTS: {len(text)} chars, voice={payload['voice']}, "
+            f" LemonFox TTS: {len(text)} chars, voice={payload['voice']}, "
             f"language={payload['language']}, speed={speed:.2f}"
         )
         
@@ -592,17 +592,17 @@ class LemonFoxTTSProvider:
                 wav_audio = await response.read()
                 
                 self.logger.debug(
-                    f"✅ LemonFox TTS: {len(text)} chars → {len(wav_audio)} bytes "
+                    f" LemonFox TTS: {len(text)} chars → {len(wav_audio)} bytes "
                     f"({len(wav_audio)/1024:.1f} KB)"
                 )
                 
                 return wav_audio
                 
         except asyncio.TimeoutError:
-            self.logger.error("⏱️ LemonFox API timeout (30s)")
+            self.logger.error("⏱ LemonFox API timeout (30s)")
             raise
         except self.aiohttp.ClientError as e:
-            self.logger.error(f"❌ LemonFox API error: {e}")
+            self.logger.error(f" LemonFox API error: {e}")
             raise
     
     async def stream_synthesize(
@@ -629,7 +629,7 @@ class LemonFoxTTSProvider:
         Yields:
             Complete WAV audio bytes
         """
-        self.logger.debug("📦 LemonFox streaming (single chunk)")
+        self.logger.debug(" LemonFox streaming (single chunk)")
         
         audio_bytes = await self.synthesize(
             text=text,
@@ -699,7 +699,7 @@ class LemonFoxTTSProvider:
             }
         }
         
-        self.logger.info(f"📋 LemonFox TTS: {len(voices)} voices available")
+        self.logger.info(f" LemonFox TTS: {len(voices)} voices available")
         return voices
     
     def validate_config(self) -> Tuple[bool, Optional[str]]:
@@ -785,7 +785,7 @@ class LemonFoxTTSProvider:
         """Close aiohttp session."""
         if self.session and not self.session.closed:
             await self.session.close()
-            self.logger.debug("🔒 LemonFox session closed")
+            self.logger.debug(" LemonFox session closed")
 
 
 class MockTTSProvider:
@@ -797,7 +797,7 @@ class MockTTSProvider:
     def __init__(self):
         """Initialize mock TTS provider"""
         self.sample_rate = 24000
-        print("🔇 Mock TTS provider initialized (silent mode)")
+        print(" Mock TTS provider initialized (silent mode)")
     
     async def synthesize(
         self,
@@ -984,18 +984,18 @@ class LeibnizTTS:
             api_key = os.getenv('LEMONFOX_API_KEY') or config.lemonfox_api_key
             # Comment 2: Validate LEMONFOX_API_KEY early
             if not api_key:
-                diagnostics.append("❌ LemonFox init failed: LEMONFOX_API_KEY not set")
-                print("⚠️ LEMONFOX_API_KEY not set - LemonFox TTS unavailable")
+                diagnostics.append(" LemonFox init failed: LEMONFOX_API_KEY not set")
+                print(" LEMONFOX_API_KEY not set - LemonFox TTS unavailable")
             else:
                 self.lemonfox_provider = LemonFoxTTSProvider(
                     api_key=api_key,
                     voice=config.lemonfox_voice,
                     language=config.lemonfox_language
                 )
-                diagnostics.append(f"✅ LemonFox TTS initialized (voice: {config.lemonfox_voice}, language: {config.lemonfox_language})")
+                diagnostics.append(f" LemonFox TTS initialized (voice: {config.lemonfox_voice}, language: {config.lemonfox_language})")
         except Exception as e:
-            diagnostics.append(f"❌ LemonFox init failed: {e}")
-            print(f"⚠️ Failed to initialize LemonFox TTS: {e}")
+            diagnostics.append(f" LemonFox init failed: {e}")
+            print(f" Failed to initialize LemonFox TTS: {e}")
         
         # Comment 1: Check for MOCK_TTS mode before raising error
         mock_mode = os.getenv('MOCK_TTS', 'false').lower() == 'true'
@@ -1005,8 +1005,8 @@ class LeibnizTTS:
             if mock_mode:
                 # Comment 1: Enable mock TTS provider
                 self.lemonfox_provider = MockTTSProvider()
-                diagnostics.append("🔇 Mock TTS provider enabled (no real audio output)")
-                print("🔇 Running in MOCK_TTS mode - no real audio output")
+                diagnostics.append(" Mock TTS provider enabled (no real audio output)")
+                print(" Running in MOCK_TTS mode - no real audio output")
             else:
                 # Comment 7: Include diagnostics in error message
                 error_msg = (
@@ -1029,7 +1029,7 @@ class LeibnizTTS:
         self.provider_failures = 0
         
         # Log successful initialization
-        init_msg = f"🎤 Leibniz TTS initialized (provider: {config.provider}, fallback: {enable_fallback}, cache: {config.enable_cache}"
+        init_msg = f" Leibniz TTS initialized (provider: {config.provider}, fallback: {enable_fallback}, cache: {config.enable_cache}"
         if mock_mode:
             init_msg += ", MOCK_MODE)"
         else:
@@ -1140,7 +1140,7 @@ class LeibnizTTS:
                         self.cache_hits += 1
                         elapsed = time.time() - start_time
                         
-                        self.logger.debug(f"💾 Dialogue cache hit ({cache_name}): {duration:.2f}s audio in {elapsed:.3f}s")
+                        self.logger.debug(f" Dialogue cache hit ({cache_name}): {duration:.2f}s audio in {elapsed:.3f}s")
                         
                         return {
                             'success': True,
@@ -1154,7 +1154,7 @@ class LeibnizTTS:
                             'elapsed': elapsed
                         }
                 except Exception as e:
-                    print(f"⚠️ Error reading dialogue cache: {e}")
+                    print(f" Error reading dialogue cache: {e}")
             
             # Cache miss or content changed - synthesize and save to dialogue cache
             outfile = dialogue_wav
@@ -1204,7 +1204,7 @@ class LeibnizTTS:
         #             self.cache_hits += 1
         #             elapsed = time.time() - start_time
         #
-        #             print(f"💾 Audio archive hit ({provider_name}): {duration:.2f}s audio in {elapsed:.3f}s")
+        #             print(f" Audio archive hit ({provider_name}): {duration:.2f}s audio in {elapsed:.3f}s")
         #             print(f"   Reusing: {os.path.basename(cached_file)}")
         #
         #             return {
@@ -1229,7 +1229,7 @@ class LeibnizTTS:
             
             for attempt in range(self.config.retry_attempts):
                 try:
-                    # print(f"🎤 Synthesizing with {provider_name} (attempt {attempt + 1}/{self.config.retry_attempts})...")
+                    # print(f" Synthesizing with {provider_name} (attempt {attempt + 1}/{self.config.retry_attempts})...")
                     
                     # Synthesize based on provider (only LemonFox now)
                     if provider_name == 'lemonfox':
@@ -1276,7 +1276,7 @@ class LeibnizTTS:
                                     lambda: open(dialogue_txt, 'w', encoding='utf-8').write(text)
                                 )
                             except Exception as e:
-                                print(f"⚠️ Error saving dialogue cache content: {e}")
+                                print(f" Error saving dialogue cache content: {e}")
                         
                         # Fire-and-forget background task
                         asyncio.create_task(_save_dialogue_cache_background())
@@ -1305,10 +1305,10 @@ class LeibnizTTS:
                     #
                     #             if cached_path:
                     #                 archive_total = time.time() - archive_start
-                    #                 print(f"💾 Saved to audio archive: {os.path.basename(cached_path)}")
-                    #                 print(f"   ⏱️ Archiving latency: {archive_total:.3f}s (duration: {duration_elapsed:.3f}s, cache: {cache_elapsed:.3f}s)")
+                    #                 print(f" Saved to audio archive: {os.path.basename(cached_path)}")
+                    #                 print(f"   ⏱ Archiving latency: {archive_total:.3f}s (duration: {duration_elapsed:.3f}s, cache: {cache_elapsed:.3f}s)")
                     #     except Exception as e:
-                    #         print(f"⚠️ Background archiving error: {e}")
+                    #         print(f" Background archiving error: {e}")
                     #
                     # # Fire-and-forget archiving task (Comment 7)
                     # asyncio.create_task(_background_archiving())
@@ -1320,8 +1320,8 @@ class LeibnizTTS:
                     
                     # Show sentence text in logs (truncate if long)
                     # text_preview = text if len(text) <= 60 else f"{text[:57]}..."
-# #                     print(f"✅ Synthesized: ~{estimated_duration:.2f}s audio in {elapsed:.3f}s ({provider_name}){cache_msg}")
-#                     print(f"   📝 Text: \"{text_preview}\"")
+# #                     print(f" Synthesized: ~{estimated_duration:.2f}s audio in {elapsed:.3f}s ({provider_name}){cache_msg}")
+#                     print(f"    Text: \"{text_preview}\"")
                     
                     # Comment 9: Track successful synthesis
                     self.provider_stats[provider_name]['success'] += 1
@@ -1342,7 +1342,7 @@ class LeibnizTTS:
                     last_error = e
                     # Comment 9: Track timeout errors
                     self.provider_stats[provider_name]['errors'].append(('TimeoutError', str(e)))
-                    print(f"⏱️ Timeout on attempt {attempt + 1} ({provider_name})")
+                    print(f"⏱ Timeout on attempt {attempt + 1} ({provider_name})")
                     if attempt < self.config.retry_attempts - 1:
                         await asyncio.sleep(self.config.retry_delay * (2 ** attempt))
                     continue
@@ -1351,7 +1351,7 @@ class LeibnizTTS:
                     last_error = e
                     # Comment 9: Track exception types
                     self.provider_stats[provider_name]['errors'].append((type(e).__name__, str(e)))
-                    print(f"❌ Error on attempt {attempt + 1} ({provider_name}): {e}")
+                    print(f" Error on attempt {attempt + 1} ({provider_name}): {e}")
                     if attempt < self.config.retry_attempts - 1:
                         await asyncio.sleep(self.config.retry_delay * (2 ** attempt))
                     continue
@@ -1360,7 +1360,7 @@ class LeibnizTTS:
             self.provider_failures += 1
             # Comment 9: Track provider failure
             self.provider_stats[provider_name]['failure'] += 1
-            print(f"❌ {provider_name} failed after {self.config.retry_attempts} attempts")
+            print(f" {provider_name} failed after {self.config.retry_attempts} attempts")
         
         # All providers failed - cleanup temp file
         if temp_file_path and os.path.exists(temp_file_path):
@@ -1394,7 +1394,7 @@ class LeibnizTTS:
         Returns:
             Concatenated audio bytes
         """
-        print(f"🎤 Streaming TTS: {text[:50]}...")
+        print(f" Streaming TTS: {text[:50]}...")
         
         # Priority: Only LemonFox available now
         if self.lemonfox_provider:
@@ -1444,7 +1444,7 @@ class LeibnizTTS:
         
         # Concatenate chunks
         full_audio = b''.join(audio_chunks)
-        print(f"✅ Streaming complete: {len(full_audio)} bytes")
+        print(f" Streaming complete: {len(full_audio)} bytes")
         
         return full_audio
     
@@ -1782,7 +1782,7 @@ class LeibnizTTS:
                 os.unlink(filepath)
             except OSError as e:
                 # Log but don't raise - cleanup is best-effort
-                print(f"⚠️ Failed to cleanup temp file {filepath}: {e}")
+                print(f" Failed to cleanup temp file {filepath}: {e}")
     
     async def warmup(self):
         """Pre-warm TTS providers"""
@@ -1793,9 +1793,9 @@ class LeibnizTTS:
         
         try:
             await self.synthesize_to_file(test_text, temp_path, force_regenerate=True)
-            print("✅ TTS warmup complete")
+            print(" TTS warmup complete")
         except Exception as e:
-            print(f"⚠️ TTS warmup failed: {e}")
+            print(f" TTS warmup failed: {e}")
         finally:
             Path(temp_path).unlink(missing_ok=True)
     
@@ -1803,7 +1803,7 @@ class LeibnizTTS:
         """Close TTS providers and cleanup resources"""
         if self.lemonfox_provider:
             await self.lemonfox_provider.close()
-        print("🔒 LeibnizTTS resources closed")
+        print(" LeibnizTTS resources closed")
 
 
 # Global instance
@@ -1924,7 +1924,7 @@ async def cleanup_leibniz_tts():
         await _leibniz_tts.close()
         if _leibniz_tts.cache:
             _leibniz_tts.cache._save_cache_index()
-    print("✅ TTS cleanup complete")
+    print(" TTS cleanup complete")
 
 
 async def get_available_voices(provider: str = "lemonfox") -> List[Dict[str, Any]]:
@@ -1958,11 +1958,11 @@ async def get_available_voices(provider: str = "lemonfox") -> List[Dict[str, Any
 async def test_leibniz_tts():
     """Test Leibniz TTS functionality"""
     print("=" * 60)
-    print("🧪 Testing Leibniz TTS Module")
+    print(" Testing Leibniz TTS Module")
     print("=" * 60)
     
     # Test 1: Basic synthesis
-    print("\n📋 Test 1: Basic Synthesis")
+    print("\n Test 1: Basic Synthesis")
     try:
         result = await leibniz_synthesize(
             "Hello! Welcome to Leibniz University.",
@@ -1971,12 +1971,12 @@ async def test_leibniz_tts():
         )
         print(f"   Result: {result}")
         assert result['success'], "Synthesis failed"
-        print("✅ Basic synthesis test passed")
+        print(" Basic synthesis test passed")
     except Exception as e:
-        print(f"❌ Basic synthesis test failed: {e}")
+        print(f" Basic synthesis test failed: {e}")
     
     # Test 2: Emotion modulation
-    print("\n📋 Test 2: Emotion Modulation")
+    print("\n Test 2: Emotion Modulation")
     try:
         emotions = ['excited', 'calm', 'helpful']
         for emotion in emotions:
@@ -1986,12 +1986,12 @@ async def test_leibniz_tts():
                 emotion
             )
             print(f"   {emotion}: {result['duration']:.2f}s, cached: {result.get('cached', False)}")
-        print("✅ Emotion modulation test passed")
+        print(" Emotion modulation test passed")
     except Exception as e:
-        print(f"❌ Emotion modulation test failed: {e}")
+        print(f" Emotion modulation test failed: {e}")
     
     # Test 3: Caching
-    print("\n📋 Test 3: Caching")
+    print("\n Test 3: Caching")
     try:
         text = "This message should be cached."
         
@@ -2004,22 +2004,22 @@ async def test_leibniz_tts():
         print(f"   Second: cached={result2.get('cached', False)}, time={result2['elapsed']:.3f}s")
         
         assert result2.get('cached', False), "Cache miss on second synthesis"
-        print("✅ Caching test passed")
+        print(" Caching test passed")
     except Exception as e:
-        print(f"❌ Caching test failed: {e}")
+        print(f" Caching test failed: {e}")
     
     # Test 4: Cache statistics
-    print("\n📋 Test 4: Cache Statistics")
+    print("\n Test 4: Cache Statistics")
     try:
         tts = get_leibniz_tts()
         stats = tts.get_cache_stats()
         print(f"   Stats: {stats}")
-        print("✅ Cache statistics test passed")
+        print(" Cache statistics test passed")
     except Exception as e:
-        print(f"❌ Cache statistics test failed: {e}")
+        print(f" Cache statistics test failed: {e}")
     
     # Test 5: Streaming (LemonFox only)
-    print("\n📋 Test 5: Streaming")
+    print("\n Test 5: Streaming")
     try:
         tts = get_leibniz_tts()
         if tts.lemonfox_provider:
@@ -2029,29 +2029,29 @@ async def test_leibniz_tts():
                 play=False
             )
             print(f"   Streamed: {len(audio)} bytes")
-            print("✅ Streaming test passed")
+            print(" Streaming test passed")
         else:
-            print("⏭️ Skipping (LemonFox not available)")
+            print("⏭ Skipping (LemonFox not available)")
     except Exception as e:
-        print(f"❌ Streaming test failed: {e}")
+        print(f" Streaming test failed: {e}")
     
     # Test 6: Available voices (LemonFox only)
-    print("\n📋 Test 6: Available Voices")
+    print("\n Test 6: Available Voices")
     try:
         voices = await get_available_voices()
         print(f"   Found {len(voices)} voices")
         for voice in voices[:3]:
             print(f"   - {voice.get('name', voice.get('voice_id'))}: {voice['provider']}")
-        print("✅ Available voices test passed")
+        print(" Available voices test passed")
     except Exception as e:
-        print(f"❌ Available voices test failed: {e}")
+        print(f" Available voices test failed: {e}")
     
     # Cleanup
-    print("\n🧹 Cleanup")
+    print("\n Cleanup")
     await cleanup_leibniz_tts()
     
     print("\n" + "=" * 60)
-    print("✅ Testing complete")
+    print(" Testing complete")
     print("=" * 60)
 
 

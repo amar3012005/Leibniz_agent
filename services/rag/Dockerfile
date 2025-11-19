@@ -35,6 +35,7 @@ RUN pip install --no-cache-dir --user \
     httpx>=0.24.0 \
     python-dotenv==1.0.1 \
     huggingface-hub>=0.16.0 \
+    langchain-huggingface \
     && echo "✅ Lightweight dependencies installed"
 
 # ============================================================================
@@ -49,7 +50,8 @@ ENV PATH=/root/.local/bin:$PATH
 WORKDIR /app
 
 # Copy ALL service code (needed because __init__.py imports RAGEngine)
-COPY leibniz_agent/services/rag/ /app/leibniz_agent/services/rag/
+COPY leibniz_agent/services/rag /app/leibniz_agent/services/rag
+COPY leibniz_agent/services/shared /app/leibniz_agent/services/shared
 
 # Create minimal __init__.py files for package structure
 RUN mkdir -p /app/leibniz_agent/services && \
@@ -58,6 +60,7 @@ RUN mkdir -p /app/leibniz_agent/services && \
 
 # Copy knowledge base
 COPY leibniz_knowledge_base /app/leibniz_knowledge_base
+COPY ./leibniz_knowledge_base /app/leibniz_knowledge_base
 
 # Set Python path
 ENV PYTHONPATH=/app
@@ -89,7 +92,8 @@ COPY --from=builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
 
 # Copy ALL service code
-COPY leibniz_agent/services/rag/ /app/leibniz_agent/services/rag/
+COPY leibniz_agent/services/rag /app/leibniz_agent/services/rag
+COPY leibniz_agent/services/shared /app/leibniz_agent/services/shared
 
 # Create minimal __init__.py files
 RUN mkdir -p /app/leibniz_agent/services && \
@@ -131,7 +135,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 RUN echo '#!/bin/bash\n\
 echo "🚀 Installing heavy dependencies (torch, sentence-transformers)..."\n\
 echo "⏱️  This will take 3-5 minutes on first run"\n\
-pip install --no-cache-dir sentence-transformers>=2.2.0 langchain-huggingface>=0.0.1\n\
+pip install --no-cache-dir -r /app/leibniz_agent/services/rag/requirements-heavy.txt\n\
 echo "✅ Heavy dependencies installed!"\n\
 echo ""\n\
 echo "📦 Building FAISS index..."\n\

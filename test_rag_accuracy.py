@@ -139,7 +139,7 @@ async def test_rag_query(question_data: Dict[str, Any], query_number: int, total
         Dictionary with all test results and metrics
     """
     logger.info(f"\n{'='*70}")
-    logger.info(f"📝 Query {query_number}/{total_queries}: {question_data['question']}")
+    logger.info(f" Query {query_number}/{total_queries}: {question_data['question']}")
     logger.info(f"{'='*70}")
     
     # Start timing
@@ -154,11 +154,11 @@ async def test_rag_query(question_data: Dict[str, Any], query_number: int, total
         entities = intent_result.get('entities', {})
         should_use_rag = intent_result.get('should_use_rag', False)
         
-        logger.info(f"⚡ Intent classified in {intent_time:.2f}ms: {intent}")
-        logger.info(f"📊 Entities extracted: {entities}")
+        logger.info(f" Intent classified in {intent_time:.2f}ms: {intent}")
+        logger.info(f" Entities extracted: {entities}")
         
     except Exception as e:
-        logger.error(f"❌ Intent classification failed: {e}")
+        logger.error(f" Intent classification failed: {e}")
         intent_result = {
             'intent': 'ERROR',
             'entities': {},
@@ -182,9 +182,9 @@ async def test_rag_query(question_data: Dict[str, Any], query_number: int, total
         rag_time = (time.time() - rag_start) * 1000
         total_time = (time.time() - start_time) * 1000
         
-        logger.info(f"📚 RAG query completed in {rag_time:.2f}ms")
+        logger.info(f" RAG query completed in {rag_time:.2f}ms")
         logger.info(f"⏱️ Total time: {total_time:.2f}ms")
-        logger.info(f"📄 Response length: {len(rag_response)} characters")
+        logger.info(f" Response length: {len(rag_response)} characters")
         
         # Extract keywords from response
         response_keywords = _extract_keywords(rag_response.lower())
@@ -194,7 +194,7 @@ async def test_rag_query(question_data: Dict[str, Any], query_number: int, total
         # Calculate keyword match score
         keyword_match_score = len(expected_keywords_found) / len(question_data['expected_keywords'])
         
-        logger.info(f"🎯 Keyword match score: {keyword_match_score:.2%} "
+        logger.info(f" Keyword match score: {keyword_match_score:.2%} "
                    f"({len(expected_keywords_found)}/{len(question_data['expected_keywords'])})")
         
         result = {
@@ -226,13 +226,13 @@ async def test_rag_query(question_data: Dict[str, Any], query_number: int, total
             'status': 'success'
         }
         
-        logger.info(f"✅ Query {query_number} completed successfully")
+        logger.info(f" Query {query_number} completed successfully")
         
     except Exception as e:
         rag_time = (time.time() - rag_start) * 1000
         total_time = (time.time() - start_time) * 1000
         
-        logger.error(f"❌ RAG query failed: {e}")
+        logger.error(f" RAG query failed: {e}")
         
         result = {
             'question_id': question_data['id'],
@@ -308,8 +308,8 @@ async def run_rag_accuracy_test() -> Dict[str, Any]:
     Returns:
         Dictionary with all test results
     """
-    logger.info("🚀 Starting RAG Accuracy Test Suite")
-    logger.info(f"📋 Total queries: {len(TEST_QUESTIONS)}")
+    logger.info(" Starting RAG Accuracy Test Suite")
+    logger.info(f" Total queries: {len(TEST_QUESTIONS)}")
     
     # Initialize results
     results = {
@@ -335,7 +335,7 @@ async def run_rag_accuracy_test() -> Dict[str, Any]:
     results['summary'] = _calculate_summary(results['questions'])
     
     logger.info("\n" + "="*70)
-    logger.info("📊 Test Summary")
+    logger.info(" Test Summary")
     logger.info("="*70)
     logger.info(f"Total queries: {results['summary']['total_queries']}")
     logger.info(f"Successful queries: {results['summary']['successful_queries']}")
@@ -437,7 +437,7 @@ def save_results(results: Dict[str, Any], filename: str = None) -> str:
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     
-    logger.info(f"\n💾 Results saved to: {filepath}")
+    logger.info(f"\n Results saved to: {filepath}")
     
     return str(filepath)
 
@@ -451,13 +451,13 @@ async def main():
         # Save results
         filepath = save_results(results)
         
-        logger.info(f"\n✅ Test suite completed successfully!")
-        logger.info(f"📊 Results saved to: {filepath}")
+        logger.info(f"\n Test suite completed successfully!")
+        logger.info(f" Results saved to: {filepath}")
         
         return results
         
     except Exception as e:
-        logger.error(f"❌ Test suite failed: {e}")
+        logger.error(f" Test suite failed: {e}")
         import traceback
         traceback.print_exc()
         raise
@@ -467,7 +467,7 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        logger.info("\n⚡ Test interrupted by user")
+        logger.info("\n Test interrupted by user")
     except Exception as e:
-        logger.error(f"❌ Fatal error: {e}")
+        logger.error(f" Fatal error: {e}")
 

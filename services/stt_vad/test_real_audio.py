@@ -32,7 +32,7 @@ class RealAudioTester:
     def audio_callback(self, indata, frames, time_info, status):
         """Sounddevice callback - captures audio chunks"""
         if status:
-            print(f"⚠️ Audio status: {status}")
+            print(f"️ Audio status: {status}")
         
         if self.is_recording and self.loop:
             # Convert float32 to int16 PCM
@@ -60,7 +60,7 @@ class RealAudioTester:
                     continue
                     
         except Exception as e:
-            print(f"❌ Send error: {e}")
+            print(f" Send error: {e}")
     
     async def receive_responses_task(self):
         """Background task - receives transcript fragments from WebSocket"""
@@ -73,23 +73,23 @@ class RealAudioTester:
                 text = data.get("text", "")
                 
                 if msg_type == "partial":
-                    print(f"\r📝 Partial: {text}", end="", flush=True)
+                    print(f"\r Partial: {text}", end="", flush=True)
                 elif msg_type == "final":
-                    print(f"\n✅ Final: {text}")
+                    print(f"\n Final: {text}")
                     break
                 elif msg_type == "timeout":
                     print("\n⏱️ Timeout - no speech detected")
                     break
                 elif msg_type == "error":
-                    print(f"\n❌ Error: {text}")
+                    print(f"\n Error: {text}")
                     break
                     
         except Exception as e:
-            print(f"\n❌ Receive error: {e}")
+            print(f"\n Receive error: {e}")
     
     async def test_with_microphone(self):
         """Main test flow with microphone input"""
-        print("🎤 Real Audio STT/VAD Test")
+        print(" Real Audio STT/VAD Test")
         print("=" * 60)
         print("\nMicrophone will capture when you start speaking...")
         print("Service timeout: ~20 seconds of silence")
@@ -103,13 +103,13 @@ class RealAudioTester:
             # Wait for user to start
             input("Press ENTER when ready...")
             
-            print("\n🔴 Recording started - speak now!")
+            print("\n Recording started - speak now!")
             print("-" * 60)
             
             # Connect to WebSocket
             async with connect(SERVICE_URL) as websocket:
                 self.websocket = websocket
-                print("✅ Connected to STT/VAD service")
+                print(" Connected to STT/VAD service")
                 
                 # Start recording
                 self.is_recording = True
@@ -132,7 +132,7 @@ class RealAudioTester:
                     try:
                         await receive_task
                     except KeyboardInterrupt:
-                        print("\n\n🛑 Stopped by user")
+                        print("\n\n Stopped by user")
                     finally:
                         self.is_recording = False
                         send_task.cancel()
@@ -143,19 +143,19 @@ class RealAudioTester:
                             pass
                 
                 print("\n" + "=" * 60)
-                print("✅ Recording session complete")
+                print(" Recording session complete")
                 
         except KeyboardInterrupt:
-            print("\n\n🛑 Test cancelled")
+            print("\n\n Test cancelled")
         except Exception as e:
-            print(f"\n❌ Test failed: {e}")
+            print(f"\n Test failed: {e}")
             import traceback
             traceback.print_exc()
 
 
 async def list_audio_devices():
     """List available audio input devices"""
-    print("\n🔊 Available Audio Devices:")
+    print("\n Available Audio Devices:")
     print("-" * 60)
     devices = sd.query_devices()
     for i, device in enumerate(devices):
@@ -184,5 +184,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n\n👋 Goodbye!")
+        print("\n\n Goodbye!")
         sys.exit(0)

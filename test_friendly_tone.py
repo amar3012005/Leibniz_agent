@@ -277,8 +277,8 @@ async def test_rag_response_tone() -> Dict[str, Any]:
                 logger.info(f"Tone score: {tone_analysis['score']:.2f}")
                 logger.info(f"Classification: {tone_analysis['tone_classification']}")
                 logger.info(f"Formal violations: {len(violations)}")
-                logger.info(f"Expected starter: {'Yes ✅' if has_expected_starter else 'No ❌'}")
-                logger.info(f"Result: {'PASS ✅' if test_result['passed'] else 'FAIL ❌'}")
+                logger.info(f"Expected starter: {'Yes ' if has_expected_starter else 'No '}")
+                logger.info(f"Result: {'PASS ' if test_result['passed'] else 'FAIL '}")
                 
                 if not test_result["passed"]:
                     issues = tone_analysis["issues"] + [v["violation"] for v in violations]
@@ -399,10 +399,10 @@ async def test_appointment_fsm_tone() -> Dict[str, Any]:
                 logger.info(f"Response: '{response[:100]}...'")
                 logger.info(f"Tone score: {tone_analysis['score']:.2f}")
                 logger.info(f"Classification: {tone_analysis['tone_classification']}")
-                logger.info(f"Personalization: {'Yes ✅' if has_personalization else 'No ❌'}")
-                logger.info(f"Positive reinforcement: {'Yes ✅' if has_positive_reinforcement else 'No ❌'}")
+                logger.info(f"Personalization: {'Yes ' if has_personalization else 'No '}")
+                logger.info(f"Positive reinforcement: {'Yes ' if has_positive_reinforcement else 'No '}")
                 logger.info(f"Formal violations: {len(violations)}")
-                logger.info(f"Result: {'PASS ✅' if test_result['passed'] else 'FAIL ❌'}")
+                logger.info(f"Result: {'PASS ' if test_result['passed'] else 'FAIL '}")
                 
                 if not test_result["passed"]:
                     issues = tone_analysis["issues"] + [v["violation"] for v in violations]
@@ -521,10 +521,10 @@ async def test_error_message_tone() -> Dict[str, Any]:
         
         logger.info(f"Response: '{response}'")
         logger.info(f"Tone score: {tone_analysis['score']:.2f}")
-        logger.info(f"Has apology: {'Yes ✅' if has_apology else 'No ❌'}")
-        logger.info(f"Has suggestion: {'Yes ✅' if has_suggestion else 'No ❌'}")
-        logger.info(f"Harsh language: {'Yes ❌' if has_harsh_language else 'No ✅'}")
-        logger.info(f"Result: {'PASS ✅' if is_friendly else 'FAIL ❌'}")
+        logger.info(f"Has apology: {'Yes ' if has_apology else 'No '}")
+        logger.info(f"Has suggestion: {'Yes ' if has_suggestion else 'No '}")
+        logger.info(f"Harsh language: {'Yes ' if has_harsh_language else 'No '}")
+        logger.info(f"Result: {'PASS ' if is_friendly else 'FAIL '}")
         
         if not is_friendly:
             issues = []
@@ -639,7 +639,7 @@ async def test_greeting_exit_tone() -> Dict[str, Any]:
         logger.info(f"Tone score: {tone_analysis['score']:.2f}")
         logger.info(f"Classification: {tone_analysis['tone_classification']}")
         logger.info(f"Expectations met: {sum(expectations_met)}/{len(expectations_met)}")
-        logger.info(f"Result: {'PASS ✅' if test_result['passed'] else 'FAIL ❌'}")
+        logger.info(f"Result: {'PASS ' if test_result['passed'] else 'FAIL '}")
         
         if not test_result["passed"]:
             issues = tone_analysis["issues"]
@@ -756,8 +756,8 @@ async def test_tone_consistency() -> Dict[str, Any]:
             logger.info(f"Overall tone consistency:")
             logger.info(f"  Mean score: {mean_score:.2f}")
             logger.info(f"  Standard deviation: {std_dev:.3f}")
-            logger.info(f"  Consistent: {'Yes ✅' if results['summary']['consistent_tone'] else 'No ❌'}")
-            logger.info(f"  Personality consistent: {'Yes ✅' if results['summary']['personality_consistent'] else 'No ❌'}")
+            logger.info(f"  Consistent: {'Yes ' if results['summary']['consistent_tone'] else 'No '}")
+            logger.info(f"  Personality consistent: {'Yes ' if results['summary']['personality_consistent'] else 'No '}")
             
             if not results["summary"]["consistent_tone"]:
                 results["issues"].append(f"Tone inconsistency - std dev {std_dev:.3f} exceeds threshold {CONSISTENCY_THRESHOLD}")
@@ -868,7 +868,7 @@ def print_report_summary(report: Dict):
     
     print(f"\nOverall Assessment: {report['summary']['overall_assessment'].upper()}")
     print(f"Overall Tone Score: {report['summary']['overall_tone_score']:.2f}")
-    print(f"Tone Consistent: {'Yes ✅' if report['summary']['tone_consistent'] else 'No ❌'}")
+    print(f"Tone Consistent: {'Yes ' if report['summary']['tone_consistent'] else 'No '}")
     print(f"Formal Violations: {report['summary']['formal_violations_total']}")
     
     print(f"\nComponent Results:")

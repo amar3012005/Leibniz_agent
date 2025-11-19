@@ -58,13 +58,13 @@ async def test_environment():
     env_found = False
     for env_path in env_paths:
         if env_path.exists():
-            print(f"  ✅ .env file found: {env_path}")
+            print(f"   .env file found: {env_path}")
             env_found = True
             tests_passed += 1
             break
     
     if not env_found:
-        print("  ⚠️  .env file NOT found in current or parent directory")
+        print("  ️  .env file NOT found in current or parent directory")
         print("     (Checking if GEMINI_API_KEY is in environment anyway...)")
 
     # Check GEMINI_API_KEY
@@ -73,19 +73,19 @@ async def test_environment():
     load_dotenv()
     api_key = os.getenv('GEMINI_API_KEY')
     if api_key:
-        print(f"  ✅ GEMINI_API_KEY found: {api_key[:8]}...{api_key[-4:]}")
+        print(f"   GEMINI_API_KEY found: {api_key[:8]}...{api_key[-4:]}")
         tests_passed += 1
     else:
-        print("  ❌ GEMINI_API_KEY NOT found")
+        print("   GEMINI_API_KEY NOT found")
 
     # Check google-genai (NOT google.generativeai)
     print("\n[1.3] Checking google-genai...")
     try:
         from google import genai
-        print(f"  ✅ google-genai imported successfully")
+        print(f"   google-genai imported successfully")
         tests_passed += 1
     except ImportError as e:
-        print(f"  ❌ google-genai import failed: {e}")
+        print(f"   google-genai import failed: {e}")
         print(f"     Install with: pip install google-genai>=1.33.0")
 
     # Check pyaudio
@@ -93,22 +93,22 @@ async def test_environment():
     try:
         import pyaudio
         p = pyaudio.PyAudio()
-        print(f"  ✅ PyAudio version: {pyaudio.__version__}")
+        print(f"   PyAudio version: {pyaudio.__version__}")
         p.terminate()
         tests_passed += 1
     except Exception as e:
-        print(f"  ❌ PyAudio check failed: {e}")
+        print(f"   PyAudio check failed: {e}")
 
     # Check sounddevice
     print("\n[1.5] Checking sounddevice...")
     try:
         import sounddevice as sd
-        print(f"  ✅ sounddevice available")
+        print(f"   sounddevice available")
         tests_passed += 1
     except ImportError as e:
-        print(f"  ❌ sounddevice import failed: {e}")
+        print(f"   sounddevice import failed: {e}")
 
-    print(f"\n📊 Test 1 Result: {tests_passed}/{tests_total} checks passed")
+    print(f"\n Test 1 Result: {tests_passed}/{tests_total} checks passed")
     return tests_passed == tests_total
 
 
@@ -138,17 +138,17 @@ async def test_microphone_hardware():
                 print(f"      Sample rate: {info['defaultSampleRate']}")
 
         if not input_devices:
-            print("  ❌ No input devices found!")
+            print("   No input devices found!")
             p.terminate()
             return False
 
         # Use default input device
         default_input = p.get_default_input_device_info()
-        print(f"\n  ✅ Default input device: {default_input['name']}")
+        print(f"\n   Default input device: {default_input['name']}")
 
         # Test microphone for 5 seconds
         print("\n[2.2] Testing microphone (speak for 5 seconds)...")
-        print("  🎤 Recording... SPEAK NOW!")
+        print("   Recording... SPEAK NOW!")
 
         SAMPLE_RATE = 16000
         CHUNK = 1024
@@ -188,27 +188,27 @@ async def test_microphone_hardware():
         avg_volume = avg_volume / frame_count if frame_count > 0 else 0
 
         print("\n")
-        print(f"  📊 Max volume: {max_volume:.0f}")
-        print(f"  📊 Avg volume: {avg_volume:.0f}")
+        print(f"   Max volume: {max_volume:.0f}")
+        print(f"   Avg volume: {avg_volume:.0f}")
 
         # Analyze results
         if max_volume < 50:
-            print("  ❌ CRITICAL: Volume too low! Check:")
+            print("   CRITICAL: Volume too low! Check:")
             print("     - Microphone is connected")
             print("     - Microphone is not muted")
             print("     - Windows microphone permissions")
             print("     - Microphone volume in Windows settings")
             return False
         elif max_volume < 200:
-            print("  ⚠️  WARNING: Volume is low but usable")
+            print("  ️  WARNING: Volume is low but usable")
             print("     Consider increasing microphone volume")
             return True
         else:
-            print("  ✅ Microphone working well!")
+            print("   Microphone working well!")
             return True
 
     except Exception as e:
-        print(f"  ❌ Microphone test failed: {e}")
+        print(f"   Microphone test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -232,12 +232,12 @@ async def test_gemini_connection():
         api_key = os.getenv('GEMINI_API_KEY')
 
         if not api_key:
-            print("  ❌ GEMINI_API_KEY not found")
+            print("   GEMINI_API_KEY not found")
             return False
 
         print("\n[3.1] Initializing Gemini client...")
         client = genai.Client(api_key=api_key)
-        print("  ✅ Client initialized")
+        print("   Client initialized")
 
         print("\n[3.2] Testing Live API session...")
         try:
@@ -258,21 +258,21 @@ async def test_gemini_connection():
                 config=config
             )
             session = await session_context.__aenter__()
-            print("  ✅ Live API session created successfully")
+            print("   Live API session created successfully")
 
             # Close session using SINDH pattern
             await session_context.__aexit__(None, None, None)
-            print("  ✅ Session closed successfully")
+            print("   Session closed successfully")
             return True
 
         except Exception as e:
-            print(f"  ❌ Live API session failed: {e}")
+            print(f"   Live API session failed: {e}")
             import traceback
             traceback.print_exc()
             return False
 
     except Exception as e:
-        print(f"  ❌ Gemini connection test failed: {e}")
+        print(f"   Gemini connection test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -320,11 +320,11 @@ async def test_audio_streaming():
             }
         )
         session = await session_context.__aenter__()
-        print("  ✅ Session connected")
+        print("   Session connected")
 
         print("\n[4.2] Starting audio stream (speak for 10 seconds)...")
-        print("  🎤 Listening... SPEAK NOW!")
-        print("  📝 Real-time transcripts will appear below:")
+        print("   Listening... SPEAK NOW!")
+        print("   Real-time transcripts will appear below:")
         print("  " + "-"*70)
 
         SAMPLE_RATE = 16000
@@ -338,7 +338,7 @@ async def test_audio_streaming():
         # Audio callback
         def audio_callback(indata, frames, time_info, status):
             if status:
-                print(f"  ⚠️  Audio status: {status}")
+                print(f"  ️  Audio status: {status}")
 
             # Convert to int16 PCM
             audio_data = (indata.copy() * 32767).astype(np.int16).tobytes()
@@ -380,9 +380,9 @@ async def test_audio_streaming():
                         text = response.server_content.input_transcription.text
                         if text and text.strip():
                             if not transcript_received:
-                                print("\n  🗣️  Speech detected!")
+                                print("\n  ️  Speech detected!")
                                 transcript_received = True
-                            print(f"  📝 {text.strip()}")
+                            print(f"   {text.strip()}")
 
             except Exception as e:
                 logger.error(f"Process transcripts error: {e}")
@@ -416,10 +416,10 @@ async def test_audio_streaming():
         await session_context.__aexit__(None, None, None)
 
         if transcript_received:
-            print("  ✅ SUCCESS: Transcripts received from Gemini!")
+            print("   SUCCESS: Transcripts received from Gemini!")
             return True
         else:
-            print("  ❌ FAILURE: No transcripts received")
+            print("   FAILURE: No transcripts received")
             print("     Possible issues:")
             print("     - No speech detected (speak louder)")
             print("     - API not transcribing (check quota)")
@@ -427,7 +427,7 @@ async def test_audio_streaming():
             return False
 
     except Exception as e:
-        print(f"  ❌ Audio streaming test failed: {e}")
+        print(f"   Audio streaming test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -468,11 +468,11 @@ async def test_leibniz_vad():
             }
         )
         session = await session_context.__aenter__()
-        print("  ✅ Leibniz VAD session connected (English, SINDH pattern)")
+        print("   Leibniz VAD session connected (English, SINDH pattern)")
 
         print("\n[5.2] Testing speech capture (speak in ENGLISH for 15 seconds)...")
-        print("  🎤 Listening... SPEAK NOW IN ENGLISH!")
-        print("  📝 Real-time transcripts will appear below:")
+        print("   Listening... SPEAK NOW IN ENGLISH!")
+        print("   Real-time transcripts will appear below:")
         print("  " + "-"*70)
 
         SAMPLE_RATE = 16000
@@ -511,9 +511,9 @@ async def test_leibniz_vad():
                     text = response.server_content.input_transcription.text
                     if text and text.strip():
                         if not transcripts:
-                            print("\n  🗣️  Speech detected!")
+                            print("\n  ️  Speech detected!")
                         transcripts.append(text.strip())
-                        print(f"  📝 {text.strip()}")
+                        print(f"   {text.strip()}")
 
         # Timeout manager
         async def manage_timeout():
@@ -543,30 +543,30 @@ async def test_leibniz_vad():
 
         if transcripts:
             final_transcript = ' '.join(transcripts)
-            print(f"  ✅ SUCCESS: Leibniz VAD captured: {final_transcript}")
-            print(f"  📊 Total fragments: {len(transcripts)}")
+            print(f"   SUCCESS: Leibniz VAD captured: {final_transcript}")
+            print(f"   Total fragments: {len(transcripts)}")
             return True
         else:
-            print("  ❌ FAILURE: No transcripts captured")
+            print("   FAILURE: No transcripts captured")
             print("     Speak in ENGLISH and louder")
             return False
 
         vad = get_leibniz_vad()
-        print("  ✅ VAD instance created")
+        print("   VAD instance created")
 
         print("\n[5.2] Enabling verbose logging...")
         vad.config.verbose = True
         vad.config.log_audio_callbacks = True
         vad.config.log_state_transitions = True
-        print("  ✅ Verbose logging enabled")
+        print("   Verbose logging enabled")
 
         print("\n[5.3] Setting agent speaking state to False...")
         await vad.set_agent_speaking_state(False, 'test_init')
-        print(f"  ✅ State: {vad.conversation_state}, Speaking: {vad.is_agent_speaking}")
+        print(f"   State: {vad.conversation_state}, Speaking: {vad.is_agent_speaking}")
 
         print("\n[5.4] Testing speech capture (speak for 10 seconds)...")
-        print("  🎤 Listening... SPEAK NOW!")
-        print("  📝 Real-time fragments will appear below:")
+        print("   Listening... SPEAK NOW!")
+        print("   Real-time fragments will appear below:")
         print("  " + "-"*70)
 
         fragments = []
@@ -574,7 +574,7 @@ async def test_leibniz_vad():
         def streaming_callback(fragment: str, is_final: bool):
             fragments.append((fragment, is_final))
             status = "FINAL" if is_final else "partial"
-            print(f"  📝 [{status}] {fragment}")
+            print(f"   [{status}] {fragment}")
 
         # Set timeout for test
         vad.set_dynamic_timeout(attempt_count=0, conversation_context="initial")
@@ -584,26 +584,26 @@ async def test_leibniz_vad():
         )
 
         print("\n")
-        print(f"  📊 Fragments received: {len(fragments)}")
+        print(f"   Fragments received: {len(fragments)}")
 
         if transcript:
-            print(f"  ✅ SUCCESS: Final transcript: {transcript}")
+            print(f"   SUCCESS: Final transcript: {transcript}")
             
             # Get performance metrics
             metrics = vad.get_performance_metrics()
             print(f"  � Capture count: {metrics['capture_count']}")
-            print(f"  📊 Avg capture time: {metrics['avg_capture_time']:.2f}s")
-            print(f"  📊 Consecutive timeouts: {metrics['consecutive_timeouts']}")
+            print(f"   Avg capture time: {metrics['avg_capture_time']:.2f}s")
+            print(f"   Consecutive timeouts: {metrics['consecutive_timeouts']}")
             return True
         else:
-            print("  ❌ FAILURE: No transcript captured")
+            print("   FAILURE: No transcript captured")
             print(f"     should_accept_user_audio: {vad.should_accept_user_audio()}")
             print(f"     conversation_state: {vad.conversation_state}")
             print(f"     is_agent_speaking: {vad.is_agent_speaking}")
             return False
 
     except Exception as e:
-        print(f"  ❌ Leibniz VAD test failed: {e}")
+        print(f"   Leibniz VAD test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -626,25 +626,25 @@ async def main():
     if results['environment']:
         results['microphone'] = await test_microphone_hardware()
     else:
-        print("\n⚠️  Skipping microphone test due to environment issues")
+        print("\n️  Skipping microphone test due to environment issues")
         results['microphone'] = False
 
     if results['environment']:
         results['gemini'] = await test_gemini_connection()
     else:
-        print("\n⚠️  Skipping Gemini test due to environment issues")
+        print("\n️  Skipping Gemini test due to environment issues")
         results['gemini'] = False
 
     if results['environment'] and results['microphone'] and results['gemini']:
         results['streaming'] = await test_audio_streaming()
     else:
-        print("\n⚠️  Skipping audio streaming test due to previous failures")
+        print("\n️  Skipping audio streaming test due to previous failures")
         results['streaming'] = False
 
     if results['streaming']:
         results['leibniz_vad'] = await test_leibniz_vad()
     else:
-        print("\n⚠️  Skipping Leibniz VAD test due to streaming failure")
+        print("\n️  Skipping Leibniz VAD test due to streaming failure")
         results['leibniz_vad'] = False
 
     # Summary
@@ -654,7 +654,7 @@ async def main():
     print()
 
     for test_name, passed in results.items():
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = " PASS" if passed else " FAIL"
         print(f"  {status}  {test_name.replace('_', ' ').title()}")
 
     total_passed = sum(results.values())
@@ -665,9 +665,9 @@ async def main():
     print()
 
     if all(results.values()):
-        print("  🎉 ALL TESTS PASSED! Leibniz VAD should be working.")
+        print("   ALL TESTS PASSED! Leibniz VAD should be working.")
     else:
-        print("  ⚠️  SOME TESTS FAILED. Review errors above.")
+        print("  ️  SOME TESTS FAILED. Review errors above.")
         print()
         print("  Common fixes:")
         if not results.get('microphone', True):
@@ -681,7 +681,7 @@ async def main():
             print("  - Check API quota limits")
 
     print()
-    print("  📋 Full log saved to: vad_diagnostic.log")
+    print("   Full log saved to: vad_diagnostic.log")
     print("="*80)
 
 
@@ -689,8 +689,8 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n\n⚠️  Test interrupted by user")
+        print("\n\n️  Test interrupted by user")
     except Exception as e:
-        print(f"\n\n❌ Fatal error: {e}")
+        print(f"\n\n Fatal error: {e}")
         import traceback
         traceback.print_exc()

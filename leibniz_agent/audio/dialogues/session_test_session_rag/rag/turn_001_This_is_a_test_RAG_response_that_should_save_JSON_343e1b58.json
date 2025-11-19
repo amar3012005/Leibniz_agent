@@ -1,0 +1,11 @@
+{
+  "session_id": "test_session_rag",
+  "turn_number": 1,
+  "dialogue_type": "rag",
+  "text": "This is a test RAG response that should save JSON only.",
+  "audio_file": null,
+  "original_audio_path": null,
+  "timestamp": 1763422439.560394,
+  "text_length": 55,
+  "text_hash": "343e1b58"
+}

@@ -81,7 +81,7 @@ class AudioCache:
         self.hits = 0
         self.misses = 0
         
-        logger.info(f"📦 Audio cache initialized: {len(self.cache_index)} entries, max_size={max_size}")
+        logger.info(f" Audio cache initialized: {len(self.cache_index)} entries, max_size={max_size}")
     
     def _load_cache_index(self):
         """
@@ -94,13 +94,13 @@ class AudioCache:
             try:
                 with open(self.index_file, 'r', encoding='utf-8') as f:
                     self.cache_index = json.load(f)
-                logger.info(f"📦 Loaded TTS cache index: {len(self.cache_index)} entries")
+                logger.info(f" Loaded TTS cache index: {len(self.cache_index)} entries")
             except Exception as e:
-                logger.warning(f"⚠️ Failed to load cache index: {e}. Starting with empty cache.")
+                logger.warning(f"️ Failed to load cache index: {e}. Starting with empty cache.")
                 self.cache_index = {}
         else:
             self.cache_index = {}
-            logger.info("📦 No existing cache index found. Starting fresh.")
+            logger.info(" No existing cache index found. Starting fresh.")
     
     def _save_cache_index(self):
         """
@@ -130,7 +130,7 @@ class AudioCache:
                         raise
         
         except Exception as e:
-            logger.error(f"⚠️ Failed to save cache index: {e}")
+            logger.error(f"️ Failed to save cache index: {e}")
     
     def get_cache_key(
         self,
@@ -204,7 +204,7 @@ class AudioCache:
         cache_file = self.cache_dir / f"{cache_key}.wav"
         if not cache_file.exists():
             # Remove from index if file missing
-            logger.warning(f"⚠️ Cache file missing for key {cache_key}. Removing from index.")
+            logger.warning(f"️ Cache file missing for key {cache_key}. Removing from index.")
             del self.cache_index[cache_key]
             self._save_cache_index()
             self.misses += 1
@@ -215,7 +215,7 @@ class AudioCache:
         self._save_cache_index()
         
         self.hits += 1
-        logger.debug(f"✅ Cache HIT: {cache_key} ({text[:50]}...)")
+        logger.debug(f" Cache HIT: {cache_key} ({text[:50]}...)")
         return str(cache_file)
     
     def cache_audio(
@@ -258,7 +258,7 @@ class AudioCache:
         try:
             shutil.copy2(audio_file, cache_file)
         except Exception as e:
-            logger.error(f"❌ Failed to cache audio file: {e}")
+            logger.error(f" Failed to cache audio file: {e}")
             raise
         
         # Update index
@@ -280,7 +280,7 @@ class AudioCache:
         # Save index
         self._save_cache_index()
         
-        logger.debug(f"💾 Cached audio: {cache_key} ({text[:50]}...) - {cache_file.stat().st_size} bytes")
+        logger.debug(f" Cached audio: {cache_key} ({text[:50]}...) - {cache_file.stat().st_size} bytes")
         return str(cache_file)
     
     def _cleanup_cache(self):
@@ -309,12 +309,12 @@ class AudioCache:
                     try:
                         cache_file.unlink()
                     except Exception as e:
-                        logger.warning(f"⚠️ Failed to delete cache file {cache_key}: {e}")
+                        logger.warning(f"️ Failed to delete cache file {cache_key}: {e}")
                 
                 # Remove from index
                 del self.cache_index[cache_key]
             
-            logger.info(f"🧹 Cleaned up {entries_to_remove} old cache entries (LRU)")
+            logger.info(f" Cleaned up {entries_to_remove} old cache entries (LRU)")
     
     def clear_cache(self):
         """
@@ -334,14 +334,14 @@ class AudioCache:
                     cache_file.unlink()
                     cleared_count += 1
                 except Exception as e:
-                    logger.warning(f"⚠️ Failed to delete cache file {cache_key}: {e}")
+                    logger.warning(f"️ Failed to delete cache file {cache_key}: {e}")
         
         self.cache_index = {}
         self._save_cache_index()
         self.hits = 0
         self.misses = 0
         
-        logger.info(f"🧹 Cache cleared: {cleared_count} files deleted")
+        logger.info(f" Cache cleared: {cleared_count} files deleted")
     
     def get_stats(self) -> Dict[str, Any]:
         """

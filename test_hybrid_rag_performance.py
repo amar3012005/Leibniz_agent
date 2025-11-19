@@ -73,11 +73,11 @@ def test_hybrid_rag():
     """Test hybrid RAG performance"""
     
     print("\n" + "="*70)
-    print("🧪 HYBRID RAG PERFORMANCE TEST")
+    print(" HYBRID RAG PERFORMANCE TEST")
     print("="*70)
     
     # Initialize RAG system
-    print("\n📥 Initializing Leibniz RAG...")
+    print("\n Initializing Leibniz RAG...")
     rag = LeibnizRAG()
     
     # Run tests
@@ -106,7 +106,7 @@ def test_hybrid_rag():
                 timing = {}
             
             # Display results
-            print(f"\n💬 Answer ({len(answer)} chars):")
+            print(f"\n Answer ({len(answer)} chars):")
             print(f"   {answer}")
             
             print(f"\n⏱️  Performance Breakdown:")
@@ -127,13 +127,13 @@ def test_hybrid_rag():
                     # Categorize performance
                     total_ms = timing['total_ms']
                     if total_ms < 600:
-                        perf_label = "⚡ EXCELLENT (Hybrid)"
+                        perf_label = " EXCELLENT (Hybrid)"
                     elif total_ms < 1200:
-                        perf_label = "✅ GOOD"
+                        perf_label = " GOOD"
                     elif total_ms < 2000:
-                        perf_label = "⚠️  ACCEPTABLE"
+                        perf_label = "️  ACCEPTABLE"
                     else:
-                        perf_label = "❌ SLOW (Standard RAG)"
+                        perf_label = " SLOW (Standard RAG)"
                     
                     print(f"\n   Performance: {perf_label}")
             
@@ -145,13 +145,13 @@ def test_hybrid_rag():
             })
             
         except Exception as e:
-            print(f"\n❌ Error: {e}")
+            print(f"\n Error: {e}")
             import traceback
             traceback.print_exc()
     
     # Summary
     print(f"\n{'='*70}")
-    print("📊 PERFORMANCE SUMMARY")
+    print(" PERFORMANCE SUMMARY")
     print(f"{'='*70}")
     
     if results:
@@ -161,28 +161,28 @@ def test_hybrid_rag():
         
         if hybrid_results:
             avg_hybrid = sum(r['timing'].get('total_ms', 0) for r in hybrid_results) / len(hybrid_results)
-            print(f"\n🔧 Hybrid Pattern Queries (n={len(hybrid_results)}):")
+            print(f"\n Hybrid Pattern Queries (n={len(hybrid_results)}):")
             print(f"   Average Latency: {avg_hybrid:.1f}ms")
             print(f"   Expected Range:  200-600ms")
             if avg_hybrid < 600:
-                print(f"   ✅ Target achieved!")
+                print(f"    Target achieved!")
             else:
-                print(f"   ⚠️  Slower than expected")
+                print(f"   ️  Slower than expected")
         
         if standard_results:
             avg_standard = sum(r['timing'].get('total_ms', 0) for r in standard_results) / len(standard_results)
-            print(f"\n📚 Standard RAG Queries (n={len(standard_results)}):")
+            print(f"\n Standard RAG Queries (n={len(standard_results)}):")
             print(f"   Average Latency: {avg_standard:.1f}ms")
             print(f"   Expected Range:  600-2200ms")
         
         if hybrid_results and standard_results:
             speedup = avg_standard / avg_hybrid
-            print(f"\n🏆 Performance Improvement:")
+            print(f"\n Performance Improvement:")
             print(f"   Speedup: {speedup:.2f}x faster")
             print(f"   Time Saved: {avg_standard - avg_hybrid:.1f}ms per query")
         
         print(f"\n{'='*70}")
-        print("✅ Hybrid RAG Test Complete!")
+        print(" Hybrid RAG Test Complete!")
         print(f"{'='*70}\n")
 
 

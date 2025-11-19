@@ -586,10 +586,10 @@ async def run_end_to_end_test(scenario: EndToEndTestScenario) -> Dict[str, Any]:
                                 test_data["appointment_data"] = fsm_result.get("data", {})
                                 in_appointment_flow = False
                                 fsm = None
-                                logger.info(f"✅ Appointment completed: {test_data['appointment_data']}")
+                                logger.info(f" Appointment completed: {test_data['appointment_data']}")
                         else:
                             # FSM didn't progress - genuine RAG interruption
-                            logger.info(f"🤖 Handling RAG interruption during appointment booking")
+                            logger.info(f" Handling RAG interruption during appointment booking")
                             
                             # Process RAG query
                             context = intent_result.get('entities', {})
@@ -600,7 +600,7 @@ async def run_end_to_end_test(scenario: EndToEndTestScenario) -> Dict[str, Any]:
                                 # Add resume message
                                 resume_message = "Now, let's continue with your appointment booking."
                                 test_data["responses_generated"].append(resume_message)
-                                logger.info(f"✅ RAG interruption handled, resuming appointment booking")
+                                logger.info(f" RAG interruption handled, resuming appointment booking")
                             except Exception as rag_e:
                                 logger.error(f"RAG interruption failed: {str(rag_e)}")
                                 # Use FSM response as fallback
@@ -614,7 +614,7 @@ async def run_end_to_end_test(scenario: EndToEndTestScenario) -> Dict[str, Any]:
                             test_data["appointment_data"] = result.get("data", {})
                             in_appointment_flow = False
                             fsm = None
-                            logger.info(f"✅ Appointment completed: {test_data['appointment_data']}")
+                            logger.info(f" Appointment completed: {test_data['appointment_data']}")
                 
                 elif intent == "GREETING":
                     response = "Hi there! I'm Lexi, your friendly assistant for Leibniz University. How can I help you today?"
@@ -662,7 +662,7 @@ async def run_end_to_end_test(scenario: EndToEndTestScenario) -> Dict[str, Any]:
                         test_data["appointment_data"] = result.get("data", {})
                         in_appointment_flow = False
                         fsm = None
-                        logger.info(f"✅ Appointment completed: {test_data['appointment_data']}")
+                        logger.info(f" Appointment completed: {test_data['appointment_data']}")
                     
                 elif intent == "EXIT":
                     response = "Thanks for chatting! Have a great day, and feel free to reach out anytime you need help."
@@ -678,7 +678,7 @@ async def run_end_to_end_test(scenario: EndToEndTestScenario) -> Dict[str, Any]:
                             test_data["appointment_data"] = result.get("data", {})
                             in_appointment_flow = False
                             fsm = None
-                            logger.info(f"✅ Appointment completed: {test_data['appointment_data']}")
+                            logger.info(f" Appointment completed: {test_data['appointment_data']}")
                     else:
                         response = "I didn't quite catch that. Could you please rephrase?"
                         test_data["responses_generated"].append(response)
@@ -820,15 +820,15 @@ def print_report_summary(report: Dict):
     summary = report["summary"]
     print(f"\nTest Execution Summary:")
     print(f"  Total Scenarios: {summary['total_scenarios']}")
-    print(f"  Passed: {summary['passed']} ✅")
-    print(f"  Failed: {summary['failed']} ❌")
-    print(f"  Errors: {summary['errors']} 🔧")
+    print(f"  Passed: {summary['passed']} ")
+    print(f"  Failed: {summary['failed']} ")
+    print(f"  Errors: {summary['errors']} ")
     print(f"  Total Duration: {summary['total_duration']:.2f}s")
     
     if "metrics" in report and report["metrics"]:
         print(f"\nPerformance Metrics:")
         print(f"  Average Response Time: {report['metrics'].get('avg_response_time', 0):.2f}s")
-        print(f"  Target Met: {'Yes ✅' if report['metrics'].get('response_time_target_met', False) else 'No ❌'}")
+        print(f"  Target Met: {'Yes ' if report['metrics'].get('response_time_target_met', False) else 'No '}")
     
     if report["issues"]:
         print(f"\nIssues Found ({len(report['issues'])}):")

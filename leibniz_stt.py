@@ -186,7 +186,7 @@ def _get_vad_function(func_name: str):
 
 # Import prewarm trigger from persistent services
 try:
-    from leibniz_agent.leibniz_persistent_services import trigger_prewarm_on_speech_detection
+    from leibniz_persistent_services import trigger_prewarm_on_speech_detection
     _PREWARM_AVAILABLE = True
 except ImportError as e:
     logger.debug(f"Persistent services not available: {e}")
@@ -319,7 +319,7 @@ class OptimizedGeminiConnection:
             
             cls._warmup_complete = True
         except Exception as e:
-            print(f"⚠️ Warmup failed: {e}")
+            print(f" Warmup failed: {e}")
             cls._warmup_complete = False
     
     @classmethod
@@ -1204,7 +1204,7 @@ class LeibnizSTT:
             for attempt in range(self.config.max_retries):
                 try:
                     # Comment 6: Upload file using google.genai client methods
-                    print(f"📤 Uploading audio file (attempt {attempt + 1}/{self.config.max_retries})...")
+                    print(f" Uploading audio file (attempt {attempt + 1}/{self.config.max_retries})...")
                     uploaded_file = await asyncio.wait_for(
                         asyncio.to_thread(self.client.files.upload, path=filepath),
                         timeout=15.0
@@ -1218,7 +1218,7 @@ class LeibnizSTT:
                     )
                     
                     # Call Gemini API with uploaded file (prompt first, then file)
-                    print("🎤 Transcribing audio with Gemini...")
+                    print(" Transcribing audio with Gemini...")
                     response = await asyncio.wait_for(
                         asyncio.to_thread(
                             self.client.models.generate_content,
@@ -1270,7 +1270,7 @@ class LeibnizSTT:
                     self.successful_captures += 1
                     self.total_capture_time += transcription_duration
                     
-                    print(f"✅ Transcription complete: {len(transcript)} characters ({transcription_duration:.2f}s)")
+                    print(f" Transcription complete: {len(transcript)} characters ({transcription_duration:.2f}s)")
                     
                     return {
                         "text": transcript,
@@ -1284,7 +1284,7 @@ class LeibnizSTT:
                     # Track failed attempt
                     self.total_captures += 1
                     self.failed_captures += 1
-                    print(f"⏱️ Timeout on attempt {attempt + 1}")
+                    print(f"⏱ Timeout on attempt {attempt + 1}")
                     if attempt < self.config.max_retries - 1:
                         delay = self.config.retry_delay_base * (2 ** attempt)
                         await asyncio.sleep(delay)
@@ -1301,7 +1301,7 @@ class LeibnizSTT:
                     # Track failed attempt
                     self.total_captures += 1
                     self.failed_captures += 1
-                    print(f"❌ Error on attempt {attempt + 1}: {e}")
+                    print(f" Error on attempt {attempt + 1}: {e}")
                     if attempt < self.config.max_retries - 1:
                         delay = self.config.retry_delay_base * (2 ** attempt)
                         await asyncio.sleep(delay)
@@ -1316,14 +1316,14 @@ class LeibnizSTT:
                 try:
                     os.remove(temp_file_path)
                 except Exception as e:
-                    print(f"⚠️ Failed to remove temp file: {e}")
+                    print(f" Failed to remove temp file: {e}")
             
             if uploaded_file:
                 try:
                     # Comment 6: Delete using google.genai client methods
                     await asyncio.to_thread(self.client.files.delete, uploaded_file.name)
                 except Exception as e:
-                    print(f"⚠️ Failed to delete uploaded file: {e}")
+                    print(f" Failed to delete uploaded file: {e}")
     
     async def capture_audio(
         self,
@@ -1350,7 +1350,7 @@ class LeibnizSTT:
             LeibnizSTT._active = True
         
         try:
-            print("🎙️ Initializing Gemini Live session for audio capture...")
+            print(" Initializing Gemini Live session for audio capture...")
             
             # Get optimized session with async context manager
             async with (await OptimizedGeminiConnection.get_optimized_session(self.config)) as session:
@@ -1369,7 +1369,7 @@ class LeibnizSTT:
                 def audio_callback(indata, frames, time_info, status):
                     """Callback for audio stream - handles stereo→mono conversion"""
                     if status:
-                        print(f"⚠️ Audio status: {status}")
+                        print(f" Audio status: {status}")
                     
                     # Convert stereo to mono if needed (average the channels)
                     if indata.shape[1] == 2:  # Stereo input
@@ -1388,7 +1388,7 @@ class LeibnizSTT:
                     try:
                         # Try as integer index first
                         device = int(device_env)
-                        print(f"🎤 Using audio input device index: {device}")
+                        print(f" Using audio input device index: {device}")
                     except ValueError:
                         # Try to find device by name substring match
                         try:
@@ -1399,16 +1399,16 @@ class LeibnizSTT:
                                     dev_name = dev.get('name', '').lower()
                                     if device_env_lower in dev_name:
                                         device = idx
-                                        print(f"🎤 Matched device index {idx}: {dev.get('name')}")
+                                        print(f" Matched device index {idx}: {dev.get('name')}")
                                         break
                             
                             if device is None:
-                                print(f"⚠️ Device '{device_env}' not found - using default")
+                                print(f" Device '{device_env}' not found - using default")
                         except Exception as e:
-                            print(f"⚠️ Device lookup failed: {e} - using default")
+                            print(f" Device lookup failed: {e} - using default")
                 
                 if device is None:
-                    print("🎤 Using system default audio input device")
+                    print(" Using system default audio input device")
                 
                 # Determine number of channels based on device capabilities
                 # Many modern devices (especially Realtek) only support stereo (2 channels)
@@ -1420,9 +1420,9 @@ class LeibnizSTT:
                         max_input_channels = device_info.get('max_input_channels', 1)
                         if max_input_channels >= 2:
                             num_channels = 2  # Use stereo if available
-                            print(f"🎤 Using stereo input ({num_channels} channels) - will convert to mono")
+                            print(f" Using stereo input ({num_channels} channels) - will convert to mono")
                     except Exception as e:
-                        print(f"⚠️ Could not query device channels: {e} - using mono")
+                        print(f" Could not query device channels: {e} - using mono")
                 
                 # Start audio stream with explicit device and dynamic channel count
                 stream = sd.InputStream(
@@ -1460,7 +1460,7 @@ class LeibnizSTT:
                                 # Send pre-buffer on first speech detection
                                 if not speech_started and transcript_fragments:
                                     speech_started = True
-                                    print("🗣️ Speech detected - sending pre-buffer")
+                                    print(" Speech detected - sending pre-buffer")
                                     # Send buffered audio
                                     for buffered_chunk in audio_buffer:
                                         # Direct conversion like sindh_bidirectional_vad.py
@@ -1486,7 +1486,7 @@ class LeibnizSTT:
                             except asyncio.TimeoutError:
                                 continue
                             except Exception as e:
-                                print(f"❌ Send audio error: {e}")
+                                print(f" Send audio error: {e}")
                                 break
                     except asyncio.CancelledError:
                         pass  # Task cancelled, clean exit
@@ -1503,20 +1503,20 @@ class LeibnizSTT:
                                 
                                 if transcript_text and transcript_text.strip():
                                     fragment = transcript_text.strip()
-                                    print(f"📝 Fragment: {fragment}")
+                                    print(f" Fragment: {fragment}")
                                     transcript_fragments.append(fragment)
                                     last_speech_time = time.time()
                                     
                                     # Comment 8: Log when speech first detected
                                     if len(transcript_fragments) == 1:
-                                        print("✅ First speech detected")
+                                        print(" First speech detected")
                                         # Comment 4: Trigger prewarm on first fragment
                                         trigger_lightweight_prewarm('streaming_stt')
                                     
                                     # Comment 4: Check for barge-in after each fragment
                                     is_barge_in = check_and_handle_barge_in()
                                     if is_barge_in:
-                                        print("🚨 Barge-in detected - ending user speech capture")
+                                        print(" Barge-in detected - ending user speech capture")
                                         turn_complete = True
                                         break
                                     
@@ -1526,7 +1526,7 @@ class LeibnizSTT:
                             
                             # Check for turn completion
                             if response.server_content and response.server_content.turn_complete:
-                                print("✅ Turn complete")
+                                print(" Turn complete")
                                 turn_complete = True
                                 break
                     except asyncio.CancelledError:
@@ -1544,13 +1544,13 @@ class LeibnizSTT:
                             
                             # Start timeout (no speech detected)
                             if not transcript_fragments and (current_time - start_time) > self.config.start_timeout_s:
-                                print(f"⏱️ Start timeout ({self.config.start_timeout_s}s) - no speech detected")  # Comment 8
+                                print(f"⏱ Start timeout ({self.config.start_timeout_s}s) - no speech detected")  # Comment 8
                                 turn_complete = True
                                 break
                             
                             # Silence timeout (speech ended)
                             if transcript_fragments and (current_time - last_speech_time) > self.config.silence_timeout:
-                                print(f"⏱️ Silence timeout ({self.config.silence_timeout}s) - speech ended")  # Comment 8
+                                print(f"⏱ Silence timeout ({self.config.silence_timeout}s) - speech ended")  # Comment 8
                                 turn_complete = True
                                 break
                     except asyncio.CancelledError:
@@ -1558,7 +1558,7 @@ class LeibnizSTT:
                 
                 # Comment 1: Run tasks concurrently with asyncio.gather
                 with stream:
-                    print("🎤 Listening... (speak now)")
+                    print(" Listening... (speak now)")
                     
                     try:
                         # Run all tasks concurrently
@@ -1568,22 +1568,22 @@ class LeibnizSTT:
                             timeout_manager()
                         )
                     except Exception as e:
-                        print(f"⚠️ Task error: {e}")
+                        print(f" Task error: {e}")
                 
                 # Comment 3: Send end-of-turn signal
                 try:
-                    print("📤 Sending end-of-turn signal")  # Comment 8
+                    print(" Sending end-of-turn signal")  # Comment 8
                     await session.send_realtime_input(end_of_turn=True)
                 except Exception:
                     # Fallback for older API
                     try:
                         await session.send(input="", end_of_turn=True)
                     except Exception as e:
-                        print(f"⚠️ End-of-turn signal failed: {e}")
+                        print(f" End-of-turn signal failed: {e}")
                 
                 # Combine transcript fragments
                 if not transcript_fragments:
-                    print("🔇 No speech detected")
+                    print(" No speech detected")
                     # Track failed capture
                     self.total_captures += 1
                     self.failed_captures += 1
@@ -1619,14 +1619,14 @@ class LeibnizSTT:
                 self.successful_captures += 1
                 self.total_capture_time += duration
                 
-                print(f"✅ Capture complete: {len(full_transcript)} characters ({duration:.2f}s)")
+                print(f" Capture complete: {len(full_transcript)} characters ({duration:.2f}s)")
                 return full_transcript
         
         except Exception as e:
             # Track failed capture
             self.total_captures += 1
             self.failed_captures += 1
-            print(f"❌ Capture error: {e}")
+            print(f" Capture error: {e}")
             # Comment 3: Reset warmup on connection errors
             if "connection" in str(e).lower():
                 await OptimizedGeminiConnection.reset_warmup()
@@ -1887,7 +1887,7 @@ async def warmup_leibniz_stt(preconnect_s: float = 1.0, is_speculative: bool = F
     start_time = time.time()
     result = {"stt_warmed": False, "vad_warmed": False, "total_time": 0.0}
     
-    print(f"🔥 Warming up Leibniz STT connection{' (speculative)' if is_speculative else ''}...")
+    print(f" Warming up Leibniz STT connection{' (speculative)' if is_speculative else ''}...")
     
     # Warmup STT connection
     try:
@@ -1895,7 +1895,7 @@ async def warmup_leibniz_stt(preconnect_s: float = 1.0, is_speculative: bool = F
         if preconnect_s > 0:
             await asyncio.sleep(preconnect_s)
         result["stt_warmed"] = True
-        print("✅ STT warmup complete")
+        print(" STT warmup complete")
     except Exception as e:
         logger.error(f"STT warmup failed: {e}")
     
@@ -1905,15 +1905,15 @@ async def warmup_leibniz_stt(preconnect_s: float = 1.0, is_speculative: bool = F
         try:
             # Wait 1 second between STT and VAD warmup
             await asyncio.sleep(1.0)
-            print("🔥 Warming up VAD session...")
+            print(" Warming up VAD session...")
             await warmup_vad_func(preconnect_s=2.0)
             result["vad_warmed"] = True
-            print("✅ VAD warmup complete")
+            print(" VAD warmup complete")
         except Exception as e:
             logger.error(f"VAD warmup failed: {e}")
     
     result["total_time"] = time.time() - start_time
-    print(f"✅ Combined warmup complete ({result['total_time']:.2f}s)")
+    print(f" Combined warmup complete ({result['total_time']:.2f}s)")
     
     return result
 
@@ -1928,7 +1928,7 @@ async def prewarm_during_tts(audio_duration: float):
     """
     # Calculate optimal delay (2 seconds before audio ends)
     delay = max(0.0, audio_duration - 2.0)
-    print(f"🔥 Pre-warming STT during TTS playback (delay: {delay:.1f}s)...")
+    print(f" Pre-warming STT during TTS playback (delay: {delay:.1f}s)...")
     
     # Prewarm connection
     await OptimizedGeminiConnection.prewarm_for_next_capture(delay=delay)
@@ -1936,11 +1936,11 @@ async def prewarm_during_tts(audio_duration: float):
     # Also prewarm RAG/intent services (fire-and-forget)
     async def prewarm_services():
         try:
-            from leibniz_agent.leibniz_persistent_services import get_leibniz_services_manager
+            from leibniz_persistent_services import get_leibniz_services_manager
             services = await get_leibniz_services_manager()
             if services and hasattr(services, 'prewarm_rag'):
                 await services.prewarm_rag()
-                print("🔥 Pre-warmed RAG/intent services during TTS")
+                print(" Pre-warmed RAG/intent services during TTS")
         except Exception:
             pass  # Silent failure - prewarm is best-effort
     
@@ -1950,13 +1950,13 @@ async def prewarm_during_tts(audio_duration: float):
 
 async def cleanup_leibniz_stt():
     """Clean up Leibniz STT and VAD resources"""
-    print("🧹 Cleaning up Leibniz STT...")
+    print(" Cleaning up Leibniz STT...")
     
     # Cleanup VAD if available (lazy import)
     cleanup_vad_func = _get_vad_function('cleanup_leibniz_vad')
     if cleanup_vad_func:
         try:
-            print("🧹 Cleaning up VAD...")
+            print(" Cleaning up VAD...")
             await cleanup_vad_func()
         except Exception as e:
             logger.debug(f"VAD cleanup error: {e}")
@@ -1964,14 +1964,14 @@ async def cleanup_leibniz_stt():
     # Cleanup temporary audio files
     global _temp_audio_files
     if _temp_audio_files:
-        print(f"🧹 Cleaning up {len(_temp_audio_files)} temp audio files...")
+        print(f" Cleaning up {len(_temp_audio_files)} temp audio files...")
         cleanup_temp_audio_files(_temp_audio_files)
         _temp_audio_files = []
     
     # Reset connection warmup
     await OptimizedGeminiConnection.reset_warmup()
     
-    print("✅ STT cleanup complete")
+    print(" STT cleanup complete")
 
 
 # ============================================================================
@@ -2050,26 +2050,26 @@ def log_performance_summary():
         >>> log_performance_summary()
     """
     print("\n" + "=" * 60)
-    print("📊 LEIBNIZ STT PERFORMANCE SUMMARY")
+    print(" LEIBNIZ STT PERFORMANCE SUMMARY")
     print("=" * 60)
     
     stats = get_stt_statistics()
     
     # STT metrics
-    print(f"\n🎤 STT Operations:")
+    print(f"\n STT Operations:")
     print(f"  Total: {stats['total_operations']}")
-    print(f"  Success rate: {stats['success_rate']:.1%} {'✅' if stats['success_rate'] > 0.9 else '⚠️' if stats['success_rate'] > 0.7 else '❌'}")
-    print(f"  Avg latency: {stats['average_latency']:.2f}s {'⚡' if stats['average_latency'] < 2.0 else '🐌'}")
+    print(f"  Success rate: {stats['success_rate']:.1%} {'' if stats['success_rate'] > 0.9 else '' if stats['success_rate'] > 0.7 else ''}")
+    print(f"  Avg latency: {stats['average_latency']:.2f}s {'' if stats['average_latency'] < 2.0 else ''}")
     
     # Prewarm stats
-    print(f"\n🔥 Prewarm:")
+    print(f"\n Prewarm:")
     print(f"  Triggers: {stats['prewarm_triggers']}")
     
     # VAD stats
     if _VAD_AVAILABLE and "vad_stats" in stats:
         vad_stats = stats["vad_stats"]
-        print(f"\n🎙️ VAD:")
-        print(f"  Enabled: ✅")
+        print(f"\n VAD:")
+        print(f"  Enabled: ")
         print(f"  Captures: {vad_stats.get('capture_count', 0)}")
         print(f"  Barge-in: {'Yes' if vad_stats.get('barge_in_detected', False) else 'No'}")
         
@@ -2077,10 +2077,10 @@ def log_performance_summary():
             session = stats["session_stats"]
             print(f"  Session reuse: {session.get('total_uses', 0)} uses")
     else:
-        print(f"\n🎙️ VAD: ❌ Not available")
+        print(f"\n VAD:  Not available")
     
     # Temp files
-    print(f"\n📁 Temp Files:")
+    print(f"\n Temp Files:")
     print(f"  Created: {stats['temp_files_created']}")
     
     print("\n" + "=" * 60 + "\n")
@@ -2166,19 +2166,19 @@ async def test_leibniz_stt():
     - Diagnostics
     """
     print("=" * 60)
-    print("🧪 Testing Leibniz STT Module")
+    print(" Testing Leibniz STT Module")
     print("=" * 60)
     
     # Test 1: Connection warmup
-    print("\n📋 Test 1: Connection Warmup")
+    print("\n Test 1: Connection Warmup")
     try:
         await warmup_leibniz_stt(preconnect_s=0.5)
-        print("✅ Warmup test passed")
+        print(" Warmup test passed")
     except Exception as e:
-        print(f"❌ Warmup test failed: {e}")
+        print(f" Warmup test failed: {e}")
     
     # Test 2: Language detection
-    print("\n📋 Test 2: Language Detection")
+    print("\n Test 2: Language Detection")
     try:
         detector = LanguageDetector()
         
@@ -2192,12 +2192,12 @@ async def test_leibniz_stt():
         print(f"   English validation: {is_eng}")
         assert is_eng, "English validation failed"
         
-        print("✅ Language detection test passed")
+        print(" Language detection test passed")
     except Exception as e:
-        print(f"❌ Language detection test failed: {e}")
+        print(f" Language detection test failed: {e}")
     
     # Comment 8: Test 3: Audio preprocessing helpers
-    print("\n📋 Test 3: Audio Preprocessing Helpers")
+    print("\n Test 3: Audio Preprocessing Helpers")
     try:
         # Test silent audio file creation
         temp_file = create_silent_audio_file(duration_s=0.1, sample_rate=16000)
@@ -2226,12 +2226,12 @@ async def test_leibniz_stt():
         global _temp_audio_files
         _temp_audio_files.append(temp_file)
         
-        print("✅ Audio helpers test passed")
+        print(" Audio helpers test passed")
     except Exception as e:
-        print(f"❌ Audio helpers test failed: {e}")
+        print(f" Audio helpers test failed: {e}")
     
     # Comment 8: Test 4: Normalization
-    print("\n📋 Test 4: Transcript Normalization")
+    print("\n Test 4: Transcript Normalization")
     try:
         test_cases = [
             ("Um, I I I want the the book", "i want the book"),
@@ -2246,12 +2246,12 @@ async def test_leibniz_stt():
             print(f"   '{raw}' → '{normalized}'")
             # Just check it runs without error, exact match depends on implementation
         
-        print("✅ Normalization test passed")
+        print(" Normalization test passed")
     except Exception as e:
-        print(f"❌ Normalization test failed: {e}")
+        print(f" Normalization test failed: {e}")
     
     # Comment 8: Test 5: VAD integration helpers
-    print("\n📋 Test 5: VAD Integration Helpers")
+    print("\n Test 5: VAD Integration Helpers")
     try:
         # Test concurrent capture detection
         is_active = is_capture_active()
@@ -2269,12 +2269,12 @@ async def test_leibniz_stt():
         trigger_lightweight_prewarm('test')
         print(f"   Prewarm triggered")
         
-        print("✅ VAD integration test passed")
+        print(" VAD integration test passed")
     except Exception as e:
-        print(f"❌ VAD integration test failed: {e}")
+        print(f" VAD integration test failed: {e}")
     
     # Test 6: File transcription (if sample file exists)
-    print("\n📋 Test 6: File Transcription")
+    print("\n Test 6: File Transcription")
     sample_file = "test_audio.wav"
     if os.path.exists(sample_file):
         try:
@@ -2282,14 +2282,14 @@ async def test_leibniz_stt():
             print(f"   Transcript: {result['text']}")
             print(f"   Confidence: {result['confidence']:.2f}")
             print(f"   Duration: {result['duration']:.2f}s")
-            print("✅ File transcription test passed")
+            print(" File transcription test passed")
         except Exception as e:
-            print(f"❌ File transcription test failed: {e}")
+            print(f" File transcription test failed: {e}")
     else:
-        print(f"⏭️ Skipping (no sample file: {sample_file})")
+        print(f"⏭ Skipping (no sample file: {sample_file})")
     
     # Test 7: Streaming capture (interactive)
-    print("\n📋 Test 7: Streaming Capture")
+    print("\n Test 7: Streaming Capture")
     print("   Note: This requires microphone access")
     try:
         def callback(fragment, is_final):
@@ -2301,14 +2301,14 @@ async def test_leibniz_stt():
         
         if transcript:
             print(f"   Full transcript: {transcript}")
-            print("✅ Streaming capture test passed")
+            print(" Streaming capture test passed")
         else:
-            print("⚠️ No speech detected")
+            print(" No speech detected")
     except Exception as e:
-        print(f"❌ Streaming capture test failed: {e}")
+        print(f" Streaming capture test failed: {e}")
     
     # Comment 8: Test 8: Performance metrics
-    print("\n📋 Test 8: Performance Metrics")
+    print("\n Test 8: Performance Metrics")
     try:
         stt = get_leibniz_stt()
         
@@ -2326,12 +2326,12 @@ async def test_leibniz_stt():
         combined = get_combined_performance_metrics()
         print(f"   Combined metrics keys: {list(combined.keys())}")
         
-        print("✅ Metrics test passed")
+        print(" Metrics test passed")
     except Exception as e:
-        print(f"❌ Metrics test failed: {e}")
+        print(f" Metrics test failed: {e}")
     
     # Comment 8: Test 9: System diagnostics
-    print("\n📋 Test 9: System Diagnostics")
+    print("\n Test 9: System Diagnostics")
     try:
         stt = get_leibniz_stt()
         report = await stt.diagnose_system()
@@ -2340,7 +2340,7 @@ async def test_leibniz_stt():
         print(f"   Checks performed: {len(report['checks'])}")
         
         for check_name, check_result in report['checks'].items():
-            status_icon = "✅" if check_result['status'] == 'ok' else "❌"
+            status_icon = "" if check_result['status'] == 'ok' else ""
             print(f"   {status_icon} {check_name}: {check_result['message']}")
         
         if report['recommendations']:
@@ -2348,12 +2348,12 @@ async def test_leibniz_stt():
             for rec in report['recommendations']:
                 print(f"     - {rec}")
         
-        print("✅ Diagnostics test passed")
+        print(" Diagnostics test passed")
     except Exception as e:
-        print(f"❌ Diagnostics test failed: {e}")
+        print(f" Diagnostics test failed: {e}")
     
     # Comment 8: Test 10: Temp file cleanup
-    print("\n📋 Test 10: Temp File Cleanup")
+    print("\n Test 10: Temp File Cleanup")
     try:
         # Check temp files tracked
         print(f"   Temp files tracked: {len(_temp_audio_files)}")
@@ -2363,16 +2363,16 @@ async def test_leibniz_stt():
             cleanup_temp_audio_files(_temp_audio_files.copy())
             print(f"   Cleaned up {len(_temp_audio_files)} temp files")
         
-        print("✅ Cleanup test passed")
+        print(" Cleanup test passed")
     except Exception as e:
-        print(f"❌ Cleanup test failed: {e}")
+        print(f" Cleanup test failed: {e}")
     
     # Final cleanup
-    print("\n🧹 Final Cleanup")
+    print("\n Final Cleanup")
     await cleanup_leibniz_stt()
     
     print("\n" + "=" * 60)
-    print("✅ Testing complete")
+    print(" Testing complete")
     print("=" * 60)
 
 

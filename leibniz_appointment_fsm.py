@@ -215,7 +215,7 @@ class LeibnizAppointmentFSM:
         # Conversation history for context
         self.conversation_history: List[str] = []
         
-        logger.info("🎓 Leibniz Appointment FSM initialized")
+        logger.info(" Leibniz Appointment FSM initialized")
     
     async def process_input(self, user_input: str) -> Dict[str, Any]:
         """
@@ -306,7 +306,7 @@ class LeibnizAppointmentFSM:
             }
             
         except Exception as e:
-            logger.error(f"❌ Error processing input in state {self.state}: {e}")
+            logger.error(f" Error processing input in state {self.state}: {e}")
             return {
                 "response": "Oops, something went wrong. Let me try that again. Could you repeat what you just said?",
                 "state": self.state.value,
@@ -1499,7 +1499,7 @@ class LeibnizAppointmentFSM:
         self.confirmation_attempts = {}
         self.conversation_history = []
         self.last_error = None
-        logger.info("🔄 Appointment FSM reset")
+        logger.info(" Appointment FSM reset")
 
 
 # ============================================================================
@@ -1574,7 +1574,7 @@ def format_appointment_for_submission(data: AppointmentData) -> Dict[str, Any]:
 async def test_appointment_fsm():
     """Comprehensive test suite for appointment FSM"""
     print("\n" + "="*80)
-    print("🎓 Leibniz Appointment FSM Test Suite")
+    print(" Leibniz Appointment FSM Test Suite")
     print("="*80 + "\n")
     
     # Scenario 1: Happy path (all fields valid first try)
@@ -1603,7 +1603,7 @@ async def test_appointment_fsm():
         print(f"  State: {result['state']}")
         print(f"  Response: {result['response'][:100]}...")
         if result['complete']:
-            print(f"\n✅ Booking Complete!")
+            print(f"\n Booking Complete!")
             print(f"  Data: {result['data']}")
     
     # Scenario 2: Validation errors and retries
@@ -1658,7 +1658,7 @@ async def test_appointment_fsm():
     print(f"  Response: {result['response']}")
     
     print("\n" + "="*80)
-    print("✅ All Tests Completed Successfully!")
+    print(" All Tests Completed Successfully!")
     print("="*80 + "\n")
 
 

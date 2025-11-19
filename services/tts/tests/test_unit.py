@@ -334,7 +334,7 @@ def test_cache_key_with_special_characters(audio_cache):
 @pytest.mark.unit
 def test_cache_key_with_unicode(audio_cache):
     """Test cache key generation handles Unicode text."""
-    unicode_text = "Hello 世界 🌍"
+    unicode_text = "Hello 世界 "
     key = audio_cache.get_cache_key(unicode_text, "voice1", "en-US", "google", "neutral")
     
     assert len(key) == 32

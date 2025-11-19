@@ -4,14 +4,14 @@ Leibniz Bidirectional VAD Integration
 Production-grade Voice Activity Detection (VAD) for Leibniz agent using Gemini Live API.
 Implements all 7 critical patterns from SINDH bidirectional VAD for maximum robustness.
 
-Key Features (✅ SINDH-Compatible):
-✅ Pattern 1: Persistent session management with singleton pooling (eliminates cold starts)
-✅ Pattern 2: Streaming audio chunks (50-100ms PCM via sounddevice)
-✅ Pattern 3: Fragment-level transcript callbacks (real-time UI updates)
-✅ Pattern 4: Session health & auto-recovery (handles 1011, 1006 errors)
-✅ Pattern 5: State machine & concurrency control (asyncio.Lock, barge-in detection)
-✅ Pattern 6: Dynamic timeout configuration (per-phase: greeting, decision, complex, retry)
-✅ Pattern 7: Comprehensive logging & diagnostics (performance metrics, timeout events)
+Key Features ( SINDH-Compatible):
+ Pattern 1: Persistent session management with singleton pooling (eliminates cold starts)
+ Pattern 2: Streaming audio chunks (50-100ms PCM via sounddevice)
+ Pattern 3: Fragment-level transcript callbacks (real-time UI updates)
+ Pattern 4: Session health & auto-recovery (handles 1011, 1006 errors)
+ Pattern 5: State machine & concurrency control (asyncio.Lock, barge-in detection)
+ Pattern 6: Dynamic timeout configuration (per-phase: greeting, decision, complex, retry)
+ Pattern 7: Comprehensive logging & diagnostics (performance metrics, timeout events)
 
 Architecture:
 - LeibnizPersistentSession: Singleton session manager (SINDH-pattern persistent pooling)
@@ -113,7 +113,7 @@ class LeibnizVADConfig:
         # Enforce English-only configuration with lenient normalization
         if self.language_code not in ["en-US", "en"]:
             logger.warning(
-                f"⚠️  Leibniz VAD configured for English-only. "
+                f"️  Leibniz VAD configured for English-only. "
                 f"Got language_code='{self.language_code}', normalizing to 'en-US'. "
                 f"For multilingual support, use TARA agent with hi-IN configuration."
             )
@@ -127,7 +127,7 @@ class LeibnizVADConfig:
 
 class LeibnizPersistentSession:
     """
-    ⭐⭐⭐ PATTERN 1: Persistent Gemini Live Session Singleton (SINDH-Compatible)
+     PATTERN 1: Persistent Gemini Live Session Singleton (SINDH-Compatible)
     
     Singleton session manager for Gemini Live API with event loop binding,
     smart warmup, and automatic session refresh. Eliminates 8-12s cold starts.
@@ -270,12 +270,12 @@ class LeibnizPersistentSession:
                     cls._session_loop = None
                 
                 connection_time = time.time() - start_time
-                logger.info(f"✅ New session ready in {connection_time:.3f}s")
+                logger.info(f" New session ready in {connection_time:.3f}s")
                 # Verify language configuration was applied
-                logger.info(f"✅ Session configured with language: {config.language_code}")
+                logger.info(f" Session configured with language: {config.language_code}")
             else:
                 connection_time = time.time() - start_time
-                logger.debug(f"♻️  Warm session reused (age: {session_age:.1f}s, uses: {cls._total_uses})")
+                logger.debug(f"️  Warm session reused (age: {session_age:.1f}s, uses: {cls._total_uses})")
             
             # Update activity tracking
             cls._last_activity = now
@@ -291,7 +291,7 @@ class LeibnizPersistentSession:
         config: 'LeibnizVADConfig'
     ):
         """
-        ⭐⭐ PATTERN 4 (Warmup): Smart warmup with throttling (SINDH-pattern).
+         PATTERN 4 (Warmup): Smart warmup with throttling (SINDH-pattern).
         
         Only warms up if:
         - No warmup already in progress (throttling)
@@ -311,7 +311,7 @@ class LeibnizPersistentSession:
             return
         
         # Verify language code is maintained
-        logger.debug(f"🔥 Smart warmup with language: {config.language_code}")
+        logger.debug(f" Smart warmup with language: {config.language_code}")
         
         now = time.time()
         session_age = now - cls._last_activity if cls._last_activity > 0 else 999
@@ -324,9 +324,9 @@ class LeibnizPersistentSession:
         cls._warmup_in_progress = True
         
         try:
-            logger.info(f"🔥 Smart warmup triggered (session age: {session_age:.1f}s)")
+            logger.info(f" Smart warmup triggered (session age: {session_age:.1f}s)")
             await cls.get_session(client, model_name, config)
-            logger.info("✅ Background warmup completed")
+            logger.info(" Background warmup completed")
         except Exception as e:
             logger.warning(f"Warmup failed: {e}")
         finally:
@@ -335,7 +335,7 @@ class LeibnizPersistentSession:
     @classmethod
     def get_session_stats(cls) -> Dict[str, Any]:
         """
-        ⭐ PATTERN 7 (Diagnostics): Get session statistics (SINDH-pattern).
+         PATTERN 7 (Diagnostics): Get session statistics (SINDH-pattern).
         
         Returns:
             Dict with session age, uses, creation time, loop info, warmup status
@@ -353,7 +353,7 @@ class LeibnizPersistentSession:
     @classmethod
     async def close_session(cls):
         """
-        ⭐⭐⭐ PATTERN 4 (Recovery): Close persistent session and cleanup (SINDH-pattern).
+         PATTERN 4 (Recovery): Close persistent session and cleanup (SINDH-pattern).
         
         Called on:
         - Critical errors (1011, 1006, internal errors)
@@ -368,7 +368,7 @@ class LeibnizPersistentSession:
             if cls._session_context is not None:
                 try:
                     await cls._session_context.__aexit__(None, None, None)
-                    logger.info("🔒 Persistent session closed")
+                    logger.info(" Persistent session closed")
                 except Exception as e:
                     logger.debug(f"Session close error (expected): {e}")
                 finally:
@@ -383,7 +383,7 @@ class LeibnizPersistentSession:
 
 class LeibnizBidirectionalVAD:
     """
-    ⭐⭐⭐ PATTERNS 2-7: Leibniz Bidirectional VAD (SINDH-Compatible)
+     PATTERNS 2-7: Leibniz Bidirectional VAD (SINDH-Compatible)
     
     Production-grade VAD implementing all SINDH reliability patterns:
     
@@ -442,28 +442,28 @@ class LeibnizBidirectionalVAD:
         self.client = None
         self._init_client()
         
-        # ⭐⭐⭐ PATTERN 5: State Machine Flags (SINDH-pattern conversation state)
+        #  PATTERN 5: State Machine Flags (SINDH-pattern conversation state)
         self.conversation_state = "idle"  # idle, listening, speaking, deciding (SINDH states)
         self.is_agent_speaking = False
         self.is_listening = False
         self.barge_in_detected = False
         self.last_transcript = None
         
-        # ⭐ PATTERN 7: Performance Tracking (SINDH-pattern metrics)
+        #  PATTERN 7: Performance Tracking (SINDH-pattern metrics)
         self.capture_count = 0
         self.total_capture_time = 0.0
         self.avg_capture_time = 0.0
         
-        # ⭐⭐ PATTERN 4: Timeout Tracking for Session Health (SINDH-pattern)
+        #  PATTERN 4: Timeout Tracking for Session Health (SINDH-pattern)
         self.consecutive_timeouts = 0
         self._last_capture_ended_at = 0  # Track last capture end for stale session check
         
-        # ⭐⭐ PATTERN 6: Current Capture Context (SINDH-pattern dynamic timeouts)
+        #  PATTERN 6: Current Capture Context (SINDH-pattern dynamic timeouts)
         self._current_timeout = self.config.initial_timeout_s
         self._current_context = "initial"
         self._current_attempt = 0
         
-        # ⭐⭐⭐ PATTERN 5: Concurrency Control (SINDH-pattern locks)
+        #  PATTERN 5: Concurrency Control (SINDH-pattern locks)
         self._async_lock = None  # Will be created in capture_speech_bidirectional()
         self._active = False
         
@@ -484,11 +484,11 @@ class LeibnizBidirectionalVAD:
             )
         
         self.client = genai.Client(api_key=api_key)
-        logger.info("✅ Gemini client initialized for Leibniz VAD")
+        logger.info(" Gemini client initialized for Leibniz VAD")
     
     async def set_agent_speaking_state(self, is_speaking: bool, context: str = ""):
         """
-        ⭐⭐⭐ PATTERN 5: Update agent speaking state (SINDH-pattern state management).
+         PATTERN 5: Update agent speaking state (SINDH-pattern state management).
         
         Called by:
         - TTS module before/after speech playback
@@ -502,12 +502,12 @@ class LeibnizBidirectionalVAD:
         self.conversation_state = "speaking" if is_speaking else "listening"
         
         if self.config.log_state_transitions:
-            status = f"🔊 Agent speaking: {context}" if is_speaking else f"🎤 Ready for user: {context}"
+            status = f" Agent speaking: {context}" if is_speaking else f" Ready for user: {context}"
             logger.debug(status)
     
     def should_accept_user_audio(self) -> bool:
         """
-        ⭐⭐⭐ PATTERN 5: Core bidirectional logic (SINDH-pattern audio gating).
+         PATTERN 5: Core bidirectional logic (SINDH-pattern audio gating).
         
         Returns:
             True if user audio should be accepted, False otherwise
@@ -529,7 +529,7 @@ class LeibnizBidirectionalVAD:
     
     def set_dynamic_timeout(self, attempt_count: int = 0, conversation_context: str = "initial"):
         """
-        ⭐⭐ PATTERN 6: Dynamic timeout configuration (SINDH-pattern per-phase timeouts).
+         PATTERN 6: Dynamic timeout configuration (SINDH-pattern per-phase timeouts).
         
         Maps conversation context to appropriate timeout values:
         - greeting: 12s (allow comfort time)
@@ -569,7 +569,7 @@ class LeibnizBidirectionalVAD:
     
     def log_timeout_event(self, elapsed_time: float, expected_timeout: float):
         """
-        ⭐ PATTERN 7: Timeout event logging (SINDH-pattern diagnostics).
+         PATTERN 7: Timeout event logging (SINDH-pattern diagnostics).
         
         Logs detailed timeout information for debugging production issues.
         
@@ -590,7 +590,7 @@ class LeibnizBidirectionalVAD:
         streaming_callback: Optional[Callable[[str, bool], None]] = None
     ) -> Optional[str]:
         """
-        ⭐⭐⭐ PATTERNS 2-4-6: Bidirectional speech capture (SINDH-EXACT implementation).
+         PATTERNS 2-4-6: Bidirectional speech capture (SINDH-EXACT implementation).
         
         Pattern 2 (Streaming): 50-100ms PCM chunks via sounddevice → asyncio.Queue → session.send()
         Pattern 3 (Callbacks): Fragment-level streaming_callback(text, is_final) for real-time UI
@@ -628,45 +628,45 @@ class LeibnizBidirectionalVAD:
         - Integrates with LeibnizPersistentSession for session pooling
         - Triggers leibniz_persistent_services prewarm on first speech detection
         """
-        # ⭐⭐⭐ PATTERN 5: Concurrency lock initialization (SINDH-pattern)
+        #  PATTERN 5: Concurrency lock initialization (SINDH-pattern)
         if self._async_lock is None:
             self._async_lock = asyncio.Lock()
         
         # Prevent concurrent captures (SINDH-pattern concurrency guard)
         if self._async_lock.locked():
-            logger.warning("🔒 Capture already in progress, skipping")
+            logger.warning(" Capture already in progress, skipping")
             return None
         
         # Acquire lock to guard the critical section
         await self._async_lock.acquire()
         
         try:
-            # ⭐⭐⭐ PATTERN 5: State management (SINDH-pattern conversation state)
+            #  PATTERN 5: State management (SINDH-pattern conversation state)
             self._active = True
             self.is_listening = True
             self.conversation_state = "listening"
             
-            # ⭐ PATTERN 7: Capture logging with context (SINDH-pattern diagnostics)
+            #  PATTERN 7: Capture logging with context (SINDH-pattern diagnostics)
             logger.info(
-                f"🎤 Starting capture (timeout: {self._current_timeout}s, "
+                f" Starting capture (timeout: {self._current_timeout}s, "
                 f"context: {self._current_context}, attempt: {self._current_attempt})"
             )
             
-            # ⭐⭐⭐ PATTERN 4: Session health checks (SINDH-pattern stale detection)
+            #  PATTERN 4: Session health checks (SINDH-pattern stale detection)
             now = time.time()
             time_since_last_capture = now - self._last_capture_ended_at if self._last_capture_ended_at > 0 else 0
             
             # Force session reset if stale (>60s idle) or too many timeouts
             if time_since_last_capture > 60.0:
-                logger.info(f"⚠️  Session stale ({time_since_last_capture:.1f}s), forcing reset")
+                logger.info(f"️  Session stale ({time_since_last_capture:.1f}s), forcing reset")
                 await LeibnizPersistentSession.close_session()
             
             if self.consecutive_timeouts >= 3:
-                logger.warning(f"⚠️  Too many timeouts ({self.consecutive_timeouts}), forcing session reset")
+                logger.warning(f"️  Too many timeouts ({self.consecutive_timeouts}), forcing session reset")
                 await LeibnizPersistentSession.close_session()
                 self.consecutive_timeouts = 0
             
-            # ⭐⭐⭐ PATTERN 1: Get persistent session (SINDH-pattern session pooling)
+            #  PATTERN 1: Get persistent session (SINDH-pattern session pooling)
             session = await LeibnizPersistentSession.get_session(
                 self.client,
                 self.config.model_name,
@@ -679,20 +679,20 @@ class LeibnizBidirectionalVAD:
             start_time = time.time()
             last_activity = start_time
             
-            # ⭐⭐⭐ PATTERN 2: Audio streaming setup (SINDH-pattern 50-100ms chunks)
+            #  PATTERN 2: Audio streaming setup (SINDH-pattern 50-100ms chunks)
             audio_queue = asyncio.Queue(maxsize=50)  # Bounded queue prevents memory growth
             stream_active = True
             
             def audio_callback(indata, frames, time_info, status):
-                """⭐⭐⭐ PATTERN 2: Sounddevice callback (SINDH-pattern PCM streaming)."""
+                """ PATTERN 2: Sounddevice callback (SINDH-pattern PCM streaming)."""
                 if status and self.config.log_audio_callbacks:
-                    logger.warning(f"⚠️  Audio status: {status}")
+                    logger.warning(f"️  Audio status: {status}")
                 
-                # ⭐⭐⭐ PATTERN 5: Audio gating (SINDH-pattern bidirectional logic)
+                #  PATTERN 5: Audio gating (SINDH-pattern bidirectional logic)
                 if not self.should_accept_user_audio():
                     if self.config.log_audio_callbacks or self.config.verbosity_level >= 2:
                         logger.debug(
-                            f"🚫 Rejecting audio (state: {self.conversation_state}, "
+                            f" Rejecting audio (state: {self.conversation_state}, "
                             f"agent_speaking: {self.is_agent_speaking})"
                         )
                     return
@@ -706,15 +706,15 @@ class LeibnizBidirectionalVAD:
                         audio_queue.put_nowait(audio_data)
                     except asyncio.QueueFull:
                         if self.config.log_audio_callbacks:
-                            logger.warning("⚠️  Audio queue full, dropping frame")
+                            logger.warning("️  Audio queue full, dropping frame")
             
             async def stream_audio():
-                """⭐⭐⭐ PATTERN 2: Audio streaming task (SINDH-EXACT protocol)."""
+                """ PATTERN 2: Audio streaming task (SINDH-EXACT protocol)."""
                 nonlocal stream_active
                 
                 try:
                     if self.config.log_state_transitions:
-                        logger.debug("🎙️ Starting audio streaming...")
+                        logger.debug("️ Starting audio streaming...")
                     
                     while stream_active:
                         # Check if we should accept audio (SINDH-pattern gating)
@@ -726,7 +726,7 @@ class LeibnizBidirectionalVAD:
                             # Dequeue with timeout to avoid blocking
                             audio_data = await asyncio.wait_for(audio_queue.get(), timeout=0.1)
                             
-                            # ⭐⭐⭐ SINDH-EXACT API: send_realtime_input with types.Blob
+                            #  SINDH-EXACT API: send_realtime_input with types.Blob
                             await session.send_realtime_input(
                                 audio=types.Blob(
                                     data=audio_data,
@@ -739,64 +739,64 @@ class LeibnizBidirectionalVAD:
                         
                         except Exception as e:
                             error_msg = str(e)
-                            logger.error(f"❌ Audio stream error: {e}")
+                            logger.error(f" Audio stream error: {e}")
                             
-                            # ⭐⭐⭐ PATTERN 4: Critical error detection (SINDH-pattern)
+                            #  PATTERN 4: Critical error detection (SINDH-pattern)
                             if '1011' in error_msg or '1006' in error_msg or 'internal error' in error_msg.lower():
-                                logger.warning("⚠️ Critical audio stream error - will reset session")
+                                logger.warning("️ Critical audio stream error - will reset session")
                                 await LeibnizPersistentSession.close_session()
                             
                             logger.debug("Breaking audio stream due to error")
                             break
                 
                 except Exception as e:
-                    logger.error(f"❌ Stream audio task error: {e}")
+                    logger.error(f" Stream audio task error: {e}")
             
             async def process_transcripts():
-                """⭐⭐⭐ PATTERN 3: Transcript processing with fragments (SINDH-EXACT implementation)."""
+                """ PATTERN 3: Transcript processing with fragments (SINDH-EXACT implementation)."""
                 nonlocal transcript_result, speech_detected, last_activity
                 fragments = []
                 final_callback_emitted = False  # Guard against duplicate final callbacks
                 
                 try:
                     if self.config.log_state_transitions:
-                        logger.debug("🔄 Starting transcript processing...")
+                        logger.debug(" Starting transcript processing...")
                     
                     async for response in session.receive():
                         last_activity = time.time()  # Update activity timestamp
                         
-                        # ⭐⭐⭐ PATTERN 5: Barge-in detection (SINDH-exact)
+                        #  PATTERN 5: Barge-in detection (SINDH-exact)
                         if (response.server_content and 
                             response.server_content.interrupted and 
                             self.is_agent_speaking):
-                            logger.info("✋ Barge-in detected!")
+                            logger.info(" Barge-in detected!")
                             self.barge_in_detected = True
                             await self.set_agent_speaking_state(False, "User barge-in")
                         
-                        # ⭐⭐⭐ SINDH-EXACT: Process input_transcription (not input_audio_transcription)
+                        #  SINDH-EXACT: Process input_transcription (not input_audio_transcription)
                         if response.server_content and response.server_content.input_transcription:
                             text = response.server_content.input_transcription.text
                             
                             if text and text.strip():
                                 if not speech_detected:
-                                    logger.info("🗣️ Speech detected!")
+                                    logger.info("️ Speech detected!")
                                     speech_detected = True
                                     # Enhanced speech detection logging
                                     logger.debug(f"Language: {self.config.language_code}, Fragment: '{text[:50]}...'")
                                     
-                                    # ⭐ PATTERN 7: Trigger prewarm on first speech (SINDH-pattern optimization)
+                                    #  PATTERN 7: Trigger prewarm on first speech (SINDH-pattern optimization)
                                     try:
-                                        logger.debug("⚡ Triggering persistent services prewarm on speech detection")
+                                        logger.debug(" Triggering persistent services prewarm on speech detection")
                                         asyncio.get_running_loop().create_task(trigger_prewarm_on_speech_detection())
                                     except Exception as e:
-                                        logger.warning(f"⚠️  Prewarm trigger error: {e}")
-                                        logger.debug(f"⚠️  Prewarm failed: {e}")
+                                        logger.warning(f"️  Prewarm trigger error: {e}")
+                                        logger.debug(f"️  Prewarm failed: {e}")
                                     else:
-                                        logger.debug("✅ Prewarm trigger successful")
+                                        logger.debug(" Prewarm trigger successful")
                                     
                                     # Handle speech during agent speaking (barge-in)
                                     if self.is_agent_speaking:
-                                        logger.info("🔄 User interrupted agent")
+                                        logger.info(" User interrupted agent")
                                         self.barge_in_detected = True
                                         await self.set_agent_speaking_state(False, "Barge-in interrupt")
                                 
@@ -805,9 +805,9 @@ class LeibnizBidirectionalVAD:
                                 
                                 # Enhanced fragment logging with verbose option
                                 if self.config.verbose:
-                                    logger.debug(f"📝 Fragment {len(fragments)}: {text} (cumulative: {len(' '.join(fragments))} chars)")
+                                    logger.debug(f" Fragment {len(fragments)}: {text} (cumulative: {len(' '.join(fragments))} chars)")
                                 
-                                # ⭐⭐ PATTERN 3: Fragment callback (SINDH-pattern real-time UI)
+                                #  PATTERN 3: Fragment callback (SINDH-pattern real-time UI)
                                 if streaming_callback:
                                     callback_start = time.time()
                                     try:
@@ -816,20 +816,20 @@ class LeibnizBidirectionalVAD:
                                         else:
                                             streaming_callback(text.strip(), is_final=False)
                                     except Exception as e:
-                                        logger.warning(f"⚠️  Streaming callback error: {e}")
+                                        logger.warning(f"️  Streaming callback error: {e}")
                                     finally:
                                         callback_elapsed = (time.time() - callback_start) * 1000
                                         if callback_elapsed > 50:  # Log if callback takes >50ms
-                                            logger.debug(f"⚠️  Slow callback: {callback_elapsed:.1f}ms")
+                                            logger.debug(f"️  Slow callback: {callback_elapsed:.1f}ms")
                                 
-                                # ⭐⭐ PATTERN 3: Early completion heuristics (SINDH-exact)
+                                #  PATTERN 3: Early completion heuristics (SINDH-exact)
                                 try:
                                     # Phone numbers: 10 consecutive digits → complete immediately
                                     digits = ''.join(ch for ch in ' '.join(fragments) if ch.isdigit())
                                     if len(digits) >= 10 and digits[0] in '6789':
                                         # Use contiguous digits for downstream parsing (not space-separated)
                                         transcript_result = digits
-                                        logger.info(f"📞 Early transcript (phone): {transcript_result}")
+                                        logger.info(f" Early transcript (phone): {transcript_result}")
                                         self.is_listening = False
                                         break
                                     
@@ -840,8 +840,8 @@ class LeibnizBidirectionalVAD:
                                         len(' '.join(fragments)) > 20):  # Min 20 chars
                                         
                                         transcript_result = ' '.join(fragments).strip()
-                                        logger.info(f"✅ Early completion (no chunks for {time_since_last_chunk:.1f}s)")
-                                        logger.info(f"✅ Complete transcript: {transcript_result}")
+                                        logger.info(f" Early completion (no chunks for {time_since_last_chunk:.1f}s)")
+                                        logger.info(f" Complete transcript: {transcript_result}")
                                         
                                         # Emit final transcript immediately
                                         if streaming_callback:
@@ -852,7 +852,7 @@ class LeibnizBidirectionalVAD:
                                                     streaming_callback(transcript_result, is_final=True)
                                                 final_callback_emitted = True  # Mark as emitted
                                             except Exception as e:
-                                                logger.warning(f"⚠️  Early completion callback error: {e}")
+                                                logger.warning(f"️  Early completion callback error: {e}")
                                         
                                         self.is_listening = False
                                         break
@@ -860,18 +860,18 @@ class LeibnizBidirectionalVAD:
                                 except Exception:
                                     pass
                         
-                        # ⭐⭐ PATTERN 3: Handle turn completion signal (SINDH-exact)
+                        #  PATTERN 3: Handle turn completion signal (SINDH-exact)
                         if response.server_content and response.server_content.turn_complete:
-                            logger.debug("✅ Turn complete signal received")
+                            logger.debug(" Turn complete signal received")
                             break
                     
-                    # ⭐⭐ PATTERN 3: Final transcript assembly (SINDH-exact)
+                    #  PATTERN 3: Final transcript assembly (SINDH-exact)
                     if fragments and not transcript_result:
                         transcript_result = ' '.join(fragments).strip()
-                        logger.info(f"🎯 Final complete transcript: '{transcript_result}'")
+                        logger.info(f" Final complete transcript: '{transcript_result}'")
                         logger.debug(f"Assembled from {len(fragments)} fragments")
                     
-                    # ⭐⭐ PATTERN 3: Final callback (SINDH-exact)
+                    #  PATTERN 3: Final callback (SINDH-exact)
                     # Skip if already emitted in early completion path
                     if transcript_result and streaming_callback and not final_callback_emitted:
                         try:
@@ -880,16 +880,16 @@ class LeibnizBidirectionalVAD:
                             else:
                                 streaming_callback(transcript_result, is_final=True)
                         except Exception as e:
-                            logger.warning(f"⚠️  Final callback error: {e}")
+                            logger.warning(f"️  Final callback error: {e}")
                 
                 except Exception as e:
-                    logger.error(f"❌ Process transcripts error: {e}")
+                    logger.error(f" Process transcripts error: {e}")
             
             async def manage_timeouts():
-                """⭐⭐ PATTERN 6: Timeout management with smart prompting (SINDH-pattern)."""
+                """ PATTERN 6: Timeout management with smart prompting (SINDH-pattern)."""
                 nonlocal speech_detected, stream_active
                 
-                # ⭐⭐ PATTERN 6: Start timeout - wait for first speech
+                #  PATTERN 6: Start timeout - wait for first speech
                 start_deadline = start_time + self._current_timeout
                 smart_prompt_triggered = False
                 
@@ -897,16 +897,16 @@ class LeibnizBidirectionalVAD:
                     if speech_detected:
                         break
                     
-                    # ⭐⭐ PATTERN 6: Smart prompt at 6s threshold (SINDH-pattern user encouragement)
+                    #  PATTERN 6: Smart prompt at 6s threshold (SINDH-pattern user encouragement)
                     elapsed = time.time() - start_time
                     if elapsed >= 6.0 and not smart_prompt_triggered:
                         smart_prompt_triggered = True
-                        logger.info("💡 Smart prompt: 6s elapsed, encouraging user...")
+                        logger.info(" Smart prompt: 6s elapsed, encouraging user...")
                         # Could play subtle prompt sound or show UI hint here
                     
                     await asyncio.sleep(0.1)
                 
-                # ⭐⭐ PATTERN 6: Handle start timeout (SINDH-pattern timeout logic)
+                #  PATTERN 6: Handle start timeout (SINDH-pattern timeout logic)
                 if not speech_detected:
                     elapsed = time.time() - start_time
                     self.log_timeout_event(elapsed, self._current_timeout)
@@ -923,12 +923,12 @@ class LeibnizBidirectionalVAD:
                     
                     return
                 
-                # ⭐⭐ PATTERN 6: Silence timeout - wait for silence after speech (SINDH-pattern)
+                #  PATTERN 6: Silence timeout - wait for silence after speech (SINDH-pattern)
                 while True:
                     silence_duration = time.time() - last_activity
                     
                     if silence_duration >= self.config.silence_timeout:
-                        logger.info(f"🔇 Silence detected ({silence_duration:.1f}s), completing capture")
+                        logger.info(f" Silence detected ({silence_duration:.1f}s), completing capture")
                         
                         # Stop capture
                         stream_active = False
@@ -943,11 +943,11 @@ class LeibnizBidirectionalVAD:
                     
                     await asyncio.sleep(0.1)
             
-            # ⭐⭐⭐ PATTERN 4: Retry logic for PortAudio errors (SINDH-pattern resilience)
+            #  PATTERN 4: Retry logic for PortAudio errors (SINDH-pattern resilience)
             max_retries = 2
             for retry in range(max_retries):
                 try:
-                    # ⭐⭐⭐ PATTERN 2: Start audio stream (SINDH-pattern sounddevice config)
+                    #  PATTERN 2: Start audio stream (SINDH-pattern sounddevice config)
                     with sd.InputStream(
                         callback=audio_callback,
                         samplerate=self.config.sample_rate,
@@ -955,7 +955,7 @@ class LeibnizBidirectionalVAD:
                         dtype=np.float32,
                         blocksize=int(self.config.sample_rate * 0.05)  # 50ms chunks (SINDH-pattern)
                     ):
-                        # ⭐⭐⭐ PATTERN 2+3+6: Run concurrent tasks (SINDH-pattern parallelism)
+                        #  PATTERN 2+3+6: Run concurrent tasks (SINDH-pattern parallelism)
                         tasks = [
                             asyncio.create_task(stream_audio()),
                             asyncio.create_task(process_transcripts()),
@@ -979,23 +979,23 @@ class LeibnizBidirectionalVAD:
                     break  # Success, exit retry loop
                 
                 except Exception as e:
-                    # ⭐⭐⭐ PATTERN 4: PortAudio retry logic (SINDH-pattern error handling)
+                    #  PATTERN 4: PortAudio retry logic (SINDH-pattern error handling)
                     if "PortAudio" in str(e) and retry < max_retries - 1:
-                        logger.warning(f"⚠️  PortAudio error, retrying ({retry+1}/{max_retries}): {e}")
+                        logger.warning(f"️  PortAudio error, retrying ({retry+1}/{max_retries}): {e}")
                         await asyncio.sleep(0.5)
                     else:
                         raise
             
-            # ⭐ PATTERN 7: Update performance metrics (SINDH-pattern diagnostics)
+            #  PATTERN 7: Update performance metrics (SINDH-pattern diagnostics)
             capture_time = time.time() - start_time
             self.capture_count += 1
             self.total_capture_time += capture_time
             self.avg_capture_time = self.total_capture_time / self.capture_count
             
             if transcript_result:
-                logger.info(f"✅ Speech captured in {capture_time:.1f}s: {transcript_result[:50]}...")
+                logger.info(f" Speech captured in {capture_time:.1f}s: {transcript_result[:50]}...")
                 
-                # ⭐ PATTERN 1: Trigger smart warmup (SINDH-pattern session optimization)
+                #  PATTERN 1: Trigger smart warmup (SINDH-pattern session optimization)
                 self._trigger_smart_warmup_background()
                 
                 # Reset consecutive timeouts on success (SINDH-pattern health tracking)
@@ -1007,21 +1007,21 @@ class LeibnizBidirectionalVAD:
             return transcript_result
         
         except Exception as e:
-            # ⭐⭐⭐ PATTERN 4: Critical error detection (SINDH-pattern session reset)
+            #  PATTERN 4: Critical error detection (SINDH-pattern session reset)
             error_str = str(e)
             
             # Force session reset on critical errors (SINDH-pattern error recovery)
             critical_errors = ["1011", "1006", "internal error", "session closed", "event loop"]
             if any(err in error_str.lower() for err in critical_errors):
-                logger.error(f"❌ CRITICAL ERROR, resetting session: {e}")
+                logger.error(f" CRITICAL ERROR, resetting session: {e}")
                 await LeibnizPersistentSession.close_session()
             else:
-                logger.error(f"❌ Capture error: {e}")
+                logger.error(f" Capture error: {e}")
             
             return None
         
         finally:
-            # ⭐⭐⭐ PATTERN 5: State cleanup (SINDH-pattern resource management)
+            #  PATTERN 5: State cleanup (SINDH-pattern resource management)
             stream_active = False
             self.is_listening = False
             self._active = False
@@ -1047,7 +1047,7 @@ class LeibnizBidirectionalVAD:
     
     def _trigger_smart_warmup_background(self):
         """
-        ⭐ PATTERN 1: Trigger smart warmup in background (SINDH-pattern session optimization).
+         PATTERN 1: Trigger smart warmup in background (SINDH-pattern session optimization).
         
         Runs session warmup in a background thread to avoid blocking the main conversation loop.
         Uses 3s delay to ensure current pipeline continues, then runs warmup in isolated event loop.
@@ -1080,7 +1080,7 @@ class LeibnizBidirectionalVAD:
     
     def get_performance_metrics(self) -> Dict[str, Any]:
         """
-        ⭐ PATTERN 7: Get performance metrics for diagnostics (SINDH-pattern observability).
+         PATTERN 7: Get performance metrics for diagnostics (SINDH-pattern observability).
         
         Returns comprehensive diagnostics including:
         - Conversation state (idle, listening, speaking, deciding)
@@ -1172,15 +1172,15 @@ async def capture_leibniz_speech(
     if transcript:
         # Normalize transcript with timing
         normalization_start = time.time()
-        logger.debug(f"📝 Original transcript: '{transcript}'")
+        logger.debug(f" Original transcript: '{transcript}'")
         
         normalized = normalize_english_transcript(transcript)
         
         normalization_time_ms = (time.time() - normalization_start) * 1000
         if normalized != transcript:
-            logger.debug(f"🔧 Normalized transcript: '{normalized}' ({normalization_time_ms:.2f}ms)")
+            logger.debug(f" Normalized transcript: '{normalized}' ({normalization_time_ms:.2f}ms)")
         else:
-            logger.debug(f"✅ No normalization needed ({normalization_time_ms:.2f}ms)")
+            logger.debug(f" No normalization needed ({normalization_time_ms:.2f}ms)")
         
         # Create temporary silent WAV file for compatibility
         # (leibniz_pro.py expects audio file path)
@@ -1297,10 +1297,10 @@ async def test_leibniz_vad():
     )
     
     if transcript:
-        print(f"\n✓ Captured: {transcript}")
+        print(f"\n Captured: {transcript}")
         print(f"  Audio file: {audio_file}")
     else:
-        print("\n✗ No speech detected")
+        print("\n No speech detected")
     
     # Test 2: Agent speaking state
     print("\n\nTest 2: Agent Speaking State")
@@ -1325,7 +1325,7 @@ async def test_leibniz_vad():
     print("\n\nCleanup")
     print("-" * 60)
     await cleanup_leibniz_vad()
-    print("✓ Cleanup complete")
+    print(" Cleanup complete")
     
     print("\n" + "="*60)
     print("TEST COMPLETE")

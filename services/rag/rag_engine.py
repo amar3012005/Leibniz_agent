@@ -62,11 +62,11 @@ class RAGEngine:
             try:
                 genai.configure(api_key=config.gemini_api_key)
                 self.gemini_model = genai.GenerativeModel(config.gemini_model)
-                logger.info(f"✅ Gemini model initialized: {config.gemini_model}")
+                logger.info(f" Gemini model initialized: {config.gemini_model}")
             except Exception as e:
-                logger.error(f"❌ Gemini initialization failed: {e}")
+                logger.error(f" Gemini initialization failed: {e}")
         else:
-            logger.warning("⚠️ No Gemini API key - response generation unavailable")
+            logger.warning("️ No Gemini API key - response generation unavailable")
         
         # Storage
         self.vector_store = None
@@ -94,7 +94,7 @@ class RAGEngine:
             
             # Validate files exist
             if not all(os.path.exists(p) for p in [index_path, metadata_path, texts_path]):
-                logger.error(f"❌ Index files not found at {self.config.vector_store_path}")
+                logger.error(f" Index files not found at {self.config.vector_store_path}")
                 return False
             
             # Load FAISS index
@@ -107,11 +107,11 @@ class RAGEngine:
             with open(texts_path, 'r', encoding='utf-8') as f:
                 self.documents = json.load(f)
             
-            logger.info(f"✅ Loaded FAISS index: {len(self.documents)} documents")
+            logger.info(f" Loaded FAISS index: {len(self.documents)} documents")
             return True
         
         except Exception as e:
-            logger.error(f"❌ Error loading index: {e}", exc_info=True)
+            logger.error(f" Error loading index: {e}", exc_info=True)
             return False
     
     async def process_query(
@@ -146,7 +146,7 @@ class RAGEngine:
             
             # Step 2: Validate components
             if not self.embeddings or not self.vector_store or not self.gemini_model:
-                logger.warning("⚠️ Components unavailable, falling back to Gemini-only")
+                logger.warning("️ Components unavailable, falling back to Gemini-only")
                 return await self.gemini_only_query(query_text, context, streaming_callback)
             
             # Step 3: Enrich query with entities
@@ -340,7 +340,7 @@ Your response:"""
             }
         
         except Exception as e:
-            logger.error(f"❌ RAG query error: {e}", exc_info=True)
+            logger.error(f" RAG query error: {e}", exc_info=True)
             return {
                 'answer': "I apologize, but I encountered an error while processing your question. Could you please try rephrasing it?",
                 'sources': [],

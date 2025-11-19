@@ -31,13 +31,13 @@ def main():
     
     # Check CUDA availability
     if torch.cuda.is_available():
-        print(f"✅ CUDA available: {torch.cuda.get_device_name(0)}")
+        print(f" CUDA available: {torch.cuda.get_device_name(0)}")
         print(f"   VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB")
     else:
-        print("⚠️  CUDA not available. Running on CPU (will be slow)")
+        print("️  CUDA not available. Running on CPU (will be slow)")
         print("   Recommend: Install PyTorch with CUDA support")
     
-    print("\n📥 Loading Maya1 model (this may take a few minutes)...")
+    print("\n Loading Maya1 model (this may take a few minutes)...")
     start_time = time.time()
     
     # Load the Maya1 voice AI model
@@ -49,31 +49,31 @@ def main():
             trust_remote_code=True  # Maya1 may require custom code
         )
         tokenizer = AutoTokenizer.from_pretrained("maya-research/maya1", trust_remote_code=True)
-        print(f"✅ Maya1 model loaded ({time.time() - start_time:.1f}s)")
+        print(f" Maya1 model loaded ({time.time() - start_time:.1f}s)")
     except Exception as e:
-        print(f"❌ Failed to load Maya1 model: {e}")
+        print(f" Failed to load Maya1 model: {e}")
         print("\nTroubleshooting:")
         print("  1. Install dependencies: pip install transformers accelerate")
         print("  2. Ensure HuggingFace login: huggingface-cli login")
         print("  3. Check model access: https://huggingface.co/maya-research/maya1")
         return
     
-    print("\n📥 Loading SNAC audio decoder (24kHz)...")
+    print("\n Loading SNAC audio decoder (24kHz)...")
     start_time = time.time()
     
     # Load SNAC audio decoder
     try:
         device = "cuda" if torch.cuda.is_available() else "cpu"
         snac_model = SNAC.from_pretrained("hubertsiuzdak/snac_24khz").eval().to(device)
-        print(f"✅ SNAC decoder loaded ({time.time() - start_time:.1f}s)")
+        print(f" SNAC decoder loaded ({time.time() - start_time:.1f}s)")
     except Exception as e:
-        print(f"❌ Failed to load SNAC decoder: {e}")
+        print(f" Failed to load SNAC decoder: {e}")
         print("\nInstall SNAC: pip install snac")
         return
     
     # Design your voice with natural language
     print("\n" + "=" * 70)
-    print("🎤 Voice Design Configuration")
+    print(" Voice Design Configuration")
     print("=" * 70)
     
     description = "Realistic male voice in the 30s age with american accent. Normal pitch, warm timbre, conversational pacing."
@@ -86,9 +86,9 @@ def main():
     # Create prompt with voice design (CORRECT FORMAT from HuggingFace docs)
     prompt = f'<description="{description}"> {text}'
     
-    print(f"\n📝 Prompt: {prompt[:150]}...")
+    print(f"\n Prompt: {prompt[:150]}...")
     
-    print(f"\n🎯 Generating emotional speech...")
+    print(f"\n Generating emotional speech...")
     start_time = time.time()
     
     # Generate emotional speech with enhanced parameters
@@ -109,10 +109,10 @@ def main():
         )
     
     generation_time = time.time() - start_time
-    print(f"✅ Speech tokens generated ({generation_time:.1f}s)")
+    print(f" Speech tokens generated ({generation_time:.1f}s)")
     
     # Extract SNAC audio tokens
-    print("\n📦 Decoding audio tokens...")
+    print("\n Decoding audio tokens...")
     generated_ids = outputs[0, inputs['input_ids'].shape[1]:]
     
     # Debug: Print token range
@@ -128,7 +128,7 @@ def main():
     print(f"   Strategy 1 (SNAC range): {len(snac_tokens)} tokens")
     
     if len(snac_tokens) == 0:
-        print("\n⚠️  WARNING: No tokens in standard SNAC range. Trying alternatives...")
+        print("\n️  WARNING: No tokens in standard SNAC range. Trying alternatives...")
         
         # Strategy 2: Broader audio codec range
         snac_tokens = [t.item() for t in generated_ids if t > 128000]
@@ -142,7 +142,7 @@ def main():
     print(f"   Total SNAC tokens extracted: {len(snac_tokens)}")
     
     if len(snac_tokens) == 0:
-        print("\n❌ CRITICAL: No audio tokens found!")
+        print("\n CRITICAL: No audio tokens found!")
         print("   Possible issues:")
         print("   1. Maya1 model may use different token range")
         print("   2. Prompt format may be incorrect")
@@ -154,7 +154,7 @@ def main():
         decoded_output = tokenizer.decode(generated_ids, skip_special_tokens=False)
         print(f"\n   Decoded output: {decoded_output[:200]}")
         
-        print("\n💡 Troubleshooting:")
+        print("\n Troubleshooting:")
         print("   - Check HuggingFace model card for updated usage")
         print("   - Verify model is maya-research/maya1 (not a fine-tune)")
         print("   - Try different prompt format")
@@ -179,7 +179,7 @@ def main():
     print(f"   Code layers: {[len(c) for c in codes]}")
     
     # Generate final audio with SNAC decoder
-    print("\n🎵 Generating audio waveform...")
+    print("\n Generating audio waveform...")
     start_time = time.time()
     
     codes_tensor = [
@@ -193,20 +193,20 @@ def main():
         )[0, 0].cpu().numpy()
     
     decode_time = time.time() - start_time
-    print(f"✅ Audio decoded ({decode_time:.1f}s)")
+    print(f" Audio decoded ({decode_time:.1f}s)")
     
     # Save your emotional voice output
     output_file = "maya1_output.wav"
     sf.write(output_file, audio, 24000)
     
     print("\n" + "=" * 70)
-    print("✅ SUCCESS! Voice generated successfully!")
+    print(" SUCCESS! Voice generated successfully!")
     print("=" * 70)
-    print(f"📁 Output file: {output_file}")
-    print(f"📊 Audio duration: {len(audio) / 24000:.2f} seconds")
-    print(f"📈 Sample rate: 24000 Hz")
+    print(f" Output file: {output_file}")
+    print(f" Audio duration: {len(audio) / 24000:.2f} seconds")
+    print(f" Sample rate: 24000 Hz")
     print(f"⏱️  Total time: {generation_time + decode_time:.1f}s")
-    print(f"\n🎧 Play the audio:")
+    print(f"\n Play the audio:")
     print(f"   PowerShell: Start-Process {output_file}")
     print(f"   Command: {output_file}")
     
@@ -215,10 +215,10 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\n\n⚠️  Generation interrupted by user")
+        print("\n\n️  Generation interrupted by user")
     except Exception as e:
-        print(f"\n❌ Unexpected error: {e}")
+        print(f"\n Unexpected error: {e}")
         import traceback
         traceback.print_exc()
-        print("\n💡 Tip: Ensure all dependencies are installed:")
+        print("\n Tip: Ensure all dependencies are installed:")
         print("   pip install torch transformers accelerate snac soundfile")

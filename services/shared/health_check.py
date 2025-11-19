@@ -279,12 +279,12 @@ async def check_all_services(services: Dict[str, str]) -> Dict[str, HealthCheckR
 def _print_result(result: HealthCheckResult):
     """Pretty print health check result"""
     status_emoji = {
-        "healthy": "✅",
-        "degraded": "⚠️",
-        "unhealthy": "❌",
+        "healthy": "",
+        "degraded": "️",
+        "unhealthy": "",
     }
     
-    emoji = status_emoji.get(result.status, "❓")
+    emoji = status_emoji.get(result.status, "")
     print(f"\n{emoji} {result.service_name.upper()}")
     print(f"   Status: {result.status}")
     print(f"   Latency: {result.latency_ms:.2f}ms")
@@ -364,11 +364,11 @@ Examples:
     
     if not services:
         parser.print_help()
-        print("\n❌ Error: No services specified. Use --redis, --service, or --all")
+        print("\n Error: No services specified. Use --redis, --service, or --all")
         sys.exit(1)
     
     # Run health checks
-    print("🔍 Running health checks...")
+    print(" Running health checks...")
     results = await check_all_services(services)
     
     # Print results
@@ -379,14 +379,14 @@ Examples:
     healthy_count = sum(1 for r in results.values() if r.is_healthy())
     total_count = len(results)
     
-    print(f"\n📊 Summary: {healthy_count}/{total_count} services healthy")
+    print(f"\n Summary: {healthy_count}/{total_count} services healthy")
     
     # Exit code: 0 if all healthy, 1 if any unhealthy
     if healthy_count == total_count:
-        print("🎉 All services are healthy!")
+        print(" All services are healthy!")
         sys.exit(0)
     else:
-        print("⚠️  Some services are unhealthy")
+        print("️  Some services are unhealthy")
         sys.exit(1)
 
 

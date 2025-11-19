@@ -59,7 +59,7 @@ class MockTTSProvider:
             config: TTSConfig (uses sample_rate only, no API keys needed)
         """
         self.config = config
-        logger.info("✅ Mock TTS initialized (silent audio generation)")
+        logger.info(" Mock TTS initialized (silent audio generation)")
     
     def _generate_silent_wav(self, duration_seconds: float) -> bytes:
         """
@@ -137,7 +137,7 @@ class MockTTSProvider:
         # Generate silent WAV
         wav_audio = self._generate_silent_wav(duration_seconds)
         
-        logger.debug(f"✅ Mock TTS generated {len(text)} chars → {duration_seconds:.1f}s silence ({len(wav_audio)} bytes)")
+        logger.debug(f" Mock TTS generated {len(text)} chars → {duration_seconds:.1f}s silence ({len(wav_audio)} bytes)")
         return wav_audio
     
     async def stream_synthesize(

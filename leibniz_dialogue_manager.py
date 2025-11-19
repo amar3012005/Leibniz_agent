@@ -91,7 +91,7 @@ class LeibnizDialogueManager:
         # Then load from direct environment variables (these can override file-based ones)
         self._load_from_environment_variables()
 
-        logger.info(f"✅ Loaded {len(self._dialogues)} dialogues from files and environment variables")
+        logger.info(f" Loaded {len(self._dialogues)} dialogues from files and environment variables")
 
     def _load_from_category_files(self):
         """Load dialogues from category-specific .env files"""
@@ -147,7 +147,7 @@ class LeibnizDialogueManager:
                             if internal_key:
                                 self._dialogues[internal_key] = value
 
-            logger.debug(f"✅ Loaded dialogues from {file_path} ({category} category)")
+            logger.debug(f" Loaded dialogues from {file_path} ({category} category)")
 
         except Exception as e:
             logger.warning(f"Failed to load dialogue file {file_path}: {e}")
@@ -207,7 +207,7 @@ class LeibnizDialogueManager:
                     # Fallback for variables without category prefix
                     self._dialogues[dialogue_key] = value
 
-        logger.debug(f"✅ Loaded dialogues from environment variables")
+        logger.debug(f" Loaded dialogues from environment variables")
 
     def get_dialogue(self, category: str, key: str, **kwargs) -> Optional[str]:
         """
@@ -311,7 +311,7 @@ class LeibnizDialogueManager:
         # Check if audio already exists
         audio_path = self.get_audio_path(category, key, text, emotion)
         if audio_path and os.path.exists(audio_path):
-            logger.debug(f"✅ Using archived dialogue audio: {category}.{key}")
+            logger.debug(f" Using archived dialogue audio: {category}.{key}")
             return audio_path
 
         # Synthesize new audio
@@ -400,7 +400,7 @@ class LeibnizDialogueManager:
             # Save metadata
             self._save_metadata(category, key, text, emotion, final_path)
 
-            logger.debug(f"📁 Archived dialogue audio: {final_path}")
+            logger.debug(f" Archived dialogue audio: {final_path}")
             return final_path
 
         except Exception as e:
@@ -504,6 +504,6 @@ def get_leibniz_dialogue_manager() -> LeibnizDialogueManager:
         )
 
         _dialogue_manager_instance = LeibnizDialogueManager(config)
-        logger.info("✅ Initialized Leibniz dialogue manager")
+        logger.info(" Initialized Leibniz dialogue manager")
 
     return _dialogue_manager_instance

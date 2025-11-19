@@ -28,12 +28,15 @@ COPY --from=builder /root/.local /root/.local
 # Update PATH to use installed packages
 ENV PATH=/root/.local/bin:$PATH
 
+# Set PYTHONPATH for absolute imports
+ENV PYTHONPATH=/app
+
 # Copy service code
-COPY leibniz_agent/services/intent/__init__.py ./
-COPY leibniz_agent/services/intent/config.py ./
-COPY leibniz_agent/services/intent/patterns.py ./
-COPY leibniz_agent/services/intent/intent_classifier.py ./
-COPY leibniz_agent/services/intent/app.py ./
+COPY leibniz_agent/services/intent /app/leibniz_agent/services/intent
+COPY leibniz_agent/services/shared /app/leibniz_agent/services/shared
+RUN mkdir -p /app/leibniz_agent/services && \
+    echo "" > /app/leibniz_agent/__init__.py && \
+    echo "" > /app/leibniz_agent/services/__init__.py
 
 # Expose service port
 EXPOSE 8002
@@ -43,4 +46,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8002/health', timeout=5)" || exit 1
 
 # Run with 1 worker to maintain consistent metrics and avoid state fragmentation
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8002", "--workers", "1"]
+CMD ["python", "-m", "uvicorn", "leibniz_agent.services.intent.app:app", "--host", "0.0.0.0", "--port", "8002", "--workers", "1"]

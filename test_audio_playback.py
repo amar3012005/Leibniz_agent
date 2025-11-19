@@ -27,10 +27,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 try:
     import sounddevice as sd
     SOUNDDEVICE_AVAILABLE = True
-    print("✅ sounddevice available for pygame fallback")
+    print(" sounddevice available for pygame fallback")
 except ImportError:
     SOUNDDEVICE_AVAILABLE = False
-    print("⚠️ sounddevice not available - pygame fallback disabled")
+    print("️ sounddevice not available - pygame fallback disabled")
 
 # Import TTS module (direct import since we're in leibniz_agent directory)
 import sys
@@ -41,7 +41,7 @@ from leibniz_tts import get_leibniz_tts
 
 async def test_audio_synthesis():
     """Test basic audio synthesis functionality"""
-    print("\n🎤 Testing Audio Synthesis...")
+    print("\n Testing Audio Synthesis...")
 
     try:
         tts = get_leibniz_tts()
@@ -53,30 +53,30 @@ async def test_audio_synthesis():
         if result['success']:
             audio_path = result['file']
             abs_path = os.path.abspath(audio_path)
-            print(f"✅ Synthesis successful: {abs_path}")
+            print(f" Synthesis successful: {abs_path}")
             print(f"   Duration: {result.get('duration', 'unknown'):.2f}s")
             print(f"   Cached: {result.get('cached', False)}")
             print(f"   Provider: {result.get('provider', 'unknown')}")
 
             # Verify file exists and has size
             if os.path.exists(abs_path) and os.path.getsize(abs_path) > 0:
-                print(f"✅ File verification passed: {os.path.getsize(abs_path)} bytes")
+                print(f" File verification passed: {os.path.getsize(abs_path)} bytes")
                 return abs_path
             else:
-                print("❌ File verification failed")
+                print(" File verification failed")
                 return None
         else:
-            print(f"❌ Synthesis failed: {result.get('error', 'unknown error')}")
+            print(f" Synthesis failed: {result.get('error', 'unknown error')}")
             return None
 
     except Exception as e:
-        print(f"❌ Synthesis test failed: {e}")
+        print(f" Synthesis test failed: {e}")
         return None
 
 
 async def test_pygame_playback(audio_path):
     """Test pygame audio playback with sounddevice fallback"""
-    print(f"\n🔊 Testing Audio Playback: {audio_path}")
+    print(f"\n Testing Audio Playback: {audio_path}")
 
     try:
         # Import pygame for primary playback
@@ -86,7 +86,7 @@ async def test_pygame_playback(audio_path):
         # Check file exists before loading
         abs_path = os.path.abspath(audio_path)
         if not os.path.exists(abs_path):
-            print(f"❌ Audio file not found: {abs_path}")
+            print(f" Audio file not found: {abs_path}")
             return False
 
         # Load and play with pygame
@@ -98,15 +98,15 @@ async def test_pygame_playback(audio_path):
             await asyncio.sleep(0.1)
 
         pygame.mixer.quit()
-        print("✅ Pygame playback successful")
+        print(" Pygame playback successful")
         return True
 
     except Exception as e:
-        print(f"❌ Pygame playback failed: {e}")
+        print(f" Pygame playback failed: {e}")
 
         # Try sounddevice fallback if available
         if SOUNDDEVICE_AVAILABLE:
-            print("🔄 Attempting sounddevice fallback...")
+            print(" Attempting sounddevice fallback...")
             try:
                 import soundfile as sf
 
@@ -117,36 +117,36 @@ async def test_pygame_playback(audio_path):
                 sd.play(audio_data, sample_rate)
                 sd.wait()
 
-                print("✅ Sounddevice fallback successful")
+                print(" Sounddevice fallback successful")
                 return True
 
             except Exception as fallback_e:
-                print(f"❌ Sounddevice fallback also failed: {fallback_e}")
+                print(f" Sounddevice fallback also failed: {fallback_e}")
                 return False
         else:
-            print("⚠️ No sounddevice fallback available")
+            print("️ No sounddevice fallback available")
             return False
 
 
 async def main():
     """Main test function"""
     print("=" * 60)
-    print("🧪 Leibniz TTS Audio Playback Test")
+    print(" Leibniz TTS Audio Playback Test")
     print("=" * 60)
 
     # Check environment
     api_key = os.getenv('LEMONFOX_API_KEY')
     if not api_key:
-        print("❌ LEMONFOX_API_KEY environment variable not set")
+        print(" LEMONFOX_API_KEY environment variable not set")
         print("   Please set your LemonFox API key to run this test")
         return
 
-    print(f"✅ LEMONFOX_API_KEY: {'*' * len(api_key)}")
+    print(f" LEMONFOX_API_KEY: {'*' * len(api_key)}")
 
     # Test synthesis
     audio_path = await test_audio_synthesis()
     if not audio_path:
-        print("❌ Cannot proceed with playback test - synthesis failed")
+        print(" Cannot proceed with playback test - synthesis failed")
         return
 
     # Test playback
@@ -155,18 +155,18 @@ async def main():
     # Summary
     print("\n" + "=" * 60)
     if playback_success:
-        print("🎉 All tests passed! TTS system is working correctly.")
+        print(" All tests passed! TTS system is working correctly.")
     else:
-        print("⚠️ Synthesis worked but playback failed. Check audio setup.")
+        print("️ Synthesis worked but playback failed. Check audio setup.")
     print("=" * 60)
 
     # Cleanup
     try:
         if audio_path and os.path.exists(audio_path):
             os.unlink(audio_path)
-            print(f"🧹 Cleaned up test file: {audio_path}")
+            print(f" Cleaned up test file: {audio_path}")
     except Exception as e:
-        print(f"⚠️ Cleanup failed: {e}")
+        print(f"️ Cleanup failed: {e}")
 
 
 if __name__ == "__main__":

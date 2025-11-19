@@ -1,7 +1,7 @@
 """
 Leibniz University Institute - Intent Classification Module
 
-⚠️ DEPRECATION NOTICE (2024-12):
+ DEPRECATION NOTICE (2024-12):
 This module is being phased out in favor of TARA's fast parser architecture.
 New code should use:
 - sindh_finetuned_parser.SINDHFineTunedParser
@@ -39,7 +39,7 @@ Two-tier classification for optimal performance:
 
 Performance target: >80% fast route for optimal response times.
 
-⚠️ DEPRECATED: Use TARA's fast parser instead (sindh_finetuned_parser + fast_intent_router)
+ DEPRECATED: Use TARA's fast parser instead (sindh_finetuned_parser + fast_intent_router)
 """
 
 import warnings
@@ -101,10 +101,10 @@ class LeibnizIntentParser:
         if self.gemini_api_key:
             genai.configure(api_key=self.gemini_api_key)
             self.model = genai.GenerativeModel(gemini_model)
-            print(f"🎓 Leibniz Parser: Gemini AI ({gemini_model}) enabled for complex classification")
+            print(f" Leibniz Parser: Gemini AI ({gemini_model}) enabled for complex classification")
         else:
             self.model = None
-            print("⚠️ Leibniz Parser: No Gemini API key found - fast patterns only")
+            print(" Leibniz Parser: No Gemini API key found - fast patterns only")
         
         # Load Leibniz-specific patterns
         self.leibniz_patterns = self._load_leibniz_patterns()
@@ -114,7 +114,7 @@ class LeibnizIntentParser:
         self.gemini_route_count = 0
         self.total_confidence = 0.0
         
-        print(f"🎓 Leibniz Intent Parser initialized (threshold={self.fast_threshold}, timeout={self.gemini_timeout}s, cache={self.cache_max_size})")
+        print(f" Leibniz Intent Parser initialized (threshold={self.fast_threshold}, timeout={self.gemini_timeout}s, cache={self.cache_max_size})")
     
     def _load_leibniz_patterns(self) -> Dict[str, Any]:
         """
@@ -215,7 +215,7 @@ class LeibnizIntentParser:
         """
         prompt = """You are an EXPERT intent classifier for Leibniz University Institute customer service with advanced natural language understanding.
 
-🎯 YOUR MISSION: Accurately classify user intent by deeply analyzing the SEMANTIC MEANING and CONTEXT, not just surface keywords.
+ YOUR MISSION: Accurately classify user intent by deeply analyzing the SEMANTIC MEANING and CONTEXT, not just surface keywords.
 
 CORE PRINCIPLE: Prioritize ACCURACY over speed. Think through the user's true intention before classifying.
 
@@ -223,27 +223,27 @@ CORE PRINCIPLE: Prioritize ACCURACY over speed. Think through the user's true in
 CLASSIFICATION CATEGORIES (5 INTENTS)
 ═══════════════════════════════════════════════════════════════════════════════
 
-1. 🗓️ APPOINTMENT_SCHEDULING
+1.  APPOINTMENT_SCHEDULING
    Definition: User explicitly wants to schedule, book, or arrange a meeting/appointment
    Key Indicators: "schedule", "book", "appointment", "meeting", "when can I meet"
    Confidence Threshold: Require explicit appointment-related action verbs
    
-2. 📚 RAG_QUERY (Most Common - Default for Information Requests)
+2.  RAG_QUERY (Most Common - Default for Information Requests)
    Definition: User seeking information, asking questions, or requesting explanations
    Key Indicators: Question words (what, how, why, where, when, who), "tell me", "explain", "describe"
    Confidence Threshold: ANY information-seeking behavior → RAG_QUERY
    
-3. 👋 GREETING (EXTREMELY STRICT - Rare)
+3.  GREETING (EXTREMELY STRICT - Rare)
    Definition: ONLY standalone social pleasantries with NO information request
    Key Indicators: "hi", "hello", "hey", "good morning" (ALONE, no follow-up)
    Confidence Threshold: Must be < 5 words AND contain zero question/request elements
    
-4. 🚪 EXIT
+4.  EXIT
    Definition: User wants to end the conversation
    Key Indicators: "bye", "goodbye", "thanks, that's all", "I'm done"
    Confidence Threshold: Clear termination intent
    
-5. ❓ UNCLEAR
+5.  UNCLEAR
    Definition: Genuinely ambiguous, incomplete, or nonsensical input
    Confidence Threshold: Use sparingly - most inputs have classifiable intent
 
@@ -251,59 +251,59 @@ CLASSIFICATION CATEGORIES (5 INTENTS)
 CRITICAL CLASSIFICATION RULES (READ CAREFULLY)
 ═══════════════════════════════════════════════════════════════════════════════
 
-🚨 RULE 1: GREETING vs RAG_QUERY DISTINCTION (Most Common Error)
+ RULE 1: GREETING vs RAG_QUERY DISTINCTION (Most Common Error)
 
 GREETING requires ALL of these conditions:
-  ✅ Contains greeting word ("hi", "hello", "hey", "good morning")
-  ✅ Standalone (no additional requests or questions)
-  ✅ Word count ≤ 5 words
-  ✅ NO question words (what, how, why, where, when, who, can, could, would)
-  ✅ NO action requests ("tell me", "show me", "explain", "talk about")
-  ✅ NO topic mentions (programs, courses, admission, etc.)
+   Contains greeting word ("hi", "hello", "hey", "good morning")
+   Standalone (no additional requests or questions)
+   Word count ≤ 5 words
+   NO question words (what, how, why, where, when, who, can, could, would)
+   NO action requests ("tell me", "show me", "explain", "talk about")
+   NO topic mentions (programs, courses, admission, etc.)
 
 If ANY condition fails → Classify as RAG_QUERY, NOT GREETING
 
 Examples of FALSE GREETINGS (actually RAG_QUERY):
-  ❌ "can you specifically talk about talk about any" → RAG_QUERY (has "can you talk about")
-  ❌ "can you tell me about programs" → RAG_QUERY (information request)
-  ❌ "what can you help me with" → RAG_QUERY (question about services)
-  ❌ "hello, how do I apply?" → RAG_QUERY (has follow-up question)
-  ❌ "hey, what programs do you offer?" → RAG_QUERY (asking about programs)
-  ❌ "hi there, I need information" → RAG_QUERY (information request)
+   "can you specifically talk about talk about any" → RAG_QUERY (has "can you talk about")
+   "can you tell me about programs" → RAG_QUERY (information request)
+   "what can you help me with" → RAG_QUERY (question about services)
+   "hello, how do I apply?" → RAG_QUERY (has follow-up question)
+   "hey, what programs do you offer?" → RAG_QUERY (asking about programs)
+   "hi there, I need information" → RAG_QUERY (information request)
 
 Examples of TRUE GREETINGS:
-  ✅ "hi" (standalone)
-  ✅ "hello" (standalone)
-  ✅ "good morning" (standalone)
-  ✅ "hey there" (casual greeting only)
-  ✅ "what's up" (colloquial greeting)
+   "hi" (standalone)
+   "hello" (standalone)
+   "good morning" (standalone)
+   "hey there" (casual greeting only)
+   "what's up" (colloquial greeting)
 
-  ✅ "what's up" (colloquial greeting)
+   "what's up" (colloquial greeting)
 
-🚨 RULE 2: RAG_QUERY is the DEFAULT for Information Requests
+ RULE 2: RAG_QUERY is the DEFAULT for Information Requests
 
 Classify as RAG_QUERY if user:
-  ✅ Asks a question (contains what, how, why, where, when, who)
-  ✅ Requests information ("tell me", "explain", "describe", "talk about")
-  ✅ Seeks clarification ("can you...", "could you...", "would you...")
-  ✅ Mentions university topics (programs, courses, admission, tuition, etc.)
-  ✅ Uses imperative verbs ("show", "list", "give me", "provide")
+   Asks a question (contains what, how, why, where, when, who)
+   Requests information ("tell me", "explain", "describe", "talk about")
+   Seeks clarification ("can you...", "could you...", "would you...")
+   Mentions university topics (programs, courses, admission, tuition, etc.)
+   Uses imperative verbs ("show", "list", "give me", "provide")
 
 Even if input is poorly formed or contains typos, extract the underlying information-seeking intent.
 
-🚨 RULE 3: APPOINTMENT_SCHEDULING Requires Explicit Scheduling Intent
+ RULE 3: APPOINTMENT_SCHEDULING Requires Explicit Scheduling Intent
 
 Classify as APPOINTMENT_SCHEDULING ONLY if:
-  ✅ Explicit scheduling verbs: "schedule", "book", "make", "arrange", "set up"
-  ✅ Meeting/appointment nouns: "appointment", "meeting", "consultation", "visit"
-  ✅ Time-related requests: "when can I meet", "available times", "book a slot"
+   Explicit scheduling verbs: "schedule", "book", "make", "arrange", "set up"
+   Meeting/appointment nouns: "appointment", "meeting", "consultation", "visit"
+   Time-related requests: "when can I meet", "available times", "book a slot"
 
 DO NOT classify as appointment if:
-  ❌ Asking ABOUT scheduling process (that's RAG_QUERY)
-  ❌ General questions about appointments (that's RAG_QUERY)
-  ❌ "How do I schedule..." without explicit action request (that's RAG_QUERY)
+   Asking ABOUT scheduling process (that's RAG_QUERY)
+   General questions about appointments (that's RAG_QUERY)
+   "How do I schedule..." without explicit action request (that's RAG_QUERY)
 
-🚨 RULE 4: Context Extraction is MANDATORY (Every Classification)
+ RULE 4: Context Extraction is MANDATORY (Every Classification)
 
 For EVERY intent, extract rich structured context:
 
@@ -496,12 +496,12 @@ Output: {
 FINAL REMINDERS
 ═══════════════════════════════════════════════════════════════════════════════
 
-✅ When in doubt between GREETING and RAG_QUERY → Choose RAG_QUERY
-✅ Greetings are EXTREMELY rare in customer service context
-✅ Extract maximum context - downstream RAG system depends on it
-✅ Confidence reflects your certainty - be honest about ambiguity
-✅ Focus on SEMANTIC intent, not surface keywords
-✅ Return ONLY valid JSON (no markdown, no code fences, no extra text)
+ When in doubt between GREETING and RAG_QUERY → Choose RAG_QUERY
+ Greetings are EXTREMELY rare in customer service context
+ Extract maximum context - downstream RAG system depends on it
+ Confidence reflects your certainty - be honest about ambiguity
+ Focus on SEMANTIC intent, not surface keywords
+ Return ONLY valid JSON (no markdown, no code fences, no extra text)
 
 Now classify the user input with expert-level accuracy."""
         
@@ -592,7 +592,7 @@ Now classify the user input with expert-level accuracy."""
                     
                     return gemini_result
                 except Exception as e:
-                    print(f"⚠️ Gemini classification failed: {e}")
+                    print(f" Gemini classification failed: {e}")
                     # Return fast result as final fallback
                     self.fast_route_count += 1
                     self.total_confidence += fast_result["confidence"]
@@ -618,7 +618,7 @@ Now classify the user input with expert-level accuracy."""
                 return fast_result
                 
         except Exception as e:
-            print(f"❌ Classification error: {e}")
+            print(f" Classification error: {e}")
             return {
                 "intent": "UNCLEAR",
                 "confidence": 0.2,
@@ -1002,7 +1002,7 @@ Now classify the user input with expert-level accuracy."""
             return result
             
         except json.JSONDecodeError as e:
-            print(f"⚠️ JSON parse error in Gemini response: {e}")
+            print(f" JSON parse error in Gemini response: {e}")
             return {
                 "intent": "UNCLEAR",
                 "confidence": 0.4,
@@ -1014,7 +1014,7 @@ Now classify the user input with expert-level accuracy."""
                 "reasoning": "Failed to parse Gemini JSON response"
             }
         except Exception as e:
-            print(f"⚠️ Gemini API error: {e}")
+            print(f" Gemini API error: {e}")
             return {
                 "intent": "UNCLEAR",
                 "confidence": 0.2,

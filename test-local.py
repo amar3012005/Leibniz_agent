@@ -71,61 +71,61 @@ class LeibnizRAGTester:
             "summary": {}
         }
         
-        logging.info(f"🚀 Initializing Leibniz RAG Tester with Phi-2")
-        logging.info(f"📁 Knowledge base: {knowledge_base_dir}")
+        logging.info(f" Initializing Leibniz RAG Tester with Phi-2")
+        logging.info(f" Knowledge base: {knowledge_base_dir}")
     
     def prewarm_models(self):
         """Pre-load and warm up all models at startup"""
         logging.info(f"\n{'='*60}")
-        logging.info(f"🔥 PRE-WARMING MODELS")
+        logging.info(f" PRE-WARMING MODELS")
         logging.info(f"{'='*60}")
         
         try:
             # 1. Load embedding model
-            logging.info(f"📥 Loading embedding model: {self.embedding_model_name}")
+            logging.info(f" Loading embedding model: {self.embedding_model_name}")
             start_time = time.time()
             self.embedder = SentenceTransformer(self.embedding_model_name)
             load_time = time.time() - start_time
-            logging.info(f"✅ Embedding model loaded in {load_time:.2f}s")
+            logging.info(f" Embedding model loaded in {load_time:.2f}s")
             
             # 2. Warm up embedding model with dummy query
-            logging.info(f"🔥 Warming up embedding model...")
+            logging.info(f" Warming up embedding model...")
             start_time = time.time()
             _ = self.embedder.encode(["test query for warmup"], show_progress_bar=False)
             warmup_time = time.time() - start_time
-            logging.info(f"✅ Embedding model warmed up in {warmup_time:.2f}s")
+            logging.info(f" Embedding model warmed up in {warmup_time:.2f}s")
         except Exception as e:
-            logging.error(f"❌ Embedding model loading failed: {e}")
+            logging.error(f" Embedding model loading failed: {e}")
             raise
         
         # Skip Phi-2 loading in fast retrieval mode
-        logging.info(f"⚡ FAST MODE: Skipping Phi-2 model loading (retrieval only)")
+        logging.info(f" FAST MODE: Skipping Phi-2 model loading (retrieval only)")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         
         try:
             # 5. Load and index knowledge base
-            logging.info(f"📚 Loading knowledge base from {self.knowledge_base_dir}")
+            logging.info(f" Loading knowledge base from {self.knowledge_base_dir}")
             self._load_knowledge_base()
             
             # 6. Build FAISS index
-            logging.info(f"🔨 Building FAISS index...")
+            logging.info(f" Building FAISS index...")
             start_time = time.time()
             self._build_faiss_index()
             index_time = time.time() - start_time
-            logging.info(f"✅ FAISS index built in {index_time:.2f}s")
-            logging.info(f"📊 Index size: {self.faiss_index.ntotal} vectors")
+            logging.info(f" FAISS index built in {index_time:.2f}s")
+            logging.info(f" Index size: {self.faiss_index.ntotal} vectors")
         except Exception as e:
-            logging.error(f"❌ Knowledge base loading failed: {e}")
+            logging.error(f" Knowledge base loading failed: {e}")
             raise
         
         logging.info(f"{'='*60}")
-        logging.info(f"✅ RAG SYSTEM PRE-WARMED AND READY (FAST MODE)")
+        logging.info(f" RAG SYSTEM PRE-WARMED AND READY (FAST MODE)")
         logging.info(f"{'='*60}\n")
     
     def _load_knowledge_base(self):
         """Load markdown files from Leibniz knowledge base directory"""
         if not os.path.exists(self.knowledge_base_dir):
-            logging.error(f"❌ Knowledge base directory not found: {self.knowledge_base_dir}")
+            logging.error(f" Knowledge base directory not found: {self.knowledge_base_dir}")
             logging.error(f"Please ensure leibniz_knowledge_base exists!")
             raise FileNotFoundError(f"Knowledge base not found: {self.knowledge_base_dir}")
         
@@ -137,7 +137,7 @@ class LeibnizRAGTester:
                     md_files.append(os.path.join(root, file))
         
         if not md_files:
-            logging.error(f"❌ No .md files found in {self.knowledge_base_dir}")
+            logging.error(f" No .md files found in {self.knowledge_base_dir}")
             raise FileNotFoundError(f"No markdown files in {self.knowledge_base_dir}")
         
         for file_path in md_files:
@@ -149,9 +149,9 @@ class LeibnizRAGTester:
                     chunks = self._chunk_text(content, source_name)
                     self.documents.extend(chunks)
             except Exception as e:
-                logging.warning(f"⚠️ Could not load {file_path}: {e}")
+                logging.warning(f"️ Could not load {file_path}: {e}")
         
-        logging.info(f"✅ Loaded {len(self.documents)} chunks from {len(md_files)} files")
+        logging.info(f" Loaded {len(self.documents)} chunks from {len(md_files)} files")
     
     def _chunk_text(self, text: str, source: str) -> List[Dict]:
         """Split text into overlapping chunks"""
@@ -181,14 +181,14 @@ class LeibnizRAGTester:
     def _build_faiss_index(self):
         """Build FAISS index from document chunks"""
         if not self.documents:
-            logging.error("❌ No documents to index!")
+            logging.error(" No documents to index!")
             return
         
         # Extract text from documents
         texts = [doc["text"] for doc in self.documents]
         
         # Generate embeddings
-        logging.info(f"🔢 Generating embeddings for {len(texts)} chunks...")
+        logging.info(f" Generating embeddings for {len(texts)} chunks...")
         embeddings = self.embedder.encode(texts, show_progress_bar=True)
         
         # Create FAISS index
@@ -286,27 +286,27 @@ Answer:"""
         logging.info(f"\n{'='*60}")
         logging.info(f"� Query {query_idx}/{total_queries}")
         logging.info(f"{'='*60}")
-        logging.info(f"❓ Question: {query}")
+        logging.info(f" Question: {query}")
         
         try:
             # 1. Retrieve documents
-            logging.info(f"\n🔍 Step 1: Retrieving relevant documents...")
+            logging.info(f"\n Step 1: Retrieving relevant documents...")
             retrieved_docs, retrieval_time_ms = self.retrieve_documents(query)
-            logging.info(f"⚡ Retrieved {len(retrieved_docs)} documents in {retrieval_time_ms:.2f}ms")
+            logging.info(f" Retrieved {len(retrieved_docs)} documents in {retrieval_time_ms:.2f}ms")
             
             # Show top 3 retrieved docs
-            logging.info(f"\n📚 Top 3 Retrieved Documents:")
+            logging.info(f"\n Top 3 Retrieved Documents:")
             for i, doc in enumerate(retrieved_docs[:3], 1):
                 logging.info(f"   {i}. [{doc['source']}] Relevance: {doc['relevance_score']:.3f}")
                 logging.info(f"      Preview: {doc['text'][:150]}...")
             
             # 2. Generate response with Phi-2
-            logging.info(f"\n🤖 Step 2: Generating response with Phi-2...")
+            logging.info(f"\n Step 2: Generating response with Phi-2...")
             answer, generation_time_ms = self.generate_response_with_phi2(query, retrieved_docs)
-            logging.info(f"⚡ Generated response in {generation_time_ms:.2f}ms")
+            logging.info(f" Generated response in {generation_time_ms:.2f}ms")
             
             # 3. Display answer
-            logging.info(f"\n💬 Generated Answer:")
+            logging.info(f"\n Generated Answer:")
             logging.info(f"   {answer}")
             
             # 4. Calculate total time
@@ -329,7 +329,7 @@ Answer:"""
             self.results["queries"].append(test_result)
             
         except Exception as e:
-            logging.error(f"❌ Query test failed: {e}")
+            logging.error(f" Query test failed: {e}")
             import traceback
             logging.error(traceback.format_exc())
             self.results["queries"].append({
@@ -339,8 +339,8 @@ Answer:"""
     
     def run_all_tests(self):
         """Run complete RAG test suite with Phi-2"""
-        logging.info(f"\n🎯 Starting Leibniz RAG Testing Suite with Phi-2")
-        logging.info(f"📅 Test Run ID: {self.results['test_run_id']}")
+        logging.info(f"\n Starting Leibniz RAG Testing Suite with Phi-2")
+        logging.info(f" Test Run ID: {self.results['test_run_id']}")
         
         start_time = time.time()
         
@@ -359,7 +359,7 @@ Answer:"""
         # Save results
         self._save_results()
         
-        logging.info(f"\n✅ Testing Complete! Total time: {total_time:.2f}s")
+        logging.info(f"\n Testing Complete! Total time: {total_time:.2f}s")
     
     def _generate_summary(self, total_time: float):
         """Generate test summary"""
@@ -367,7 +367,7 @@ Answer:"""
         failed_tests = [q for q in self.results["queries"] if "error" in q]
         
         if not successful_tests:
-            logging.warning("⚠️  No successful tests to summarize")
+            logging.warning("️  No successful tests to summarize")
             return
         
         summary = {
@@ -384,9 +384,9 @@ Answer:"""
         
         # Log summary
         logging.info(f"\n{'='*60}")
-        logging.info(f"🎉 FINAL TEST SUMMARY (FAST RETRIEVAL MODE)")
+        logging.info(f" FINAL TEST SUMMARY (FAST RETRIEVAL MODE)")
         logging.info(f"{'='*60}")
-        logging.info(f"📊 Overall Performance:")
+        logging.info(f" Overall Performance:")
         logging.info(f"   - Total Queries: {summary['total_queries']}")
         logging.info(f"   - Successful: {summary['successful_tests']}")
         logging.info(f"   - Failed: {summary['failed_tests']}")
@@ -402,7 +402,7 @@ Answer:"""
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2, ensure_ascii=False)
         
-        logging.info(f"💾 Results saved to: {output_file}")
+        logging.info(f" Results saved to: {output_file}")
 
 
 def main():

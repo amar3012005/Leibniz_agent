@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_4",
+  "turn_number": 5,
+  "dialogue_type": "rag",
+  "text": "The main Service Center is at the Welfengarten 1, in the main building. You can find it on the ground floor near the main entrance.",
+  "audio_file": "turn_005_The_main_Service_Center_is_at_the_Welfengarten_1_f5a1e4dd.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_4_5_n7llg_zq.wav",
+  "timestamp": 1763417642.702657,
+  "text_length": 131,
+  "text_hash": "f5a1e4dd"
+}

@@ -68,7 +68,7 @@ class LeibnizSemanticTranslator:
             'malayalam': re.compile(r'[\u0D00-\u0D7F]+') # Malayalam script
         }
         
-        logger.info(f"✅ Leibniz Semantic Translator initialized ({model_name}, timeout={self.timeout}s)")
+        logger.info(f" Leibniz Semantic Translator initialized ({model_name}, timeout={self.timeout}s)")
     
     def detect_language(self, text: str) -> Tuple[str, float]:
         """
@@ -215,7 +215,7 @@ class LeibnizSemanticTranslator:
             if 'semantic_meaning' not in result:
                 result['semantic_meaning'] = result.get('english_text', text).lower()
             
-            logger.info(f"🌐 Translated {detected_lang} → English: '{text}' → '{result['english_text']}'")
+            logger.info(f" Translated {detected_lang} → English: '{text}' → '{result['english_text']}'")
             
             return result
         

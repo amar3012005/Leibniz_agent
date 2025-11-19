@@ -41,13 +41,13 @@ async def main():
     # Load environment variables from .env.leibniz
     env_path = Path(__file__).parent / ".env.leibniz"
     load_dotenv(env_path)
-    print(f"\n📝 Loading environment from: {env_path}")
+    print(f"\n Loading environment from: {env_path}")
     
     # Verify ElevenLabs API key is configured
     elevenlabs_key = os.getenv('ELEVENLABS_API_KEY')
     if not elevenlabs_key or elevenlabs_key == 'your_elevenlabs_api_key_here':
-        print("\n❌ ERROR: ELEVENLABS_API_KEY not configured!")
-        print("\n📋 To fix this:")
+        print("\n ERROR: ELEVENLABS_API_KEY not configured!")
+        print("\n To fix this:")
         print(f"   1. Edit: {env_path}")
         print("   2. Set your ElevenLabs API key:")
         print("      ELEVENLABS_API_KEY=your_actual_api_key_here")
@@ -55,27 +55,27 @@ async def main():
         print("   Note: Free tier includes 10,000 characters/month")
         return 1
     
-    print(f"✅ ELEVENLABS_API_KEY: Set (length: {len(elevenlabs_key)} chars)")
+    print(f" ELEVENLABS_API_KEY: Set (length: {len(elevenlabs_key)} chars)")
     
     # Check provider configuration
     tts_provider = os.getenv('LEIBNIZ_TTS_PROVIDER', 'google')
     tts_fallback = os.getenv('LEIBNIZ_TTS_FALLBACK_PROVIDER', 'elevenlabs')
     
-    print(f"\n📊 Provider Configuration:")
+    print(f"\n Provider Configuration:")
     print(f"   Primary provider: {tts_provider}")
     print(f"   Fallback provider: {tts_fallback}")
     
     if tts_provider != 'elevenlabs':
-        print(f"\n⚠️  WARNING: Primary provider is '{tts_provider}', not 'elevenlabs'")
+        print(f"\n️  WARNING: Primary provider is '{tts_provider}', not 'elevenlabs'")
         print("   For this test, we'll initialize ElevenLabs explicitly")
     
     # Initialize TTS system with ElevenLabs
     print(f"\n1. Initializing Leibniz TTS with ElevenLabs...")
     try:
         tts = get_leibniz_tts()
-        print("   ✅ TTS system initialized")
+        print("    TTS system initialized")
     except Exception as e:
-        print(f"   ❌ Failed to initialize TTS: {e}")
+        print(f"    Failed to initialize TTS: {e}")
         return 1
     
     # Check TTS status
@@ -88,10 +88,10 @@ async def main():
         print(f"   Any provider available: {status.get('any_provider_available', False)}")
         
         if not status.get('elevenlabs_available'):
-            print("\n   ⚠️  WARNING: ElevenLabs provider not available!")
+            print("\n   ️  WARNING: ElevenLabs provider not available!")
             print("   Check your API key and internet connection")
     except Exception as e:
-        print(f"   ⚠️  Could not get status: {e}")
+        print(f"   ️  Could not get status: {e}")
     
     # Test basic synthesis
     print(f"\n3. Testing basic synthesis with ElevenLabs...")
@@ -106,7 +106,7 @@ async def main():
         )
         
         if result.get('success'):
-            print(f"   ✅ Synthesis successful!")
+            print(f"    Synthesis successful!")
             print(f"      Provider: {result.get('provider', 'unknown')}")
             print(f"      File: {result.get('file', test_file)}")
             print(f"      Duration: {result.get('duration', 0):.2f}s")
@@ -118,10 +118,10 @@ async def main():
                 file_size = file_path.stat().st_size / 1024
                 print(f"      File size: {file_size:.1f} KB")
         else:
-            print(f"   ❌ Synthesis failed: {result.get('error', 'Unknown error')}")
+            print(f"    Synthesis failed: {result.get('error', 'Unknown error')}")
             return 1
     except Exception as e:
-        print(f"   ❌ Exception during synthesis: {e}")
+        print(f"    Exception during synthesis: {e}")
         return 1
     
     # Test emotion modulation
@@ -140,11 +140,11 @@ async def main():
             )
             
             if result.get('success'):
-                print(f"   ✅ {emotion.capitalize()}: {result.get('provider', 'unknown')} ({result.get('elapsed', 0):.3f}s)")
+                print(f"    {emotion.capitalize()}: {result.get('provider', 'unknown')} ({result.get('elapsed', 0):.3f}s)")
             else:
-                print(f"   ❌ {emotion.capitalize()}: Failed - {result.get('error', 'Unknown')}")
+                print(f"    {emotion.capitalize()}: Failed - {result.get('error', 'Unknown')}")
         except Exception as e:
-            print(f"   ❌ {emotion.capitalize()}: Exception - {e}")
+            print(f"    {emotion.capitalize()}: Exception - {e}")
     
     # Test caching
     print(f"\n5. Testing caching behavior...")
@@ -173,9 +173,9 @@ async def main():
         print(f"   Response time: {time2:.3f}s")
         
         if time2 < time1 * 0.5:  # Cache should be significantly faster
-            print(f"   ✅ Caching working! Speedup: {time1/time2:.1f}x")
+            print(f"    Caching working! Speedup: {time1/time2:.1f}x")
         else:
-            print(f"   ⚠️  Cache may not be working (similar times)")
+            print(f"   ️  Cache may not be working (similar times)")
         
         # Get cache statistics
         if hasattr(tts, 'get_cache_stats'):
@@ -185,7 +185,7 @@ async def main():
             print(f"   - Cache hits: {cache_stats.get('hits', 0)}")
             print(f"   - Cache misses: {cache_stats.get('misses', 0)}")
     except Exception as e:
-        print(f"   ⚠️  Cache test exception: {e}")
+        print(f"   ️  Cache test exception: {e}")
     
     # Test fallback (optional - requires invalid key)
     print(f"\n6. Fallback testing (skipped - requires invalid key)")
@@ -196,13 +196,13 @@ async def main():
     print("\n" + "=" * 70)
     print("Test Completed!")
     print("=" * 70)
-    print("\n📋 Summary:")
-    print("   - ElevenLabs API key configured ✅")
-    print("   - TTS system initialized ✅")
-    print("   - Basic synthesis working ✅")
-    print("   - Emotion modulation tested ✅")
-    print("   - Caching behavior verified ✅")
-    print("\n💡 Next steps:")
+    print("\n Summary:")
+    print("   - ElevenLabs API key configured ")
+    print("   - TTS system initialized ")
+    print("   - Basic synthesis working ")
+    print("   - Emotion modulation tested ")
+    print("   - Caching behavior verified ")
+    print("\n Next steps:")
     print("   - Run the full Leibniz agent: python -m leibniz_agent.leibniz_pro")
     print("   - Check generated audio files in: test_output/")
     print("   - Review TTS logs for provider usage")

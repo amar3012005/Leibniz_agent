@@ -19,16 +19,16 @@ print(f"Loading environment from: {env_path}")
 # Check if GEMINI_API_KEY is set
 gemini_key = os.getenv('GEMINI_API_KEY')
 if not gemini_key:
-    print("\n❌ ERROR: GEMINI_API_KEY not found!")
-    print("\n📝 To fix this:")
+    print("\n ERROR: GEMINI_API_KEY not found!")
+    print("\n To fix this:")
     print(f"   1. Edit: {env_path}")
     print("   2. Add your Gemini API key:")
     print("      GEMINI_API_KEY=your_actual_gemini_api_key_here")
     print("\n   Get a key from: https://aistudio.google.com/apikey")
     exit(1)
 
-print(f"GEMINI_API_KEY: Set ✅ (length: {len(gemini_key)} chars)")
-print(f"\n⚠️  WARNING: This example uses Gemini TTS preview models")
+print(f"GEMINI_API_KEY: Set  (length: {len(gemini_key)} chars)")
+print(f"\n️  WARNING: This example uses Gemini TTS preview models")
 print("   These models are UNSTABLE and may return 500 errors")
 print("   This is a known server-side issue as of October 2025\n")
 

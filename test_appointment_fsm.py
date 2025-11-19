@@ -29,6 +29,7 @@ from typing import List, Dict, Tuple, Optional, Any
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
+import pytest
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -366,6 +367,12 @@ def create_fsm_test_scenarios() -> List[FSMTestScenario]:
     
     return scenarios
 
+@pytest.fixture
+def scenarios():
+    """Fixture providing test scenarios"""
+    return create_fsm_test_scenarios()
+
+@pytest.mark.asyncio
 async def test_fsm_scenarios(scenarios: List[FSMTestScenario]) -> Dict[str, Any]:
     """Test all FSM scenarios"""
     logger.info("Testing FSM scenarios...")
@@ -421,10 +428,10 @@ async def test_fsm_scenarios(scenarios: List[FSMTestScenario]) -> Dict[str, Any]
                     logger.info(f"  Response: {response[:100]}...")
                     
                     if complete:
-                        logger.info(f"  ✅ Booking completed!")
+                        logger.info(f"   Booking completed!")
                         break
                     elif cancelled:
-                        logger.info(f"  ❌ Booking cancelled")
+                        logger.info(f"   Booking cancelled")
                         break
                 
                 except Exception as e:
@@ -503,15 +510,15 @@ async def test_fsm_scenarios(scenarios: List[FSMTestScenario]) -> Dict[str, Any]
             logger.info(f"\nScenario Result:")
             logger.info(f"  Final state: {final_state}")
             logger.info(f"  Expected outcome: {scenario.expected_outcome}")
-            logger.info(f"  Outcome correct: {'Yes ✅' if outcome_correct else 'No ❌'}")
-            logger.info(f"  State sequence matches: {'Yes ✅' if state_sequence_matches else 'No ❌'}")
+            logger.info(f"  Outcome correct: {'Yes ' if outcome_correct else 'No '}")
+            logger.info(f"  State sequence matches: {'Yes ' if state_sequence_matches else 'No '}")
             if state_diffs:
                 logger.warning(f"  State sequence diffs:")
                 for diff in state_diffs:
                     logger.warning(f"    - {diff}")
             logger.info(f"  Errors: {len(errors)}")
             logger.info(f"  Duration: {duration:.2f}s")
-            logger.info(f"  Result: {'PASS ✅' if scenario_passed else 'FAIL ❌'}")
+            logger.info(f"  Result: {'PASS ' if scenario_passed else 'FAIL '}")
             
             if not scenario_passed:
                 issues = []
@@ -540,6 +547,7 @@ async def test_fsm_scenarios(scenarios: List[FSMTestScenario]) -> Dict[str, Any]
     
     return results
 
+@pytest.mark.asyncio
 async def test_field_validation() -> Dict[str, Any]:
     """Test field validation for all appointment fields"""
     logger.info("Testing field validation...")
@@ -607,7 +615,7 @@ async def test_field_validation() -> Dict[str, Any]:
                 if validation_passed:
                     results["summary"]["successful_validations"] += 1
                 
-                logger.info(f"  Valid '{valid_input}': {'PASS ✅' if validation_passed else 'FAIL ❌'}")
+                logger.info(f"  Valid '{valid_input}': {'PASS ' if validation_passed else 'FAIL '}")
                 
                 if not validation_passed:
                     results["issues"].append(f"Valid {field_name} '{valid_input}' was rejected")
@@ -638,7 +646,7 @@ async def test_field_validation() -> Dict[str, Any]:
                 if validation_correctly_failed:
                     results["summary"]["successful_validations"] += 1
                 
-                logger.info(f"  Invalid '{invalid_input}': {'PASS ✅' if validation_correctly_failed else 'FAIL ❌'}")
+                logger.info(f"  Invalid '{invalid_input}': {'PASS ' if validation_correctly_failed else 'FAIL '}")
                 
                 if not validation_correctly_failed:
                     results["issues"].append(f"Invalid {field_name} '{invalid_input}' was accepted")
@@ -657,6 +665,7 @@ async def test_field_validation() -> Dict[str, Any]:
     
     return results
 
+@pytest.mark.asyncio
 async def test_edge_cases() -> Dict[str, Any]:
     """Test edge cases and boundary conditions"""
     logger.info("Testing edge cases...")
@@ -796,7 +805,7 @@ async def test_edge_cases() -> Dict[str, Any]:
             if handled_gracefully:
                 results["summary"]["handled_gracefully"] += 1
             
-            logger.info(f"  Result: {'PASS ✅' if handled_gracefully else 'FAIL ❌'}")
+            logger.info(f"  Result: {'PASS ' if handled_gracefully else 'FAIL '}")
             
             if not handled_gracefully:
                 results["issues"].extend(error_details)
@@ -815,6 +824,7 @@ async def test_edge_cases() -> Dict[str, Any]:
     
     return results
 
+@pytest.mark.asyncio
 async def test_datetime_parsing() -> Dict[str, Any]:
     """Test natural language date/time parsing"""
     logger.info("Testing datetime parsing...")
@@ -888,7 +898,7 @@ async def test_datetime_parsing() -> Dict[str, Any]:
             
             logger.info(f"  Expected: {datetime_test['expected']}")
             logger.info(f"  State after input: {current_state}")
-            logger.info(f"  Parsing: {'SUCCESS ✅' if parsing_succeeded else 'FAILED ❌'}")
+            logger.info(f"  Parsing: {'SUCCESS ' if parsing_succeeded else 'FAILED '}")
             
             if not parsing_succeeded:
                 results["issues"].append(f"Failed to parse datetime: '{datetime_test['input']}'")
@@ -996,7 +1006,7 @@ def print_report_summary(report: Dict):
     
     print(f"\nScenario Details:")
     for scenario in report['scenario_testing']['scenario_tests']:
-        status_icon = "✅" if scenario['passed'] else "❌"
+        status_icon = "" if scenario['passed'] else ""
         print(f"  {scenario['name']}: {status_icon}")
     
     if report["issues"]:

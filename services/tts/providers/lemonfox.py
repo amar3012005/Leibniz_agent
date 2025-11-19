@@ -37,7 +37,7 @@ try:
     AIOHTTP_AVAILABLE = True
 except ImportError:
     AIOHTTP_AVAILABLE = False
-    logger.warning("⚠️ aiohttp not available - LemonFox TTS will not work")
+    logger.warning("️ aiohttp not available - LemonFox TTS will not work")
 
 
 class LemonFoxTTSProvider:
@@ -83,7 +83,7 @@ class LemonFoxTTSProvider:
         self.session: Optional[aiohttp.ClientSession] = None
         
         logger.info(
-            f"✅ LemonFox TTS initialized (voice: {config.lemonfox_voice}, "
+            f" LemonFox TTS initialized (voice: {config.lemonfox_voice}, "
             f"language: {config.lemonfox_language})"
         )
     
@@ -137,7 +137,7 @@ class LemonFoxTTSProvider:
         }
         
         logger.debug(
-            f"🎤 LemonFox TTS: {len(text)} chars, voice={payload['voice']}, "
+            f" LemonFox TTS: {len(text)} chars, voice={payload['voice']}, "
             f"language={payload['language']}, speed={speed:.2f}"
         )
         
@@ -158,7 +158,7 @@ class LemonFoxTTSProvider:
                 wav_audio = await response.read()
                 
                 logger.debug(
-                    f"✅ LemonFox TTS synthesized {len(text)} chars → "
+                    f" LemonFox TTS synthesized {len(text)} chars → "
                     f"{len(wav_audio)} bytes ({len(wav_audio)/1024:.1f} KB)"
                 )
                 
@@ -168,7 +168,7 @@ class LemonFoxTTSProvider:
             logger.error("⏱️ LemonFox API timeout (30s)")
             raise
         except aiohttp.ClientError as e:
-            logger.error(f"❌ LemonFox API error: {e}")
+            logger.error(f" LemonFox API error: {e}")
             raise
     
     async def stream_synthesize(
@@ -195,7 +195,7 @@ class LemonFoxTTSProvider:
         Yields:
             Audio bytes (complete WAV file)
         """
-        logger.debug("📦 LemonFox streaming (single chunk - no true streaming support)")
+        logger.debug(" LemonFox streaming (single chunk - no true streaming support)")
         
         # Call synthesize to get complete audio
         audio_bytes = await self.synthesize(
@@ -270,7 +270,7 @@ class LemonFoxTTSProvider:
             }
         }
         
-        logger.info(f"📋 LemonFox TTS: {len(voices)} voices available")
+        logger.info(f" LemonFox TTS: {len(voices)} voices available")
         return voices
     
     def validate_config(self) -> Tuple[bool, Optional[str]]:
@@ -329,4 +329,4 @@ class LemonFoxTTSProvider:
         """Async context manager exit - cleanup session."""
         if self.session and not self.session.closed:
             await self.session.close()
-            logger.debug("🔒 LemonFox session closed")
+            logger.debug(" LemonFox session closed")

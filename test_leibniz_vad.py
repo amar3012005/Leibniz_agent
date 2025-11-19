@@ -126,7 +126,7 @@ class TestLeibnizPersistentSession:
         # All instances should be the same object
         assert session1 is session2
         assert session2 is session3
-        logger.info("✅ Session singleton pattern verified")
+        logger.info(" Session singleton pattern verified")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -161,7 +161,7 @@ class TestLeibnizPersistentSession:
         stats = LeibnizPersistentSession.get_session_stats()
         assert stats['total_uses'] >= 2
         
-        logger.info(f"✅ Session reuse: {first_latency:.3f}s → {second_latency:.3f}s")
+        logger.info(f" Session reuse: {first_latency:.3f}s → {second_latency:.3f}s")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -183,7 +183,7 @@ class TestLeibnizPersistentSession:
         
         # Should create new session (can't verify identity with mock, but should not crash)
         assert session2 is not None
-        logger.info("✅ Session expiry handling verified")
+        logger.info(" Session expiry handling verified")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -203,7 +203,7 @@ class TestLeibnizPersistentSession:
         )
         
         # Should not crash - throttling is internal behavior
-        logger.info("✅ Warmup throttling verified")
+        logger.info(" Warmup throttling verified")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -236,7 +236,7 @@ class TestLeibnizPersistentSession:
         # Verify session exists
         assert stats['session_exists'] is True
         
-        logger.info(f"✅ Session stats: {stats}")
+        logger.info(f" Session stats: {stats}")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -266,7 +266,7 @@ class TestLeibnizPersistentSession:
         )
         assert new_session is not None
         
-        logger.info("✅ Session cleanup verified")
+        logger.info(" Session cleanup verified")
 
 
 # Test Class: TestLeibnizBidirectionalVAD
@@ -291,7 +291,7 @@ class TestLeibnizBidirectionalVAD:
         # Verify instance ID is 8-char string
         assert len(vad._instance_id) == 8
         
-        logger.info(f"✅ VAD initialized with ID: {vad._instance_id}")
+        logger.info(f" VAD initialized with ID: {vad._instance_id}")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -308,7 +308,7 @@ class TestLeibnizBidirectionalVAD:
         await vad.set_agent_speaking_state(False, context="test")
         assert vad.is_agent_speaking is False
         
-        logger.info("✅ Agent speaking state management verified")
+        logger.info(" Agent speaking state management verified")
     
     @pytest.mark.unit
     def test_should_accept_user_audio_logic(self):
@@ -330,7 +330,7 @@ class TestLeibnizBidirectionalVAD:
         vad.is_agent_speaking = False
         assert vad.should_accept_user_audio() is False
         
-        logger.info("✅ Audio acceptance logic verified")
+        logger.info(" Audio acceptance logic verified")
     
     @pytest.mark.unit
     def test_dynamic_timeout_configuration(self):
@@ -351,7 +351,7 @@ class TestLeibnizBidirectionalVAD:
             assert vad._current_timeout == expected_timeout, \
                 f"Context {context}: expected {expected_timeout}s, got {vad._current_timeout}s"
         
-        logger.info("✅ Dynamic timeout configuration verified")
+        logger.info(" Dynamic timeout configuration verified")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -373,7 +373,7 @@ class TestLeibnizBidirectionalVAD:
         clear_leibniz_barge_in()
         assert vad.barge_in_detected is False
         
-        logger.info("✅ Barge-in detection verified")
+        logger.info(" Barge-in detection verified")
     
     @pytest.mark.unit
     def test_consecutive_timeout_tracking(self):
@@ -388,7 +388,7 @@ class TestLeibnizBidirectionalVAD:
         vad.consecutive_timeouts = 0
         assert vad.consecutive_timeouts == 0
         
-        logger.info("✅ Timeout tracking verified")
+        logger.info(" Timeout tracking verified")
     
     @pytest.mark.unit
     def test_performance_metrics_tracking(self):
@@ -414,7 +414,7 @@ class TestLeibnizBidirectionalVAD:
         assert metrics['avg_capture_time'] == 2.5
         assert metrics['consecutive_timeouts'] == 1
         
-        logger.info(f"✅ Performance metrics: {metrics}")
+        logger.info(f" Performance metrics: {metrics}")
 
 
 # Test Class: TestLeibnizVADCapture (Comment 8)
@@ -457,10 +457,10 @@ class TestLeibnizVADCapture:
                     )
                     
                     # If capture succeeded, verify callback was potentially called
-                    logger.info(f"✅ Streaming callback test: {len(fragments)} fragments captured")
+                    logger.info(f" Streaming callback test: {len(fragments)} fragments captured")
                 except Exception as e:
                     # Capture may timeout in test environment
-                    logger.info(f"✅ Streaming callback test completed (timeout expected): {e}")
+                    logger.info(f" Streaming callback test completed (timeout expected): {e}")
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -482,7 +482,7 @@ class TestLeibnizVADCapture:
         # Verify timeout adjusted
         assert vad._current_timeout == 18.0
         
-        logger.info("✅ Context-based timeout adjustment verified")
+        logger.info(" Context-based timeout adjustment verified")
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -511,10 +511,10 @@ class TestLeibnizVADCapture:
                 
                 # Should return None on timeout
                 if transcript is None:
-                    logger.info("✅ Timeout returns None verified")
+                    logger.info(" Timeout returns None verified")
                 else:
                     # May succeed in mocked environment
-                    logger.info(f"✅ Capture returned: {transcript}")
+                    logger.info(f" Capture returned: {transcript}")
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -549,11 +549,11 @@ class TestLeibnizVADCapture:
                         assert transcript.islower() or transcript == ""
                         assert not transcript.startswith(" ")
                         assert not transcript.endswith(" ")
-                        logger.info(f"✅ Normalized transcript: '{transcript}'")
+                        logger.info(f" Normalized transcript: '{transcript}'")
                     else:
-                        logger.info("✅ Normalization test: timeout or no speech")
+                        logger.info(" Normalization test: timeout or no speech")
                 except Exception as e:
-                    logger.info(f"✅ Normalization test completed: {e}")
+                    logger.info(f" Normalization test completed: {e}")
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -593,7 +593,7 @@ class TestLeibnizVADCapture:
                 results = await asyncio.gather(task1, task2, return_exceptions=True)
                 
                 # Both should complete (sequentially)
-                logger.info(f"✅ Concurrent capture prevention: {len(results)} tasks completed")
+                logger.info(f" Concurrent capture prevention: {len(results)} tasks completed")
 
 
 # Test Class: TestLeibnizVADHelpers
@@ -607,7 +607,7 @@ class TestLeibnizVADHelpers:
         vad2 = get_leibniz_vad()
         
         assert vad1 is vad2
-        logger.info("✅ get_leibniz_vad() singleton verified")
+        logger.info(" get_leibniz_vad() singleton verified")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -626,7 +626,7 @@ class TestLeibnizVADHelpers:
         assert vad.barge_in_detected is False
         assert vad.consecutive_timeouts == 0
         
-        logger.info("✅ Conversation reset verified")
+        logger.info(" Conversation reset verified")
     
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -643,7 +643,7 @@ class TestLeibnizVADHelpers:
         # Should complete reasonably quickly
         assert duration < 10.0
         
-        logger.info(f"✅ Warmup completed in {duration:.2f}s")
+        logger.info(f" Warmup completed in {duration:.2f}s")
     
     @pytest.mark.asyncio
     @pytest.mark.unit
@@ -666,7 +666,7 @@ class TestLeibnizVADHelpers:
         stats_after = LeibnizPersistentSession.get_session_stats()
         assert stats_after['session_exists'] is False
         
-        logger.info("✅ VAD cleanup verified")
+        logger.info(" VAD cleanup verified")
 
 
 # Test Class: TestLeibnizVADPerformance
@@ -705,7 +705,7 @@ class TestLeibnizVADPerformance:
         # Performance targets (Comment 13: relaxed thresholds for mocked env)
         # Real targets: cold <5s, warm <100ms
         # Relaxed for test env with mocks
-        logger.info(f"📊 Session warmup: Cold={cold_time:.3f}s, Warm={warm_time:.3f}s, Speedup={speedup:.1f}%")
+        logger.info(f" Session warmup: Cold={cold_time:.3f}s, Warm={warm_time:.3f}s, Speedup={speedup:.1f}%")
         
         # Just verify warm is faster than cold
         assert warm_time <= cold_time or cold_time < 0.001  # Cold may be instant in mocked env

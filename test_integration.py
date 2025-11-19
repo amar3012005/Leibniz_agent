@@ -105,9 +105,9 @@ async def test_component_integration() -> Dict[str, Any]:
             results["summary"]["passed_tests"] += 1
         
         logger.info(f"Intent: {intent}")
-        logger.info(f"Context extracted: {'Yes ✅' if context else 'No ❌'}")
-        logger.info(f"RAG response: {'Generated ✅' if integration_success else 'Failed ❌'}")
-        logger.info(f"Integration: {'PASS ✅' if test_result['passed'] else 'FAIL ❌'}")
+        logger.info(f"Context extracted: {'Yes ' if context else 'No '}")
+        logger.info(f"RAG response: {'Generated ' if integration_success else 'Failed '}")
+        logger.info(f"Integration: {'PASS ' if test_result['passed'] else 'FAIL '}")
         
         # Test 2: Intent Parser → Appointment FSM Integration
         logger.info("\nTesting Intent Parser → Appointment FSM integration...")
@@ -144,8 +144,8 @@ async def test_component_integration() -> Dict[str, Any]:
             results["summary"]["passed_tests"] += 1
         
         logger.info(f"Intent: {intent}")
-        logger.info(f"FSM response: {'Generated ✅' if fsm_integration_success else 'Failed ❌'}")
-        logger.info(f"Integration: {'PASS ✅' if test_result['passed'] else 'FAIL ❌'}")
+        logger.info(f"FSM response: {'Generated ' if fsm_integration_success else 'Failed '}")
+        logger.info(f"Integration: {'PASS ' if test_result['passed'] else 'FAIL '}")
         
         # Test 3: Persistent Services Integration
         logger.info("\nTesting Persistent Services integration...")
@@ -172,9 +172,9 @@ async def test_component_integration() -> Dict[str, Any]:
             if test_result["passed"]:
                 results["summary"]["passed_tests"] += 1
             
-            logger.info(f"Intent parser ready: {'Yes ✅' if status.get('intent_parser_ready') else 'No ❌'}")
-            logger.info(f"RAG system ready: {'Yes ✅' if status.get('rag_system_ready') else 'No ❌'}")
-            logger.info(f"Integration: {'PASS ✅' if test_result['passed'] else 'FAIL ❌'}")
+            logger.info(f"Intent parser ready: {'Yes ' if status.get('intent_parser_ready') else 'No '}")
+            logger.info(f"RAG system ready: {'Yes ' if status.get('rag_system_ready') else 'No '}")
+            logger.info(f"Integration: {'PASS ' if test_result['passed'] else 'FAIL '}")
             
         except Exception as e:
             logger.error(f"Persistent services integration error: {str(e)}")
@@ -299,7 +299,7 @@ async def test_error_propagation() -> Dict[str, Any]:
             else:
                 results["summary"]["system_stability"] = False
             
-            logger.info(f"Handled gracefully: {'Yes ✅' if handled_gracefully else 'No ❌'}")
+            logger.info(f"Handled gracefully: {'Yes ' if handled_gracefully else 'No '}")
             if error_details:
                 logger.warning(f"Error details: {'; '.join(error_details)}")
         
@@ -310,7 +310,7 @@ async def test_error_propagation() -> Dict[str, Any]:
         logger.info(f"\nError Propagation Summary:")
         logger.info(f"Handled gracefully: {results['summary']['handled_gracefully']}/{results['summary']['total_error_scenarios']}")
         logger.info(f"Error handling rate: {results['summary']['error_handling_rate']:.1%}")
-        logger.info(f"System stability: {'Yes ✅' if results['summary']['system_stability'] else 'No ❌'}")
+        logger.info(f"System stability: {'Yes ' if results['summary']['system_stability'] else 'No '}")
         
     except Exception as e:
         logger.error(f"Error in error propagation testing: {str(e)}")
@@ -375,7 +375,7 @@ async def test_state_management() -> Dict[str, Any]:
         if test_result["passed"]:
             results["summary"]["state_tests_passed"] += 1
         
-        logger.info(f"State progression: {'Correct ✅' if state_progression_correct else 'Incorrect ❌'}")
+        logger.info(f"State progression: {'Correct ' if state_progression_correct else 'Incorrect '}")
         
         # Test 2: Service State Isolation
         logger.info("\nTesting service state isolation...")
@@ -424,9 +424,9 @@ async def test_state_management() -> Dict[str, Any]:
         
         results["summary"]["state_isolation_working"] = isolation_working
         
-        logger.info(f"States isolated: {'Yes ✅' if states_isolated else 'No ❌'}")
-        logger.info(f"Data isolated: {'Yes ✅' if data_isolated else 'No ❌'}")
-        logger.info(f"Isolation: {'PASS ✅' if isolation_working else 'FAIL ❌'}")
+        logger.info(f"States isolated: {'Yes ' if states_isolated else 'No '}")
+        logger.info(f"Data isolated: {'Yes ' if data_isolated else 'No '}")
+        logger.info(f"Isolation: {'PASS ' if isolation_working else 'FAIL '}")
         
         # Test 3: Service Reset Functionality
         logger.info("\nTesting service reset functionality...")
@@ -459,7 +459,7 @@ async def test_state_management() -> Dict[str, Any]:
         if test_result["passed"]:
             results["summary"]["state_tests_passed"] += 1
         
-        logger.info(f"Reset successful: {'Yes ✅' if reset_successful else 'No ❌'}")
+        logger.info(f"Reset successful: {'Yes ' if reset_successful else 'No '}")
         
         # Calculate state persistence metrics
         if results["summary"]["total_state_tests"] > 0:
@@ -468,7 +468,7 @@ async def test_state_management() -> Dict[str, Any]:
         
         logger.info(f"\nState Management Summary:")
         logger.info(f"State tests passed: {results['summary']['state_tests_passed']}/{results['summary']['total_state_tests']}")
-        logger.info(f"State persistence working: {'Yes ✅' if results['summary']['state_persistence_working'] else 'No ❌'}")
+        logger.info(f"State persistence working: {'Yes ' if results['summary']['state_persistence_working'] else 'No '}")
         
     except Exception as e:
         logger.error(f"Error in state management testing: {str(e)}")
@@ -559,8 +559,8 @@ async def test_concurrent_operations() -> Dict[str, Any]:
         
         logger.info(f"Successful: {successful_classifications}/{len(test_inputs)}")
         logger.info(f"Total time: {total_time:.2f}s")
-        logger.info(f"Concurrent success: {'Yes ✅' if concurrent_success else 'No ❌'}")
-        logger.info(f"Performance good: {'Yes ✅' if performance_good else 'No ❌'}")
+        logger.info(f"Concurrent success: {'Yes ' if concurrent_success else 'No '}")
+        logger.info(f"Performance good: {'Yes ' if performance_good else 'No '}")
         
         # Test 2: Mixed Concurrent Operations
         logger.info("\nTesting mixed concurrent operations...")
@@ -625,11 +625,11 @@ async def test_concurrent_operations() -> Dict[str, Any]:
         
         logger.info(f"Mixed operations successful: {mixed_successful}/{len(mixed_operations)}")
         logger.info(f"Mixed operations time: {mixed_time:.2f}s")
-        logger.info(f"Mixed concurrent success: {'Yes ✅' if mixed_concurrent_success else 'No ❌'}")
+        logger.info(f"Mixed concurrent success: {'Yes ' if mixed_concurrent_success else 'No '}")
         
         logger.info(f"\nConcurrent Operations Summary:")
         logger.info(f"Concurrent tests passed: {results['summary']['concurrent_success']}/{results['summary']['total_concurrent_tests']}")
-        logger.info(f"No race conditions: {'Yes ✅' if results['summary']['no_race_conditions'] else 'No ❌'}")
+        logger.info(f"No race conditions: {'Yes ' if results['summary']['no_race_conditions'] else 'No '}")
         
     except Exception as e:
         logger.error(f"Error in concurrent operations testing: {str(e)}")
@@ -725,10 +725,10 @@ def print_report_summary(report: Dict):
     print(f"  Target: {ERROR_HANDLING_THRESHOLD:.1%}")
     
     print(f"\nState Management:")
-    print(f"  Persistence Working: {'Yes ✅' if report['summary']['state_persistence_working'] else 'No ❌'}")
+    print(f"  Persistence Working: {'Yes ' if report['summary']['state_persistence_working'] else 'No '}")
     
     print(f"\nConcurrent Operations:")
-    print(f"  No Race Conditions: {'Yes ✅' if report['summary']['concurrent_operations_working'] else 'No ❌'}")
+    print(f"  No Race Conditions: {'Yes ' if report['summary']['concurrent_operations_working'] else 'No '}")
     
     if report["issues"]:
         print(f"\nIssues Found ({len(report['issues'])}):")

@@ -270,7 +270,7 @@ async def verify_knowledge_base_structure() -> Dict[str, Any]:
         
         logger.info(f"Categories found: {found_categories}/{EXPECTED_CATEGORIES}")
         logger.info(f"Total documents: {total_documents} (expected: ≥{EXPECTED_TOTAL_DOCUMENTS})")
-        logger.info(f"Structure valid: {'Yes ✅' if results['summary']['structure_valid'] else 'No ❌'}")
+        logger.info(f"Structure valid: {'Yes ' if results['summary']['structure_valid'] else 'No '}")
         
     except Exception as e:
         logger.error(f"Error verifying knowledge base structure: {str(e)}")
@@ -315,7 +315,7 @@ async def test_vector_store_coverage() -> Dict[str, Any]:
         logger.info(f"Vector store size: {stats['vector_store_size']}")
         logger.info(f"Total chunks: {stats['total_documents']}")
         logger.info(f"Categories loaded: {stats['categories_loaded']}/{EXPECTED_CATEGORIES}")
-        logger.info(f"Coverage complete: {'Yes ✅' if coverage_adequate else 'No ❌'}")
+        logger.info(f"Coverage complete: {'Yes ' if coverage_adequate else 'No '}")
         
         if not coverage_adequate:
             if stats["total_documents"] < expected_min_chunks:
@@ -400,7 +400,7 @@ async def test_category_retrieval(test_cases: List[KnowledgeBaseCoverageTest]) -
                     logger.info(f"Response length: {len(response)} chars")
                     logger.info(f"Quality score: {quality_score:.2f}")
                     logger.info(f"Processing time: {processing_time:.2f}s")
-                    logger.info(f"Quality: {'Good ✅' if quality_score >= RETRIEVAL_QUALITY_THRESHOLD else 'Poor ❌'}")
+                    logger.info(f"Quality: {'Good ' if quality_score >= RETRIEVAL_QUALITY_THRESHOLD else 'Poor '}")
                 
                 except Exception as e:
                     logger.error(f"Error processing query '{query}': {str(e)}")
@@ -428,7 +428,7 @@ async def test_category_retrieval(test_cases: List[KnowledgeBaseCoverageTest]) -
                 total_quality_score += category_avg_quality
                 
                 logger.info(f"Category {category_name} average quality: {category_avg_quality:.2f}")
-                logger.info(f"Category result: {'PASS ✅' if category_results['category_passed'] else 'FAIL ❌'}")
+                logger.info(f"Category result: {'PASS ' if category_results['category_passed'] else 'FAIL '}")
             
             results["category_tests"].append(category_results)
         
@@ -440,7 +440,7 @@ async def test_category_retrieval(test_cases: List[KnowledgeBaseCoverageTest]) -
         logger.info(f"\nCategory Coverage Summary:")
         logger.info(f"Categories passed: {results['summary']['categories_passed']}/{results['summary']['total_categories']}")
         logger.info(f"Average quality: {results['summary']['avg_retrieval_quality']:.2f}")
-        logger.info(f"All categories covered: {'Yes ✅' if results['summary']['all_categories_covered'] else 'No ❌'}")
+        logger.info(f"All categories covered: {'Yes ' if results['summary']['all_categories_covered'] else 'No '}")
         
     except Exception as e:
         logger.error(f"Error in category retrieval test: {str(e)}")
@@ -590,7 +590,7 @@ async def test_cross_category_retrieval() -> Dict[str, Any]:
             logger.info(f"Expected categories: {len(test_query['expected_categories'])}")
             logger.info(f"Categories covered: {len(categories_covered)}")
             logger.info(f"Coverage rate: {coverage_rate:.1%}")
-            logger.info(f"Success: {'Yes ✅' if multi_category_success else 'No ❌'}")
+            logger.info(f"Success: {'Yes ' if multi_category_success else 'No '}")
         
         # Calculate average categories per query
         if results["summary"]["total_tests"] > 0:
@@ -693,8 +693,8 @@ def print_report_summary(report: Dict):
     print("="*80)
     
     print(f"\nOverall Coverage: {report['summary']['overall_coverage'].upper()}")
-    print(f"Knowledge Base Complete: {'Yes ✅' if report['summary']['knowledge_base_complete'] else 'No ❌'}")
-    print(f"Vector Store Ready: {'Yes ✅' if report['summary']['vector_store_ready'] else 'No ❌'}")
+    print(f"Knowledge Base Complete: {'Yes ' if report['summary']['knowledge_base_complete'] else 'No '}")
+    print(f"Vector Store Ready: {'Yes ' if report['summary']['vector_store_ready'] else 'No '}")
     
     print(f"\nCategory Coverage:")
     print(f"  Categories Passing: {report['summary']['category_coverage']:.1%}")

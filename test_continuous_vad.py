@@ -40,7 +40,7 @@ try:
     from leibniz_agent.leibniz_vad import get_leibniz_vad
     from leibniz_agent.leibniz_persistent_services import get_leibniz_services_manager
 except ImportError as e:
-    logger.error(f"❌ Import failed: {e}")
+    logger.error(f" Import failed: {e}")
     logger.error("Run from repository root: python leibniz_agent/test_continuous_vad.py")
     logger.error(f"Current sys.path: {sys.path[:3]}")
     logger.error(f"Current directory: {os.getcwd()}")
@@ -70,21 +70,21 @@ async def test_continuous_vad_initialization():
         vad1 = get_continuous_vad()
         vad2 = get_continuous_vad()
         
-        assert vad1 is vad2, "❌ FAIL: get_continuous_vad() returned different instances"
-        logger.info("✅ PASS: Singleton pattern working (same instance returned)")
+        assert vad1 is vad2, " FAIL: get_continuous_vad() returned different instances"
+        logger.info(" PASS: Singleton pattern working (same instance returned)")
         
         # Test initialization
         logger.info("Testing continuous VAD startup...")
         await vad1.start_continuous_listening()
         
         # Verify state
-        assert vad1.is_running, "❌ FAIL: is_running flag not set"
-        assert vad1.session is not None, "❌ FAIL: Gemini session not created"
-        assert vad1.send_task is not None, "❌ FAIL: Audio send task not created"
-        assert vad1.listen_task is not None, "❌ FAIL: Transcript listen task not created"
-        assert vad1.audio_queue is not None, "❌ FAIL: Audio queue not created"
+        assert vad1.is_running, " FAIL: is_running flag not set"
+        assert vad1.session is not None, " FAIL: Gemini session not created"
+        assert vad1.send_task is not None, " FAIL: Audio send task not created"
+        assert vad1.listen_task is not None, " FAIL: Transcript listen task not created"
+        assert vad1.thread_audio_queue is not None, " FAIL: Audio queue not created"
         
-        logger.info("✅ PASS: Continuous VAD initialized successfully")
+        logger.info(" PASS: Continuous VAD initialized successfully")
         
         # Test session warmup
         logger.info("Testing persistent session warmup...")
@@ -94,8 +94,8 @@ async def test_continuous_vad_initialization():
             vad1.vad.config
         )
         
-        assert session is not None, "❌ FAIL: Persistent session not created"
-        logger.info("✅ PASS: Persistent session acquired (warm)")
+        assert session is not None, " FAIL: Persistent session not created"
+        logger.info(" PASS: Persistent session acquired (warm)")
         
         # Check health status
         logger.info("Checking health metrics...")
@@ -106,15 +106,15 @@ async def test_continuous_vad_initialization():
         logger.info(f"  - Transcripts received: {health['transcripts_received']}")
         logger.info(f"  - Errors: {health['errors_count']}")
         
-        assert health['is_running'], "❌ FAIL: Health check reports not running"
-        logger.info("✅ PASS: Health metrics available")
+        assert health['is_running'], " FAIL: Health check reports not running"
+        logger.info(" PASS: Health metrics available")
         
         # Cleanup
         await vad1.stop_continuous_listening()
-        logger.info("✅ TEST 1 PASSED: Initialization successful")
+        logger.info(" TEST 1 PASSED: Initialization successful")
         
     except Exception as e:
-        logger.error(f"❌ TEST 1 FAILED: {e}")
+        logger.error(f" TEST 1 FAILED: {e}")
         raise
 
 
@@ -145,9 +145,9 @@ async def test_wait_for_user_speech():
         transcript = await wait_for_leibniz_speech(timeout=2.0)
         elapsed = time.time() - start_time
         
-        assert transcript is None, f"❌ FAIL: Expected None on timeout, got: {transcript}"
-        assert 1.8 <= elapsed <= 2.5, f"❌ FAIL: Timeout took {elapsed:.1f}s (expected ~2.0s)"
-        logger.info(f"✅ PASS: Timeout after {elapsed:.1f}s (expected 2.0s)")
+        assert transcript is None, f" FAIL: Expected None on timeout, got: {transcript}"
+        assert 1.8 <= elapsed <= 2.5, f" FAIL: Timeout took {elapsed:.1f}s (expected ~2.0s)"
+        logger.info(f" PASS: Timeout after {elapsed:.1f}s (expected 2.0s)")
         
         # Test event signaling (simulate user speech)
         logger.info("Testing event signaling (simulated speech)...")
@@ -171,17 +171,17 @@ async def test_wait_for_user_speech():
         
         await sim_task  # Ensure simulation completes
         
-        assert transcript is not None, "❌ FAIL: Expected transcript, got None"
-        assert "Hello" in transcript, f"❌ FAIL: Unexpected transcript: {transcript}"
-        assert elapsed < 1.0, f"❌ FAIL: Event took {elapsed:.1f}s (expected <1.0s)"
-        logger.info(f"✅ PASS: Event signaling in {elapsed:.1f}s (transcript: '{transcript}')")
+        assert transcript is not None, " FAIL: Expected transcript, got None"
+        assert "Hello" in transcript, f" FAIL: Unexpected transcript: {transcript}"
+        assert elapsed < 1.0, f" FAIL: Event took {elapsed:.1f}s (expected <1.0s)"
+        logger.info(f" PASS: Event signaling in {elapsed:.1f}s (transcript: '{transcript}')")
         
         # Cleanup
         await vad.stop_continuous_listening()
-        logger.info("✅ TEST 2 PASSED: Event signaling working")
+        logger.info(" TEST 2 PASSED: Event signaling working")
         
     except Exception as e:
-        logger.error(f"❌ TEST 2 FAILED: {e}")
+        logger.error(f" TEST 2 FAILED: {e}")
         raise
 
 
@@ -212,8 +212,8 @@ async def test_barge_in_detection():
         # Simulate agent speaking
         logger.info("Simulating agent speaking...")
         vad.is_agent_speaking = True
-        assert vad.is_agent_speaking, "❌ FAIL: is_agent_speaking not set"
-        logger.info("✅ Agent speaking state set")
+        assert vad.is_agent_speaking, " FAIL: is_agent_speaking not set"
+        logger.info(" Agent speaking state set")
         
         # Simulate user interruption (background listener detects speech)
         logger.info("Simulating user interruption...")
@@ -240,13 +240,13 @@ async def test_barge_in_detection():
         await sim_task  # Ensure simulation completes
         
         # Verify barge-in flag
-        assert vad.barge_in_detected, "❌ FAIL: barge_in_detected flag not set"
-        assert elapsed < 0.5, f"❌ FAIL: Barge-in detection took {elapsed:.1f}s (expected <0.5s)"
-        logger.info(f"✅ PASS: Barge-in detected in {elapsed:.1f}s")
+        assert vad.barge_in_detected, " FAIL: barge_in_detected flag not set"
+        assert elapsed < 0.5, f" FAIL: Barge-in detection took {elapsed:.1f}s (expected <0.5s)"
+        logger.info(f" PASS: Barge-in detected in {elapsed:.1f}s")
         
         # Verify event signaling
-        assert vad_wrapper.user_transcript_event.is_set(), "❌ FAIL: Event not set on barge-in"
-        logger.info("✅ PASS: Event signaling on barge-in working")
+        assert vad_wrapper.user_transcript_event.is_set(), " FAIL: Event not set on barge-in"
+        logger.info(" PASS: Event signaling on barge-in working")
         
         # Reset state
         vad.is_agent_speaking = False
@@ -254,10 +254,10 @@ async def test_barge_in_detection():
         
         # Cleanup
         await vad_wrapper.stop_continuous_listening()
-        logger.info("✅ TEST 3 PASSED: Barge-in detection working")
+        logger.info(" TEST 3 PASSED: Barge-in detection working")
         
     except Exception as e:
-        logger.error(f"❌ TEST 3 FAILED: {e}")
+        logger.error(f" TEST 3 FAILED: {e}")
         raise
 
 
@@ -312,9 +312,9 @@ async def test_latency_comparison():
         logger.info(f"  Improvement: {improvement:.1f}x faster")
         
         assert continuous_latency < per_turn_latency, \
-            f"❌ FAIL: Continuous ({continuous_latency:.0f}ms) not faster than per-turn ({per_turn_latency:.0f}ms)"
+            f" FAIL: Continuous ({continuous_latency:.0f}ms) not faster than per-turn ({per_turn_latency:.0f}ms)"
         
-        logger.info("✅ PASS: Continuous VAD faster than per-turn (simulated)")
+        logger.info(" PASS: Continuous VAD faster than per-turn (simulated)")
         
         # Note: Real-world latency requires actual Gemini API calls
         logger.info("NOTE: For real-world latency testing, use manual speech tests")
@@ -322,10 +322,10 @@ async def test_latency_comparison():
         
         # Cleanup
         await vad_wrapper.stop_continuous_listening()
-        logger.info("✅ TEST 4 PASSED: Latency comparison successful")
+        logger.info(" TEST 4 PASSED: Latency comparison successful")
         
     except Exception as e:
-        logger.error(f"❌ TEST 4 FAILED: {e}")
+        logger.error(f" TEST 4 FAILED: {e}")
         raise
 
 
@@ -380,9 +380,9 @@ async def test_error_recovery():
         await vad.restart_listener()
         
         # Verify restarted successfully
-        assert vad.is_running, "❌ FAIL: VAD not running after restart"
-        assert vad.session is not None, "❌ FAIL: Session not restored after restart"
-        logger.info("✅ PASS: Manual restart successful")
+        assert vad.is_running, " FAIL: VAD not running after restart"
+        assert vad.session is not None, " FAIL: Session not restored after restart"
+        logger.info(" PASS: Manual restart successful")
         
         # Test max restart enforcement
         logger.info("Testing max restart attempts...")
@@ -395,10 +395,10 @@ async def test_error_recovery():
         
         # Cleanup
         await vad.stop_continuous_listening()
-        logger.info("✅ TEST 5 PASSED: Error recovery working")
+        logger.info(" TEST 5 PASSED: Error recovery working")
         
     except Exception as e:
-        logger.error(f"❌ TEST 5 FAILED: {e}")
+        logger.error(f" TEST 5 FAILED: {e}")
         raise
 
 
@@ -462,20 +462,20 @@ async def test_concurrent_speech():
         
         # Verify all utterances received
         assert len(received_transcripts) == len(utterances), \
-            f"❌ FAIL: Received {len(received_transcripts)}/{len(utterances)} utterances"
+            f" FAIL: Received {len(received_transcripts)}/{len(utterances)} utterances"
         
         for i, (expected, received) in enumerate(zip(utterances, received_transcripts)):
             assert expected == received, \
-                f"❌ FAIL: Utterance {i+1} mismatch (expected '{expected}', got '{received}')"
+                f" FAIL: Utterance {i+1} mismatch (expected '{expected}', got '{received}')"
         
-        logger.info(f"✅ PASS: All {len(utterances)} utterances received in order")
+        logger.info(f" PASS: All {len(utterances)} utterances received in order")
         
         # Cleanup
         await vad.stop_continuous_listening()
-        logger.info("✅ TEST 6 PASSED: Concurrent speech handling working")
+        logger.info(" TEST 6 PASSED: Concurrent speech handling working")
         
     except Exception as e:
-        logger.error(f"❌ TEST 6 FAILED: {e}")
+        logger.error(f" TEST 6 FAILED: {e}")
         raise
 
 
@@ -512,35 +512,35 @@ async def test_fallback_to_per_turn():
         vad = get_continuous_vad()
         await vad.start_continuous_listening()
         
-        assert vad.is_running, "❌ FAIL: VAD not running before shutdown"
+        assert vad.is_running, " FAIL: VAD not running before shutdown"
         
         # Stop continuous VAD (simulates fallback)
         await vad.stop_continuous_listening()
         
-        assert not vad.is_running, "❌ FAIL: VAD still running after shutdown"
+        assert not vad.is_running, " FAIL: VAD still running after shutdown"
         assert vad.send_task is None or vad.send_task.cancelled(), \
-            "❌ FAIL: Send task not cancelled"
+            " FAIL: Send task not cancelled"
         assert vad.listen_task is None or vad.listen_task.cancelled(), \
-            "❌ FAIL: Listen task not cancelled"
-        logger.info("✅ PASS: Continuous VAD shutdown successful")
+            " FAIL: Listen task not cancelled"
+        logger.info(" PASS: Continuous VAD shutdown successful")
         
         # Verify per-turn VAD still functional
         logger.info("Verifying per-turn VAD accessibility...")
         per_turn_vad = get_leibniz_vad()
         
-        assert per_turn_vad is not None, "❌ FAIL: Per-turn VAD not accessible"
+        assert per_turn_vad is not None, " FAIL: Per-turn VAD not accessible"
         assert hasattr(per_turn_vad, 'capture_speech_bidirectional'), \
-            "❌ FAIL: Per-turn VAD missing capture method"
-        logger.info("✅ PASS: Per-turn VAD functional after continuous shutdown")
+            " FAIL: Per-turn VAD missing capture method"
+        logger.info(" PASS: Per-turn VAD functional after continuous shutdown")
         
         # Note: Full fallback testing requires runtime environment changes
         logger.info("NOTE: Full fallback testing requires setting LEIBNIZ_ENABLE_CONTINUOUS_VAD=false at startup")
         logger.info("Manual test: 1) Set env var, 2) Restart agent, 3) Verify per-turn mode used")
         
-        logger.info("✅ TEST 7 PASSED: Fallback mechanism verified")
+        logger.info(" TEST 7 PASSED: Fallback mechanism verified")
         
     except Exception as e:
-        logger.error(f"❌ TEST 7 FAILED: {e}")
+        logger.error(f" TEST 7 FAILED: {e}")
         raise
 
 
@@ -558,9 +558,9 @@ async def run_all_tests():
     logger.info("Initializing Leibniz persistent services...")
     try:
         services = await get_leibniz_services_manager()
-        logger.info("✅ Persistent services initialized\n")
+        logger.info(" Persistent services initialized\n")
     except Exception as e:
-        logger.error(f"❌ Failed to initialize services: {e}")
+        logger.error(f" Failed to initialize services: {e}")
         logger.error("Ensure GEMINI_API_KEY is set in .env.leibniz")
         return False
     
@@ -583,18 +583,18 @@ async def run_all_tests():
             logger.info(f"\nRunning: {test_name}")
             await test_func()
             passed += 1
-            logger.info(f"✅ {test_name} PASSED\n")
+            logger.info(f" {test_name} PASSED\n")
         except Exception as e:
             failed += 1
-            logger.error(f"❌ {test_name} FAILED: {e}\n")
+            logger.error(f" {test_name} FAILED: {e}\n")
     
     # Summary
     logger.info("\n" + "=" * 80)
     logger.info("TEST SUMMARY")
     logger.info("=" * 80)
     logger.info(f"Total tests: {len(tests)}")
-    logger.info(f"Passed: {passed} ✅")
-    logger.info(f"Failed: {failed} ❌")
+    logger.info(f"Passed: {passed} ")
+    logger.info(f"Failed: {failed} ")
     logger.info(f"Success rate: {passed / len(tests) * 100:.1f}%")
     logger.info("=" * 80 + "\n")
     
@@ -604,7 +604,7 @@ async def run_all_tests():
 if __name__ == "__main__":
     # Ensure running from repository root
     if not os.path.exists("leibniz_agent"):
-        logger.error("❌ Run from repository root: python leibniz_agent/test_continuous_vad.py")
+        logger.error(" Run from repository root: python leibniz_agent/test_continuous_vad.py")
         sys.exit(1)
     
     # Run tests

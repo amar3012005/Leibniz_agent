@@ -10,7 +10,7 @@ import json
 API_KEY = "gm5Bn9DssB4Jpe6MFJCic6Lv1IaAYA11"
 API_URL = "https://api.lemonfox.ai/v1/audio/speech"
 
-print("🍋 Testing LemonFox AI Text-to-Speech API")
+print(" Testing LemonFox AI Text-to-Speech API")
 print("=" * 70)
 
 # Request parameters
@@ -27,9 +27,9 @@ headers = {
     "Content-Type": "application/json"
 }
 
-print(f"📝 Text: {payload['input']}")
-print(f"🎤 Voice: {payload['voice']}")
-print(f"🔊 Format: {payload['response_format']}")
+print(f" Text: {payload['input']}")
+print(f" Voice: {payload['voice']}")
+print(f" Format: {payload['response_format']}")
 print(f"\n⏳ Sending request to LemonFox API...")
 
 try:
@@ -48,26 +48,26 @@ try:
         with open(output_file, "wb") as f:
             f.write(response.content)
         
-        print(f"✅ SUCCESS!")
-        print(f"📁 Audio saved to: {output_file}")
-        print(f"📊 File size: {len(response.content)} bytes ({len(response.content)/1024:.1f} KB)")
-        print(f"\n💡 Play with: powershell -c 'Start-Process {output_file}'")
+        print(f" SUCCESS!")
+        print(f" Audio saved to: {output_file}")
+        print(f" File size: {len(response.content)} bytes ({len(response.content)/1024:.1f} KB)")
+        print(f"\n Play with: powershell -c 'Start-Process {output_file}'")
         
         # Auto-play (optional)
         import os
-        print(f"\n🔊 Playing audio...")
+        print(f"\n Playing audio...")
         os.system(f'powershell -c "Start-Process {output_file}"')
         
     else:
-        print(f"❌ API Error!")
+        print(f" API Error!")
         print(f"   Status: {response.status_code}")
         print(f"   Response: {response.text}")
         
 except requests.exceptions.Timeout:
-    print("❌ Request timeout - API took too long to respond")
+    print(" Request timeout - API took too long to respond")
 except requests.exceptions.RequestException as e:
-    print(f"❌ Request failed: {e}")
+    print(f" Request failed: {e}")
 except Exception as e:
-    print(f"❌ Unexpected error: {e}")
+    print(f" Unexpected error: {e}")
 
 print("\n" + "=" * 70)

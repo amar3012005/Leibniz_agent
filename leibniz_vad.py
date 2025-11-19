@@ -7,14 +7,14 @@ This module provides English-only VAD adapted from SINDH bidirectional VAD.
 Direct port of sindh_bidirectional_vad.py with language changed from hi-IN to en-US.
 
 Key Features:
-✅ Drop-in compatibility with existing capture_leibniz_speech() function
-✅ Persistent session management (eliminates 2-5s delays)
-✅ Bidirectional conversation state tracking
-✅ Smart warmup triggering
-✅ Barge-in detection capabilities
-✅ Dynamic timeout support (greeting/decision/complex/retry contexts)
-✅ Singleton pattern for optimal resource usage
-✅ Returns transcript only (NO temporary WAV file creation)
+ Drop-in compatibility with existing capture_leibniz_speech() function
+ Persistent session management (eliminates 2-5s delays)
+ Bidirectional conversation state tracking
+ Smart warmup triggering
+ Barge-in detection capabilities
+ Dynamic timeout support (greeting/decision/complex/retry contexts)
+ Singleton pattern for optimal resource usage
+ Returns transcript only (NO temporary WAV file creation)
 
 Integration: Matches SINDH pattern for cleaner API and better performance.
 
@@ -62,8 +62,13 @@ from collections import deque
 import uuid
 from dotenv import load_dotenv
 
+# Import audio source interface
+try:
+    from leibniz_webrtc_io import AudioSource
+except ImportError:
+    AudioSource = None  # Fallback if not available
+
 # Import prewarm trigger for speech detection
-from leibniz_agent.leibniz_persistent_services import trigger_prewarm_on_speech_detection
 from leibniz_agent.leibniz_stt import normalize_english_transcript
 
 # Load environment variables
@@ -139,7 +144,7 @@ class LeibnizVADConfig:
         # Language validation
         if self.language_code not in ["en-US", "en"]:
             logger.warning(
-                f"⚠️ Leibniz VAD configured for English-only. "
+                f" Leibniz VAD configured for English-only. "
                 f"Got language_code='{self.language_code}', normalizing to 'en-US'. "
                 f"For multilingual support, use TARA agent with hi-IN configuration."
             )
@@ -236,10 +241,10 @@ class LeibnizVADConfig:
         # Report validation errors
         if errors:
             error_msg = f"Configuration validation failed: {'; '.join(errors)}"
-            logger.error(f"❌ {error_msg}")
+            logger.error(f" {error_msg}")
             raise ValueError(error_msg)
         else:
-            logger.debug("✅ Configuration validation passed")
+            logger.debug(" Configuration validation passed")
 
 
 class TranscriptBuffer:
@@ -276,7 +281,7 @@ class TranscriptBuffer:
         # Deduplication: Skip exact duplicates
         if text == self.last_fragment:
             self.duplicates_skipped += 1
-            logger.debug(f"🔁 Skipped duplicate fragment: '{text[:30]}...'")
+            logger.debug(f" Skipped duplicate fragment: '{text[:30]}...'")
             return ""
         
         self.last_fragment = text
@@ -289,7 +294,7 @@ class TranscriptBuffer:
             # Complete fragment - add to buffer and return
             self.fragments.append(combined_text)
             self.pending_partial = ""  # Clear buffered partial
-            logger.debug(f"✅ Complete fragment added: '{combined_text[:50]}...'")
+            logger.debug(f" Complete fragment added: '{combined_text[:50]}...'")
             return combined_text
         else:
             # Incomplete word at end - buffer last word
@@ -300,7 +305,7 @@ class TranscriptBuffer:
                 self.pending_partial = partial_word
                 self.buffered_words_count += 1
                 logger.debug(
-                    f"📦 Buffered partial word: '{partial_word}' "
+                    f" Buffered partial word: '{partial_word}' "
                     f"(complete portion: '{complete_portion[:40]}...')"
                 )
                 return complete_portion
@@ -308,7 +313,7 @@ class TranscriptBuffer:
                 # Single incomplete word - buffer entirely
                 self.pending_partial = combined_text
                 self.buffered_words_count += 1
-                logger.debug(f"📦 Buffered single incomplete word: '{combined_text}'")
+                logger.debug(f" Buffered single incomplete word: '{combined_text}'")
                 return ""
     
     def _ends_complete_word(self, text: str) -> bool:
@@ -368,12 +373,12 @@ class TranscriptBuffer:
         all_parts = self.fragments.copy()
         if self.pending_partial:
             all_parts.append(self.pending_partial)
-            logger.debug(f"📝 Including buffered partial in final: '{self.pending_partial}'")
+            logger.debug(f" Including buffered partial in final: '{self.pending_partial}'")
         
         final = " ".join(all_parts).strip()
         
         logger.info(
-            f"📊 TranscriptBuffer stats - "
+            f" TranscriptBuffer stats - "
             f"Fragments: {len(self.fragments)}, "
             f"Received: {self.total_fragments_received}, "
             f"Duplicates: {self.duplicates_skipped}, "
@@ -407,7 +412,7 @@ class RobustAudioStreamer:
     def audio_callback(self, indata, frames, time_info, status):
         """Sounddevice callback - runs in audio thread"""
         if status:
-            logger.debug(f"⚠️ Audio callback status: {status}")
+            logger.debug(f" Audio callback status: {status}")
         try:
             # Convert float32 to PCM16
             audio_data = (indata.copy() * 32767).astype(np.int16).tobytes()
@@ -424,7 +429,7 @@ class RobustAudioStreamer:
                     # Queue full - drop chunk (expected during silence)
                     self.dropped_chunks += 1
         except Exception as e:
-            logger.error(f"❌ Audio callback error: {e}")
+            logger.error(f" Audio callback error: {e}")
             self.error_event.set()
     
     async def stream_audio_to_session(self, session):
@@ -432,7 +437,7 @@ class RobustAudioStreamer:
         try:
             # Send pre-buffer first (captures speech onset)
             if self.pre_buffer:
-                logger.debug(f"📦 Sending pre-buffer ({len(self.pre_buffer)} chunks, ~1s audio)")
+                logger.debug(f" Sending pre-buffer ({len(self.pre_buffer)} chunks, ~1s audio)")
                 for chunk in list(self.pre_buffer):
                     await session.send(data=chunk, mime_type="audio/pcm")
             
@@ -450,23 +455,23 @@ class RobustAudioStreamer:
                     # Expected during silence - continue
                     continue
                 except Exception as e:
-                    logger.error(f"❌ Audio streaming error: {e}")
+                    logger.error(f" Audio streaming error: {e}")
                     break
             
             # Send silence chunks to trigger turn_complete
-            logger.debug("📤 Sending silence chunks to finalize turn")
+            logger.debug(" Sending silence chunks to finalize turn")
             silence_chunk = np.zeros(800, dtype=np.int16).tobytes()
             for _ in range(5):  # Send 5 chunks (~250ms silence)
                 await session.send(data=silence_chunk, mime_type="audio/pcm")
             
             if self.dropped_chunks > 0:
                 logger.warning(
-                    f"⚠️ Dropped {self.dropped_chunks}/{self.total_chunks} audio chunks "
+                    f" Dropped {self.dropped_chunks}/{self.total_chunks} audio chunks "
                     f"({self.dropped_chunks/max(self.total_chunks,1)*100:.1f}%)"
                 )
         
         except Exception as e:
-            logger.error(f"❌ Audio stream task error: {e}")
+            logger.error(f" Audio stream task error: {e}")
             self.error_event.set()
     
     def start_stream(self):
@@ -484,7 +489,7 @@ class RobustAudioStreamer:
             )
             self.is_streaming = True
             self.stream.start()
-            logger.debug(f"🎤 Audio stream started ({self.sample_rate}Hz, 50ms chunks)")
+            logger.debug(f" Audio stream started ({self.sample_rate}Hz, 50ms chunks)")
             try:
                 yield self.stream
             finally:
@@ -492,7 +497,7 @@ class RobustAudioStreamer:
                 if self.stream:
                     self.stream.stop()
                     self.stream.close()
-                logger.debug("🔇 Audio stream stopped")
+                logger.debug(" Audio stream stopped")
         
         return stream_context()
 
@@ -537,7 +542,7 @@ class LeibnizPersistentSession:
             if (instance._session is not None and 
                 instance._session_loop is not None and 
                 instance._session_loop is not loop):
-                print("🔄 Leibniz: Event loop changed, closing old session")
+                print(" Leibniz: Event loop changed, closing old session")
                 await cls.close_session()
             
             # Ensure session lock exists and is created in the current event loop
@@ -562,12 +567,12 @@ class LeibnizPersistentSession:
                 if instance._session_context:
                     try:
                         await instance._session_context.__aexit__(None, None, None)
-                        print("🔄 Leibniz: Closed expired session")
+                        print(" Leibniz: Closed expired session")
                     except:
                         pass
                 
                 # Create new persistent session with exponential backoff
-                print("🌐 Leibniz: Creating persistent bidirectional session with VAD config")
+                print(" Leibniz: Creating persistent bidirectional session with VAD config")
                 
                 max_retries = 3
                 for attempt in range(max_retries):
@@ -593,14 +598,14 @@ class LeibnizPersistentSession:
                             start_readable = config.vad_start_sensitivity.replace("START_SENSITIVITY_", "")
                             end_readable = config.vad_end_sensitivity.replace("END_SENSITIVITY_", "")
                             logger.info(
-                                f"✅ VAD config applied - "
+                                f" VAD config applied - "
                                 f"prefix: {config.vad_prefix_padding_ms}ms, "
                                 f"silence: {config.vad_silence_duration_ms}ms, "
                                 f"start_sens: {start_readable}, "
                                 f"end_sens: {end_readable}"
                             )
                         else:
-                            logger.warning("⚠️ No VAD config found - using default Gemini settings")
+                            logger.warning(" No VAD config found - using default Gemini settings")
                         
                         if config.language_code:
                             session_config["speech_config"] = {
@@ -633,7 +638,7 @@ class LeibnizPersistentSession:
                             raise
             else:
                 connection_time = time.time() - start_time
-                logger.debug(f"💨 Leibniz warm session reused in {connection_time:.3f}s")
+                logger.debug(f" Leibniz warm session reused in {connection_time:.3f}s")
             
             instance._last_activity = now
             instance._total_uses += 1
@@ -682,7 +687,7 @@ class LeibnizPersistentSession:
         if instance._session_context:
             try:
                 await instance._session_context.__aexit__(None, None, None)
-                logger.debug("🧹 Leibniz: Session closed")
+                logger.debug(" Leibniz: Session closed")
             except:
                 pass
         instance._session = None
@@ -718,7 +723,7 @@ class LeibnizBidirectionalVAD:
         # Instance tracking for singleton diagnosis
         self._instance_id = str(uuid.uuid4())[:8]
         if self.config.verbose:
-            logger.debug(f"🆔 Leibniz: Instance created with ID: {self._instance_id}")
+            logger.debug(f" Leibniz: Instance created with ID: {self._instance_id}")
         
         # Bidirectional conversation state
         self.conversation_state = "idle"  # idle, listening, agent_speaking, processing
@@ -758,19 +763,19 @@ class LeibnizBidirectionalVAD:
         """Initialize Gemini client for Leibniz Agent"""
         # Early return if imports failed (Comment 5)
         if genai is None or types is None:
-            logger.error("❌ Leibniz: Gemini SDK not available, cannot initialize client")
+            logger.error(" Leibniz: Gemini SDK not available, cannot initialize client")
             return
         
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if not api_key:
-            logger.warning("⚠️ Leibniz: No API key found")
+            logger.warning(" Leibniz: No API key found")
             return
         
         try:
             self.client = genai.Client(api_key=api_key)
-            logger.info("✅ Leibniz: Bidirectional VAD client initialized")
+            logger.info(" Leibniz: Bidirectional VAD client initialized")
         except Exception as e:
-            logger.error(f"❌ Leibniz: Client init failed: {e}")
+            logger.error(f" Leibniz: Client init failed: {e}")
     
     async def set_agent_speaking_state(self, is_speaking: bool, context: str = ""):
         """
@@ -782,9 +787,9 @@ class LeibnizBidirectionalVAD:
             self.conversation_state = "agent_speaking" if is_speaking else "idle"
         
         if context:
-            status = f"🔊 Agent speaking - {context}" if is_speaking else f"🎤 Ready for user - {context}"
+            status = f" Agent speaking - {context}" if is_speaking else f" Ready for user - {context}"
         else:
-            status = "🔊 Agent speaking" if is_speaking else "🎤 Ready for user"
+            status = " Agent speaking" if is_speaking else " Ready for user"
         
         logger.debug(status)
     
@@ -809,11 +814,11 @@ class LeibnizBidirectionalVAD:
                 if not is_listening_active:
                     rejection_reasons.append("not_listening")
 
-                logger.debug(f"🎤 Audio rejected: {', '.join(rejection_reasons)} "
+                logger.debug(f" Audio rejected: {', '.join(rejection_reasons)} "
                            f"(agent_speaking={self.is_agent_speaking}, "
                            f"state={self.conversation_state}, listening={self.is_listening})")
             else:
-                logger.debug("🎤 Audio accepted: agent not speaking, in listening state")
+                logger.debug(" Audio accepted: agent not speaking, in listening state")
 
             return should_accept
     
@@ -839,12 +844,12 @@ class LeibnizBidirectionalVAD:
                 clipped_samples = np.sum(np.abs(audio_data) > 0.95)
                 clipping_ratio = clipped_samples / len(audio_data)
                 if clipping_ratio > 0.05:  # >5% clipped
-                    logger.warning(f"⚠️ Audio clipping detected: {clipping_ratio*100:.1f}% samples clipped")
+                    logger.warning(f" Audio clipping detected: {clipping_ratio*100:.1f}% samples clipped")
                     return False
             
             return True
         except Exception as e:
-            logger.error(f"❌ Audio validation error: {e}")
+            logger.error(f" Audio validation error: {e}")
             return True  # Allow through on validation error
     
     def set_dynamic_timeout(self, attempt_count: int = 0, conversation_context: str = "initial") -> None:
@@ -865,36 +870,36 @@ class LeibnizBidirectionalVAD:
             if conversation_context in ['greeting', 'initial']:
                 self.config.start_timeout_s = self.config.greeting_timeout_s  # 25s
                 self.config.silence_before_finalize_s = 3.5  # Increased from 2.0s - allow formulation time
-                logger.debug(f"🕐 Applied greeting/initial: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
+                logger.debug(f" Applied greeting/initial: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
             elif conversation_context in ['decision', 'service_selection']:
                 self.config.start_timeout_s = self.config.decision_timeout_s  # 30s
                 self.config.silence_before_finalize_s = 3.5  # Increased from 2.0s - allow thinking time
-                logger.debug(f"🕐 Applied decision: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
+                logger.debug(f" Applied decision: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
             elif conversation_context in ['complex_query', 'rag_query', 'complex']:
                 self.config.start_timeout_s = self.config.complex_query_timeout_s  # 35s
                 self.config.silence_before_finalize_s = 5.0  # Increased from 3.5s - very patient for complex queries
-                logger.debug(f"🕐 Applied complex_query: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
+                logger.debug(f" Applied complex_query: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
             elif conversation_context in ['post_service', 'continuation']:
                 self.config.start_timeout_s = self.config.post_service_timeout_s  # 20s
                 self.config.silence_before_finalize_s = 3.0  # Increased from 2.5s - medium-high threshold
-                logger.debug(f"🕐 Applied post_service: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
+                logger.debug(f" Applied post_service: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
             else:
                 self.config.start_timeout_s = self.config.initial_timeout_s  # 20s
                 self.config.silence_before_finalize_s = 3.5  # Increased from 2.0s - more patient default
-                logger.debug(f"🕐 Applied default: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
+                logger.debug(f" Applied default: timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
         else:
             # Retry attempts - shorter timeout but STILL PATIENT (increased from 1.5s to 2.5s)
             self.config.start_timeout_s = self.config.retry_timeout_s  # 10s
             self.config.silence_before_finalize_s = 2.5  # Increased - be patient even on retries
-            logger.debug(f"🕐 Applied retry (attempt {attempt_count}): timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
+            logger.debug(f" Applied retry (attempt {attempt_count}): timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
         
         logger.info(
-            f"🕐 Leibniz: Dynamic timeout configured - "
+            f" Leibniz: Dynamic timeout configured - "
             f"timeout: {self.config.start_timeout_s}s, "
             f"silence_finalize: {self.config.silence_before_finalize_s}s "
             f"(attempt: {attempt_count}, context: '{conversation_context}')"
         )
-        logger.info(f"✅ Leibniz: Dynamic timeout configured for {conversation_context} (attempt {attempt_count})")
+        logger.info(f" Leibniz: Dynamic timeout configured for {conversation_context} (attempt {attempt_count})")
     
     def log_timeout_event(self, elapsed_time: float, expected_timeout: float) -> None:
         """Enhanced timeout event logging"""
@@ -902,7 +907,7 @@ class LeibnizBidirectionalVAD:
         attempt_info = getattr(self, '_current_attempt', 0)
         
         logger.warning(
-            f"⏱️ TIMEOUT: {elapsed_time:.1f}s elapsed "
+            f"⏱ TIMEOUT: {elapsed_time:.1f}s elapsed "
             f"(expected: {expected_timeout:.1f}s, context: {context_info}, attempt: {attempt_info})"
         )
     
@@ -923,7 +928,7 @@ class LeibnizBidirectionalVAD:
             # No event loop running, skip warmup
             pass
     
-    async def capture_speech_bidirectional(self, streaming_callback: Optional[Callable[[str, bool], None]] = None) -> Optional[str]:
+    async def capture_speech_bidirectional(self, streaming_callback: Optional[Callable[[str, bool], None]] = None, audio_source: Optional['AudioSource'] = None) -> Optional[str]:
         """
         Main bidirectional speech capture - adapted from SINDH
         
@@ -935,7 +940,7 @@ class LeibnizBidirectionalVAD:
             Transcript string or None on timeout/error
         """
         if not self.client:
-            logger.error("❌ Leibniz: No client available")
+            logger.error(" Leibniz: No client available")
             return None
         
         # Always recreate lock in current event loop
@@ -953,7 +958,7 @@ class LeibnizBidirectionalVAD:
         # Prevent concurrent captures
         async with self._async_lock:
             if self._active:
-                logger.warning("⚠️ Leibniz: VAD already active")
+                logger.warning(" Leibniz: VAD already active")
                 return None
             self._active = True
         
@@ -961,7 +966,7 @@ class LeibnizBidirectionalVAD:
         final_callback_emitted = False  # Guard flag to prevent duplicate callbacks
         
         # PHASE 2 CHANGE 2.3: Add latency logging for capture
-        logger.info(f"🎤 Speech capture started (timeout={self.config.start_timeout_s}s)")
+        logger.info(f" Speech capture started (timeout={self.config.start_timeout_s}s)")
         
         try:
             # Set listening state
@@ -970,7 +975,7 @@ class LeibnizBidirectionalVAD:
             attempt_info = getattr(self, '_current_attempt', 0)
             
             logger.info(
-                f"🎤 Listening (timeout={self.config.start_timeout_s}s, "
+                f" Listening (timeout={self.config.start_timeout_s}s, "
                 f"context={context_info}, attempt={attempt_info})"
             )
             
@@ -978,12 +983,12 @@ class LeibnizBidirectionalVAD:
             if self._last_capture_ended_at is not None:
                 time_since_last_capture = time.time() - self._last_capture_ended_at
                 if time_since_last_capture > 60.0:
-                    logger.warning(f"⚠️ Leibniz: Stale session ({time_since_last_capture:.1f}s) - forcing reset")
+                    logger.warning(f" Leibniz: Stale session ({time_since_last_capture:.1f}s) - forcing reset")
                     await LeibnizPersistentSession.close_session()
             
             # Check for multiple consecutive timeouts
             if self.consecutive_timeouts >= 3:
-                logger.warning("⚠️ Leibniz: Multiple timeouts detected, forcing session reset")
+                logger.warning(" Leibniz: Multiple timeouts detected, forcing session reset")
                 await LeibnizPersistentSession.close_session()
                 self.consecutive_timeouts = 0
             
@@ -998,7 +1003,7 @@ class LeibnizBidirectionalVAD:
                 logger.error("Failed to get session")
                 return None
             
-            logger.info(f"👂 Ready for input (timeout={self.config.start_timeout_s}s)")
+            logger.info(f" Ready for input (timeout={self.config.start_timeout_s}s)")
             
             # Detailed VAD session logging (TARA pattern)
             print(f"Listening for speech: timeout={self.config.start_timeout_s}s, context={context_info}, attempt={attempt_info}, instance=N/A")
@@ -1030,136 +1035,229 @@ class LeibnizBidirectionalVAD:
             # Audio streaming setup with backpressure (Comment 4)
             audio_queue = asyncio.Queue(maxsize=100)
             
-            def audio_callback(indata, frames, time_info, status):
-                """Sounddevice callback - sends audio to Gemini Live"""
-                nonlocal dropped_count
-                if status and self.config.log_audio_callbacks:
-                    logger.debug(f"Audio status: {status}")
-                
-                # Convert to int16 PCM using flatten() (Comment 6 - consistent with gemini_live_vad.py)
-                audio_data = (indata.flatten() * 32767).astype(np.int16).tobytes()
-                
-                # Add to pre-buffer (TARA pattern - always append regardless of queue)
-                pre_buffer.append(audio_data)
-                
-                # Queue for async send (use put_nowait in sync callback)
-                try:
-                    audio_queue.put_nowait(audio_data)
-                except asyncio.QueueFull:
-                    dropped_count += 1
-                    if self.config.log_audio_callbacks:
-                        logger.debug(f"Audio queue full, dropped chunk (total drops: {dropped_count})")
-                except RuntimeError:
-                    pass  # Event loop not running
-            
-            # Start audio stream EARLY (16kHz mono, 50ms chunks = 800 samples)
-            # Use np.float32 dtype (Comment 6)
-            stream = sd.InputStream(
-                samplerate=self.config.sample_rate,
-                channels=1,
-                dtype=np.float32,
-                blocksize=800,
-                callback=audio_callback
-            )
-            
-            async def send_audio_task():
-                """Background task - streams audio to Gemini"""
-                nonlocal pre_buffer_sent, pre_buffer_chunks_sent
-                
-                # Wait for pre-buffer to reach ~20 chunks (Comment 7)
-                # This gives time for buffering to occur after stream starts
-                wait_start = time.time()
-                while len(pre_buffer) < 20 and (time.time() - wait_start) < 0.75:
-                    await asyncio.sleep(0.025)  # 25ms sleep steps
-                
-                logger.debug(f"Pre-buffer filled to {len(pre_buffer)} chunks in {time.time() - wait_start:.3f}s")
-                
-                # Send pre-buffer first (TARA pattern)
-                if pre_buffer and not pre_buffer_sent:
-                    logger.info(f"📦 Sending pre-buffer: {len(pre_buffer)} chunks (~{len(pre_buffer)*50}ms)")
-                    for buffered_chunk in pre_buffer:
+            if audio_source is not None:
+                # Use injected audio source
+                async def audio_callback():
+                    """Get audio from injected source"""
+                    nonlocal dropped_count
+                    try:
+                        # Get frames from source (assuming 800 samples per chunk at 16kHz = 50ms)
+                        frames = await audio_source.get_frames(800)
+                        # Convert to int16 PCM
+                        audio_data = (frames * 32767).astype(np.int16).tobytes()
+                        
+                        # Add to pre-buffer
+                        pre_buffer.append(audio_data)
+                        
+                        # Queue for async send
                         try:
+                            audio_queue.put_nowait(audio_data)
+                        except asyncio.QueueFull:
+                            dropped_count += 1
+                            if self.config.log_audio_callbacks:
+                                logger.debug(f"Audio queue full, dropped chunk (total drops: {dropped_count})")
+                    except Exception as e:
+                        logger.error(f"Audio source error: {e}")
+                        self.error_event.set()
+                
+                # Start audio source task
+                async def send_audio_task():
+                    """Background task - streams audio to Gemini"""
+                    nonlocal pre_buffer_sent, pre_buffer_chunks_sent
+                    
+                    # Wait for pre-buffer to reach ~20 chunks
+                    wait_start = time.time()
+                    while len(pre_buffer) < 20 and (time.time() - wait_start) < 0.75:
+                        await asyncio.sleep(0.025)
+                    
+                    logger.debug(f"Pre-buffer filled to {len(pre_buffer)} chunks in {time.time() - wait_start:.3f}s")
+                    
+                    # Send pre-buffer first
+                    if pre_buffer and not pre_buffer_sent:
+                        logger.info(f" Sending pre-buffer: {len(pre_buffer)} chunks (~{len(pre_buffer)*50}ms)")
+                        for buffered_chunk in pre_buffer:
+                            try:
+                                await session.send_realtime_input(
+                                    audio=types.Blob(
+                                        data=buffered_chunk,
+                                        mime_type=f"audio/pcm;rate={self.config.sample_rate}"
+                                    )
+                                )
+                                pre_buffer_chunks_sent += 1
+                            except Exception as e:
+                                logger.warning(f"Pre-buffer send error: {e}")
+                                break
+                        pre_buffer_sent = True
+                        logger.info(" Pre-buffer sent successfully")
+                    
+                    # Stream real-time audio
+                    audio_chunks_sent = 0
+                    while self.is_listening:
+                        try:
+                            await audio_callback()  # Get from source
+                            audio_chunk = await asyncio.wait_for(
+                                audio_queue.get(), timeout=0.1
+                            )
                             await session.send_realtime_input(
                                 audio=types.Blob(
-                                    data=buffered_chunk,
+                                    data=audio_chunk,
                                     mime_type=f"audio/pcm;rate={self.config.sample_rate}"
                                 )
                             )
-                            pre_buffer_chunks_sent += 1  # Comment 8: Track pre-buffer chunks
+                            audio_chunks_sent += 1
+                            if audio_chunks_sent % 50 == 0:
+                                logger.debug(f" Sent {audio_chunks_sent} audio chunks ({audio_chunks_sent*50}ms)")
+                        except asyncio.TimeoutError:
+                            continue
                         except Exception as e:
-                            logger.warning(f"Pre-buffer send error: {e}")
+                            logger.error(f"Audio send error: {e}")
                             break
-                    pre_buffer_sent = True
-                    logger.info("✅ Pre-buffer sent successfully")
-                
-                # Now stream real-time audio
-                audio_chunks_sent = 0  # Track chunks sent for debugging
-                while self.is_listening:
-                    try:
-                        audio_chunk = await asyncio.wait_for(
-                            audio_queue.get(), timeout=0.1
-                        )
-                        # Use send_realtime_input with Blob (correct Gemini Live API)
-                        await session.send_realtime_input(
-                            audio=types.Blob(
-                                data=audio_chunk,
-                                mime_type=f"audio/pcm;rate={self.config.sample_rate}"
+                    
+                    # Send extra silence to trigger turn_complete
+                    silence_chunk = b'\x00' * (800 * 2)
+                    for i in range(8):
+                        try:
+                            await session.send_realtime_input(
+                                audio=types.Blob(
+                                    data=silence_chunk,
+                                    mime_type=f"audio/pcm;rate={self.config.sample_rate}"
+                                )
                             )
-                        )
-                        audio_chunks_sent += 1
-                        # Log every 50 chunks (2.5 seconds of audio)
-                        if audio_chunks_sent % 50 == 0:
-                            logger.debug(f"📡 Sent {audio_chunks_sent} audio chunks ({audio_chunks_sent*50}ms)")
-                    except asyncio.TimeoutError:
-                        continue
-                    except Exception as e:
-                        logger.error(f"Audio send error: {e}")
-                        break
+                        except Exception as e:
+                            logger.debug(f"Silence chunk {i+1} send error: {e}")
+                            break
+                    logger.debug(" Sent 8 silence chunks (400ms) to trigger turn_complete")
                 
-                # Send extra silence to trigger turn_complete (Comment 3)
-                # 8 chunks × 50ms = 400ms of silence
-                silence_chunk = b'\x00' * (800 * 2)  # 800 samples × 2 bytes (int16)
-                for i in range(8):
-                    try:
-                        await session.send_realtime_input(
-                            audio=types.Blob(
-                                data=silence_chunk,
-                                mime_type=f"audio/pcm;rate={self.config.sample_rate}"
-                            )
-                        )
-                    except Exception as e:
-                        logger.debug(f"Silence chunk {i+1} send error: {e}")
-                        break
-                logger.debug("📤 Sent 8 silence chunks (400ms) to trigger turn_complete")
-            
-            # Start streaming audio
-            with stream:
+                # Start streaming audio
                 send_task = asyncio.create_task(send_audio_task())
                 
-                logger.info("🎧 Starting to listen for Gemini responses...")
+            else:
+                # Original sounddevice-based streaming
+                def audio_callback(indata, frames, time_info, status):
+                    """Sounddevice callback - sends audio to Gemini Live"""
+                    nonlocal dropped_count
+                    if status and self.config.log_audio_callbacks:
+                        logger.debug(f"Audio status: {status}")
+                    
+                    # Convert to int16 PCM using flatten()
+                    audio_data = (indata.flatten() * 32767).astype(np.int16).tobytes()
+                    
+                    # Add to pre-buffer
+                    pre_buffer.append(audio_data)
+                    
+                    # Queue for async send
+                    try:
+                        audio_queue.put_nowait(audio_data)
+                    except asyncio.QueueFull:
+                        dropped_count += 1
+                        if self.config.log_audio_callbacks:
+                            logger.debug(f"Audio queue full, dropped chunk (total drops: {dropped_count})")
+                    except RuntimeError:
+                        pass
+                
+                # Start audio stream EARLY
+                stream = sd.InputStream(
+                    samplerate=self.config.sample_rate,
+                    channels=1,
+                    dtype=np.float32,
+                    blocksize=800,
+                    callback=audio_callback
+                )
+                
+                async def send_audio_task():
+                    """Background task - streams audio to Gemini"""
+                    nonlocal pre_buffer_sent, pre_buffer_chunks_sent
+                    
+                    # Wait for pre-buffer to reach ~20 chunks
+                    wait_start = time.time()
+                    while len(pre_buffer) < 20 and (time.time() - wait_start) < 0.75:
+                        await asyncio.sleep(0.025)
+                    
+                    logger.debug(f"Pre-buffer filled to {len(pre_buffer)} chunks in {time.time() - wait_start:.3f}s")
+                    
+                    # Send pre-buffer first
+                    if pre_buffer and not pre_buffer_sent:
+                        logger.info(f" Sending pre-buffer: {len(pre_buffer)} chunks (~{len(pre_buffer)*50}ms)")
+                        for buffered_chunk in pre_buffer:
+                            try:
+                                await session.send_realtime_input(
+                                    audio=types.Blob(
+                                        data=buffered_chunk,
+                                        mime_type=f"audio/pcm;rate={self.config.sample_rate}"
+                                    )
+                                )
+                                pre_buffer_chunks_sent += 1
+                            except Exception as e:
+                                logger.warning(f"Pre-buffer send error: {e}")
+                                break
+                        pre_buffer_sent = True
+                        logger.info(" Pre-buffer sent successfully")
+                    
+                    # Stream real-time audio
+                    audio_chunks_sent = 0
+                    while self.is_listening:
+                        try:
+                            audio_chunk = await asyncio.wait_for(
+                                audio_queue.get(), timeout=0.1
+                            )
+                            await session.send_realtime_input(
+                                audio=types.Blob(
+                                    data=audio_chunk,
+                                    mime_type=f"audio/pcm;rate={self.config.sample_rate}"
+                                )
+                            )
+                            audio_chunks_sent += 1
+                            if audio_chunks_sent % 50 == 0:
+                                logger.debug(f" Sent {audio_chunks_sent} audio chunks ({audio_chunks_sent*50}ms)")
+                        except asyncio.TimeoutError:
+                            continue
+                        except Exception as e:
+                            logger.error(f"Audio send error: {e}")
+                            break
+                    
+                    # Send extra silence to trigger turn_complete
+                    silence_chunk = b'\x00' * (800 * 2)
+                    for i in range(8):
+                        try:
+                            await session.send_realtime_input(
+                                audio=types.Blob(
+                                    data=silence_chunk,
+                                    mime_type=f"audio/pcm;rate={self.config.sample_rate}"
+                                )
+                            )
+                        except Exception as e:
+                            logger.debug(f"Silence chunk {i+1} send error: {e}")
+                            break
+                    logger.debug(" Sent 8 silence chunks (400ms) to trigger turn_complete")
+                
+                # Start streaming audio
+                with stream:
+                    send_task = asyncio.create_task(send_audio_task())
+                
+                logger.info(" Starting to listen for Gemini responses...")
                 response_count = 0
                 
                 try:
                     # Process Gemini Live responses (SINDH pattern - simple async for)
                     async for response in session.receive():
                         response_count += 1
-                        logger.debug(f"📥 Response #{response_count} received")
+                        logger.debug(f" Response #{response_count} received")
                         
                         # Debug: Log what we're receiving
                         if response:
                             if hasattr(response, 'server_content') and response.server_content:
-                                logger.debug(f"📥 Has server_content")
+                                logger.debug(f" Has server_content")
                                 if hasattr(response.server_content, 'input_transcription') and response.server_content.input_transcription:
-                                    logger.info(f"🎯 Found input_transcription!")
+                                    logger.info(f" Found input_transcription!")
                                 else:
-                                    logger.debug(f"📥 No input_transcription in server_content")
+                                    logger.debug(f" No input_transcription in server_content")
                         
                         # PHASE 2 CHANGE 2.2: Check timeout (single check per iteration)
                         elapsed = time.time() - start_time
                         if elapsed >= self.config.start_timeout_s:
                             self.log_timeout_event(elapsed, self.config.start_timeout_s)
                             self.consecutive_timeouts += 1
-                            logger.info(f"⏱️ Timeout after {response_count} responses")
+                            logger.info(f"⏱ Timeout after {response_count} responses")
                             break
                         
                         # Check silence-based finalization (if we have speech and enough silence)
@@ -1169,7 +1267,7 @@ class LeibnizBidirectionalVAD:
                                 # Only finalize if we have some transcript content
                                 current_transcript = transcript_buffer.get_final_transcript()
                                 if current_transcript:
-                                    logger.info(f"✅ {silence_duration:.1f}s silence after speech - finalizing transcript")
+                                    logger.info(f" {silence_duration:.1f}s silence after speech - finalizing transcript")
                                     break
                         
                         # Comment 10: Handle interruption signal
@@ -1177,9 +1275,9 @@ class LeibnizBidirectionalVAD:
                             if response.server_content.interrupted:
                                 # Clear any buffered partial word
                                 if transcript_buffer.pending_partial:
-                                    logger.info(f"🔄 Interruption detected - clearing buffered partial: '{transcript_buffer.pending_partial}'")
+                                    logger.info(f" Interruption detected - clearing buffered partial: '{transcript_buffer.pending_partial}'")
                                     transcript_buffer.pending_partial = ""
-                                logger.debug("🔄 Gemini interrupted signal received - continuing to listen")
+                                logger.debug(" Gemini interrupted signal received - continuing to listen")
                                 continue
                         
                         # Handle input transcription (SINDH pattern - spontaneous!)
@@ -1190,22 +1288,23 @@ class LeibnizBidirectionalVAD:
                                 if not speech_detected:
                                     speech_detected = True
                                     last_activity = time.time()  # Initialize last_activity (Comment 8)
-                                    logger.info(f"🗣️ Leibniz: Speech detected!")
-                                    print("🗣️ Leibniz: Speech detected!")
+                                    logger.info(f" Leibniz: Speech detected!")
+                                    print(" Leibniz: Speech detected!")
                                     
                                     # Trigger RAG prewarm on first speech (fire-and-forget)
                                     try:
-                                        print("🔥 Pre-warming RAG models...")
+                                        print(" Pre-warming RAG models...")
+                                        from leibniz_persistent_services import trigger_prewarm_on_speech_detection
                                         await trigger_prewarm_on_speech_detection()
-                                        logger.info("⚡ RAG prewarm triggered on speech detection")
-                                        print("✅ RAG models pre-warmed successfully")
+                                        logger.info(" RAG prewarm triggered on speech detection")
+                                        print(" RAG models pre-warmed successfully")
                                     except Exception as e:
-                                        logger.warning(f"⚠️ Prewarm trigger failed: {e}")
+                                        logger.warning(f" Prewarm trigger failed: {e}")
                                     
                                     # Handle speech during agent speaking (barge-in)
                                     with self._speaking_lock:
                                         if self.is_agent_speaking:
-                                            logger.info("🔄 Leibniz: User interrupted agent")
+                                            logger.info(" Leibniz: User interrupted agent")
                                             self.barge_in_detected = True
                                             await self.set_agent_speaking_state(False, "Barge-in interrupt")
                                 
@@ -1221,7 +1320,7 @@ class LeibnizBidirectionalVAD:
                                     silence_durations.append(silence_gap)
                                 last_fragment_time = last_activity
                                 
-                                logger.debug(f"📝 Leibniz: {text}")
+                                logger.debug(f" Leibniz: {text}")
                                 
                                 # Invoke streaming callback for complete portion only (not buffered partials)
                                 if streaming_callback and complete_text:
@@ -1231,7 +1330,7 @@ class LeibnizBidirectionalVAD:
                                     
                                     if callback_time > 0.05:
                                         logger.warning(
-                                            f"⚠️ Callback slow: {callback_time*1000:.1f}ms for fragment {fragment_count}"
+                                            f" Callback slow: {callback_time*1000:.1f}ms for fragment {fragment_count}"
                                         )
                                 
                                 # PHASE 2 CHANGE 2.1: Early completion detection (Comment 1 fix)
@@ -1270,15 +1369,15 @@ class LeibnizBidirectionalVAD:
                                             # High confidence: speech ended, finalize immediately
                                             transcript_result = current_transcript
                                             logger.info(
-                                                f"✅ Leibniz: Early completion detected "
+                                                f" Leibniz: Early completion detected "
                                                 f"(silence: {time_since_last_chunk:.1f}s [{min_silence}-{max_silence}s], "
                                                 f"chars: {len(current_transcript)} [min: {min_chars}], "
                                                 f"fragments: {fragment_count} [min: {min_fragments}], "
                                                 f"context: {context}) "
                                                 f"- Reason: {'chars' if len(current_transcript) >= min_chars else 'fragments'}"
                                             )
-                                            print(f"✅ Leibniz: Early completion detected (no chunks for {time_since_last_chunk:.1f}s)")
-                                            print(f"✅ Leibniz: Complete transcript: {transcript_result}")
+                                            print(f" Leibniz: Early completion detected (no chunks for {time_since_last_chunk:.1f}s)")
+                                            print(f" Leibniz: Complete transcript: {transcript_result}")
                                             
                                             # Emit final callback
                                             if streaming_callback and not final_callback_emitted:
@@ -1293,12 +1392,12 @@ class LeibnizBidirectionalVAD:
                         # Handle turn completion (Comment 5: Configurable - can be enabled/disabled)
                         if response.server_content and response.server_content.turn_complete:
                             if self.config.ignore_turn_complete:
-                                logger.debug("⏭️ Turn complete signal ignored (config.ignore_turn_complete=True)")
+                                logger.debug("⏭ Turn complete signal ignored (config.ignore_turn_complete=True)")
                                 continue
                             
                             # Only ignore turn_complete if no speech detected yet
                             if speech_detected:
-                                logger.info(f"✅ Turn complete received after speech - finalizing transcript")
+                                logger.info(f" Turn complete received after speech - finalizing transcript")
                                 break
                             else:
                                 logger.debug("⏳ Turn complete received but no speech yet - continuing to listen")
@@ -1318,7 +1417,7 @@ class LeibnizBidirectionalVAD:
                 # Build transcript from buffer if early completion didn't fire
                 transcript_result = transcript_buffer.get_final_transcript()
                 if transcript_result:
-                    logger.debug("📋 Built transcript from TranscriptBuffer (turn_complete path)")
+                    logger.debug(" Built transcript from TranscriptBuffer (turn_complete path)")
             
             if transcript_result:
                 # Reset timeout counter on success
@@ -1333,7 +1432,7 @@ class LeibnizBidirectionalVAD:
                 # Comment 8: Log concise summary with diagnostic metrics
                 avg_silence = sum(silence_durations) / len(silence_durations) if silence_durations else 0.0
                 logger.info(
-                    f"✅ Speech captured in {capture_elapsed*1000:.1f}ms: '{transcript_result[:50]}...' | "
+                    f" Speech captured in {capture_elapsed*1000:.1f}ms: '{transcript_result[:50]}...' | "
                     f"Diagnostics: fragments={fragment_count}, chars={cumulative_length}, "
                     f"pre_buffer_sent={pre_buffer_chunks_sent}, dropped={dropped_count}, "
                     f"avg_silence={avg_silence:.2f}s, silence_gaps={len(silence_durations)}"
@@ -1344,7 +1443,7 @@ class LeibnizBidirectionalVAD:
                     streaming_callback(transcript_result, is_final=True)
                 
                 logger.info(
-                    f"🎯 Final transcript complete: '{transcript_result}' "
+                    f" Final transcript complete: '{transcript_result}' "
                     f"({fragment_count} fragments)"
                 )
                 
@@ -1358,7 +1457,7 @@ class LeibnizBidirectionalVAD:
                 self._last_capture_ended_at = time.time()
                 
                 # Session cleanup confirmation
-                print("🧹 Leibniz: Session cleaned up for next capture")
+                print(" Leibniz: Session cleaned up for next capture")
                 
                 # Trigger smart warmup
                 self._trigger_smart_warmup_background()
@@ -1366,11 +1465,11 @@ class LeibnizBidirectionalVAD:
             return transcript_result
             
         except Exception as e:
-            logger.error(f"❌ Capture error: {e}")
+            logger.error(f" Capture error: {e}")
             
             # Force session reset on errors
             if "1011" in str(e) or "1006" in str(e) or "event loop" in str(e):
-                logger.warning("🔄 Forcing session reset due to error")
+                logger.warning(" Forcing session reset due to error")
                 await LeibnizPersistentSession.close_session()
             
             return None
@@ -1413,7 +1512,8 @@ def get_leibniz_vad() -> LeibnizBidirectionalVAD:
 
 async def capture_leibniz_speech(
     streaming_callback: Optional[Callable[[str, bool], None]] = None,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, Any]] = None,
+    audio_source: Optional['AudioSource'] = None
 ) -> Optional[str]:
     """
     Main API function for capturing English speech.
@@ -1437,7 +1537,7 @@ async def capture_leibniz_speech(
         vad.set_dynamic_timeout(attempt_count=attempt, conversation_context=conversation_context)
     
     # Capture speech bidirectionally
-    transcript = await vad.capture_speech_bidirectional(streaming_callback=streaming_callback)
+    transcript = await vad.capture_speech_bidirectional(streaming_callback=streaming_callback, audio_source=audio_source)
     
     # Apply normalization (Comment 9: Only normalize once here, not in capture_speech_bidirectional)
     if transcript:
@@ -1468,17 +1568,17 @@ async def set_leibniz_agent_speaking(is_speaking: bool, context: str = ""):
         if is_speaking:
             # Stop continuous VAD during TTS to prevent audio feedback
             await continuous_vad.stop_continuous_listening()
-            logger.info("🎤 Microphone disabled during TTS (preventing audio feedback)")
+            logger.info(" Microphone disabled during TTS (preventing audio feedback)")
         else:
             # Restart continuous VAD after TTS
             await continuous_vad.start_continuous_listening()
-            logger.info("🎤 Microphone re-enabled after TTS")
+            logger.info(" Microphone re-enabled after TTS")
 
     except ImportError:
         # Continuous VAD not available, skip control
         pass
     except Exception as e:
-        logger.warning(f"⚠️ Error controlling microphone during TTS: {e}")
+        logger.warning(f" Error controlling microphone during TTS: {e}")
 
 
 async def reset_leibniz_conversation():
@@ -1487,16 +1587,16 @@ async def reset_leibniz_conversation():
     with vad._speaking_lock:
         vad.barge_in_detected = False
     vad.consecutive_timeouts = 0
-    logger.debug("🔄 Leibniz conversation state reset")
+    logger.debug(" Leibniz conversation state reset")
 
 
 async def cleanup_leibniz_vad():
     """Cleanup Leibniz VAD resources"""
     try:
         await LeibnizPersistentSession.close_session()
-        logger.info("🧹 Leibniz VAD cleaned up")
+        logger.info(" Leibniz VAD cleaned up")
     except Exception as e:
-        logger.warning(f"⚠️ Leibniz: Cleanup error: {e}")
+        logger.warning(f" Leibniz: Cleanup error: {e}")
 
 
 def check_leibniz_barge_in() -> bool:
@@ -1526,7 +1626,7 @@ async def warmup_leibniz_vad(preconnect_s: float = 0.0) -> Dict[str, Any]:
     try:
         vad = get_leibniz_vad()
         if vad.client:
-            logger.info("🔥 Warming up Leibniz VAD")
+            logger.info(" Warming up Leibniz VAD")
             
             # Optional delay before connection
             if preconnect_s > 0:
@@ -1537,15 +1637,15 @@ async def warmup_leibniz_vad(preconnect_s: float = 0.0) -> Dict[str, Any]:
                 vad.config.model_name,
                 vad.config
             )
-            logger.info("✅ Leibniz VAD warmup completed")
+            logger.info(" Leibniz VAD warmup completed")
             return {"session_created": True}
         else:
             error_msg = "No client available for warmup"
-            logger.warning(f"⚠️ {error_msg}")
+            logger.warning(f" {error_msg}")
             return {"error": error_msg}
     except Exception as e:
         error_msg = str(e)
-        logger.error(f"❌ Warmup failed: {error_msg}")
+        logger.error(f" Warmup failed: {error_msg}")
         return {"error": error_msg}
 
 
@@ -1575,18 +1675,18 @@ def get_leibniz_vad_metrics() -> Dict[str, Any]:
 if __name__ == "__main__":
     async def test_leibniz_vad():
         """Test Leibniz bidirectional VAD system"""
-        print("🧪 Testing Leibniz Bidirectional VAD")
+        print(" Testing Leibniz Bidirectional VAD")
         print("=" * 40)
         
         vad = get_leibniz_vad()
         
         if not vad.client:
-            print("❌ No API key - cannot test")
+            print(" No API key - cannot test")
             return
         
         try:
             # Test speech capture
-            print("🎤 Testing speech capture...")
+            print(" Testing speech capture...")
             
             def callback(fragment, is_final):
                 print(f"{'FINAL' if is_final else 'Fragment'}: {fragment}")
@@ -1594,7 +1694,7 @@ if __name__ == "__main__":
             transcript = await capture_leibniz_speech(streaming_callback=callback)
             
             if transcript:
-                print(f"✅ Captured: {transcript}")
+                print(f" Captured: {transcript}")
                 
                 # Test agent speaking state
                 await set_leibniz_agent_speaking(True, "Testing agent state")
@@ -1603,11 +1703,11 @@ if __name__ == "__main__":
                 
                 # Show metrics
                 metrics = get_leibniz_vad_metrics()
-                print(f"📊 Metrics: {metrics}")
+                print(f" Metrics: {metrics}")
             else:
                 print("⏰ No speech captured")
             
-            print("✅ Leibniz VAD test completed!")
+            print(" Leibniz VAD test completed!")
             
         finally:
             await cleanup_leibniz_vad()

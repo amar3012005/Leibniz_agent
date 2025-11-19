@@ -205,7 +205,7 @@ class PersistentIntentParser:
     async def initialize(self):
         """Initialize the intent parser and start processing loop"""
         try:
-            logger.info("✅ Leibniz parser pre-warmed")            
+            logger.info(" Leibniz parser pre-warmed")            
             # PHASE 1 CHANGE 1.2: Load Leibniz parser instead of SINDH parser
             self.parser = get_leibniz_parser()
             self.fast_router = get_fast_router(None)  # No V2 parser needed
@@ -214,16 +214,16 @@ class PersistentIntentParser:
             # Start background processing loop
             asyncio.create_task(self._processing_loop())
             
-            logger.info("✅ Leibniz parser pre-warmed")
-            logger.info("✅ Leibniz Intent Parser ready for university customer service")
+            logger.info(" Leibniz parser pre-warmed")
+            logger.info(" Leibniz Intent Parser ready for university customer service")
             
         except Exception as e:
-            logger.error(f"❌ Failed to initialize intent parser: {e}")
+            logger.error(f" Failed to initialize intent parser: {e}")
             raise
     
     async def _processing_loop(self):
         """Background loop for processing intent classification requests"""
-        logger.info("🔄 Intent parser processing loop started")
+        logger.info(" Intent parser processing loop started")
         
         while True:
             try:
@@ -237,7 +237,7 @@ class PersistentIntentParser:
                 # Log queue depth if > 0 (monitoring)
                 queue_depth = self.request_queue.qsize()
                 if queue_depth > 0:
-                    logger.debug(f"📊 Intent queue depth: {queue_depth}")
+                    logger.debug(f" Intent queue depth: {queue_depth}")
                 
                 # Check recent results cache first (in-memory)
                 cache_key = self._generate_cache_key(request.text)
@@ -252,7 +252,7 @@ class PersistentIntentParser:
                             self.stats['cache_hits'] + self.stats['cache_misses']
                         )
                         
-                        logger.debug(f"⚡ Intent from cache in {processing_time*1000:.0f}ms: {result.get('intent', 'UNKNOWN')}")
+                        logger.debug(f" Intent from cache in {processing_time*1000:.0f}ms: {result.get('intent', 'UNKNOWN')}")
                         
                         # Create response
                         response = ServiceResponse(
@@ -267,7 +267,7 @@ class PersistentIntentParser:
                             try:
                                 await request.callback(response)
                             except Exception as e:
-                                logger.error(f"❌ Callback error: {e}")
+                                logger.error(f" Callback error: {e}")
                         
                         # Mark task as done
                         self.request_queue.task_done()
@@ -309,10 +309,10 @@ class PersistentIntentParser:
                 
                 processing_time = time.time() - start_time
                 
-                logger.info(f"⚡ Intent classified in {classify_time:.2f}s: {result.get('intent', 'UNKNOWN')}")
+                logger.info(f" Intent classified in {classify_time:.2f}s: {result.get('intent', 'UNKNOWN')}")
                 
                 if classify_time > 5.0:
-                    logger.warning(f"⚠️ Slow intent classification: {classify_time:.2f}s")
+                    logger.warning(f" Slow intent classification: {classify_time:.2f}s")
                 
                 # Extract context
                 context = result.get('context', {})
@@ -335,7 +335,7 @@ class PersistentIntentParser:
                     try:
                         await request.callback(response)
                     except Exception as e:
-                        logger.error(f"❌ Callback error: {e}")
+                        logger.error(f" Callback error: {e}")
                 
                 # Signal completion event if request was in-flight
                 request_hash = request.request_hash
@@ -346,7 +346,7 @@ class PersistentIntentParser:
                 self.request_queue.task_done()
                 
             except Exception as e:
-                logger.error(f"❌ Error processing intent request: {e}")
+                logger.error(f" Error processing intent request: {e}")
                 
                 # Create error response
                 response = ServiceResponse(
@@ -362,7 +362,7 @@ class PersistentIntentParser:
                     try:
                         await request.callback(response)
                     except Exception as callback_error:
-                        logger.error(f"❌ Callback error: {callback_error}")
+                        logger.error(f" Callback error: {callback_error}")
                 
                 # Clean up in-flight tracking
                 if 'request' in locals() and hasattr(request, 'request_hash'):
@@ -403,7 +403,7 @@ class PersistentIntentParser:
                     self.deduplicated_count += 1
                     self.stats['deduplicated_requests'] = self.deduplicated_count
                     
-                    logger.debug("⚡ Reusing in-flight result (saved duplicate work)")
+                    logger.debug(" Reusing in-flight result (saved duplicate work)")
                     
                     # Call callback with cached result if provided
                     if callback:
@@ -498,13 +498,13 @@ class PersistentIntentParser:
     async def prewarm_parser(self):
         """PHASE 1 CHANGE 1.4: Pre-warm Leibniz parser instead of SINDH parser"""
         try:
-            logger.debug("🔥 Pre-warming Leibniz intent parser...")
+            logger.debug(" Pre-warming Leibniz intent parser...")
             
             # Call get_leibniz_parser to warm Leibniz parser
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(None, get_leibniz_parser)
             
-            logger.debug("✅ Leibniz parser pre-warmed")
+            logger.debug(" Leibniz parser pre-warmed")
             
         except Exception as e:
             # Silent failure (non-critical)
@@ -566,7 +566,7 @@ class PersistentRAGSystem:
     async def initialize(self):
         """Initialize the RAG system and start processing loop"""
         try:
-            logger.info("✅ Leibniz RAG System initialized")            
+            logger.info(" Leibniz RAG System initialized")            
             # Load Leibniz RAG
             self.rag_system = get_leibniz_rag()
             
@@ -578,10 +578,10 @@ class PersistentRAGSystem:
             texts_exists = os.path.exists(os.path.join(vector_store_path, "texts.json"))
             
             if index_exists and metadata_exists and texts_exists:
-                logger.info("✅ Using existing Leibniz vector store (no rebuild needed)")
+                logger.info(" Using existing Leibniz vector store (no rebuild needed)")
             else:
-                logger.info("🏗️ Building Leibniz vector store from knowledge base (first-time setup)...")
-                logger.info("📏 Chunk strategy: 500-800 chars with 100 char overlap")
+                logger.info(" Building Leibniz vector store from knowledge base (first-time setup)...")
+                logger.info(" Chunk strategy: 500-800 chars with 100 char overlap")
                 
                 # Build vector store
                 self.rag_system._build_vector_store_from_knowledge_base()
@@ -589,13 +589,13 @@ class PersistentRAGSystem:
             # Update stats
             self.stats['vector_store_size'] = len(self.rag_system.documents)
             
-            logger.info("✅ Leibniz RAG System initialized")
-            logger.info(f"📊 Vector store: {self.stats['vector_store_size']} documents from 12 categories")
+            logger.info(" Leibniz RAG System initialized")
+            logger.info(f" Vector store: {self.stats['vector_store_size']} documents from 12 categories")
             
             # FIX: Check if vector store has documents BEFORE running verification
             if self.stats['vector_store_size'] == 0 or len(self.rag_system.documents) == 0:
-                logger.warning("❌ RAG system has zero documents - knowledge base not properly loaded")
-                logger.warning("❌ RAG system not ready - fix knowledge base path and populate with markdown files")
+                logger.warning(" RAG system has zero documents - knowledge base not properly loaded")
+                logger.warning(" RAG system not ready - fix knowledge base path and populate with markdown files")
                 self.rag_system_ready = False
                 self.is_ready = False
                 return
@@ -608,35 +608,35 @@ class PersistentRAGSystem:
             )
             
             # Comment 1: Handle string/tuple/dict returns from process_rag_query
-            logger.debug(f"🔍 RAG verification result type: {type(test_result)}")
+            logger.debug(f" RAG verification result type: {type(test_result)}")
             
             response_text = None
             
             # Case 1: String return (direct response)
             if isinstance(test_result, str):
                 response_text = test_result.strip()
-                logger.debug(f"🔍 RAG returned string, length: {len(response_text)}")
+                logger.debug(f" RAG returned string, length: {len(response_text)}")
             
             # Case 2: Tuple return (response, metadata)
             elif isinstance(test_result, tuple) and len(test_result) > 0:
                 response_text = str(test_result[0]).strip()
-                logger.debug(f"🔍 RAG returned tuple, using first item, length: {len(response_text)}")
+                logger.debug(f" RAG returned tuple, using first item, length: {len(response_text)}")
             
             # Case 3: Dict return (structured response)
             elif isinstance(test_result, dict):
-                logger.debug(f"🔍 RAG returned dict with keys: {test_result.keys()}")
+                logger.debug(f" RAG returned dict with keys: {test_result.keys()}")
                 response_text = test_result.get('response') or test_result.get('answer')
                 if response_text:
                     response_text = response_text.strip()
-                    logger.debug(f"🔍 RAG dict response length: {len(response_text)}")
+                    logger.debug(f" RAG dict response length: {len(response_text)}")
             
             # Validate response
             if response_text and len(response_text) > 0:
-                logger.info("✅ Verification successful - context-aware retrieval working")
+                logger.info(" Verification successful - context-aware retrieval working")
                 self.rag_system_ready = True
                 self.is_ready = True
             else:
-                logger.warning("❌ RAG verification failed - retrieval not working correctly")
+                logger.warning(" RAG verification failed - retrieval not working correctly")
                 # Comment 2: Truncate log output for privacy/readability
                 if test_result:
                     result_str = str(test_result)
@@ -650,12 +650,12 @@ class PersistentRAGSystem:
             asyncio.create_task(self._processing_loop())
             
         except Exception as e:
-            logger.error(f"❌ Failed to initialize RAG system: {e}")
+            logger.error(f" Failed to initialize RAG system: {e}")
             raise
     
     async def _processing_loop(self):
         """Background loop for processing RAG query requests with priority handling"""
-        logger.info("🔄 RAG processing loop started")
+        logger.info(" RAG processing loop started")
         
         # Maintain pending requests for priority sorting
         pending_requests = []
@@ -686,7 +686,7 @@ class PersistentRAGSystem:
                 request_id = request.request_id
                 if request_id in self.in_flight_requests:
                     if self.in_flight_requests[request_id].get('cancelled', False):
-                        logger.debug(f"⏭️ Skipping cancelled request: {request_id}")
+                        logger.debug(f"⏭ Skipping cancelled request: {request_id}")
                         self.stats['cancelled_requests'] += 1
                         
                         # Clean up
@@ -708,7 +708,7 @@ class PersistentRAGSystem:
                             self.stats['cache_hits'] + self.stats['cache_misses']
                         )
                         
-                        logger.debug(f"⚡ RAG query from cache in {processing_time*1000:.0f}ms")
+                        logger.debug(f" RAG query from cache in {processing_time*1000:.0f}ms")
                         
                         # Create response
                         response = ServiceResponse(
@@ -723,7 +723,7 @@ class PersistentRAGSystem:
                             try:
                                 await request.callback(response)
                             except Exception as e:
-                                logger.error(f"❌ Callback error: {e}")
+                                logger.error(f" Callback error: {e}")
                         
                         # Clean up
                         if request_id in self.in_flight_requests:
@@ -740,7 +740,7 @@ class PersistentRAGSystem:
                 
                 # Log context usage
                 if context.get('user_goal'):
-                    logger.debug(f"🎓 Processing with context: {context.get('user_goal')}")
+                    logger.debug(f" Processing with context: {context.get('user_goal')}")
                 
                 # Call RAG system with context
                 rag_start = time.time()
@@ -763,10 +763,10 @@ class PersistentRAGSystem:
                 
                 processing_time = time.time() - start_time
                 
-                logger.info(f"⚡ RAG query processed in {rag_time:.2f}s")
+                logger.info(f" RAG query processed in {rag_time:.2f}s")
                 
                 if rag_time > 5.0:
-                    logger.warning(f"⚠️ Slow RAG query: {rag_time:.2f}s")
+                    logger.warning(f" Slow RAG query: {rag_time:.2f}s")
                 
                 # Create response
                 response = ServiceResponse(
@@ -786,7 +786,7 @@ class PersistentRAGSystem:
                     try:
                         await request.callback(response)
                     except Exception as e:
-                        logger.error(f"❌ Callback error: {e}")
+                        logger.error(f" Callback error: {e}")
                 
                 # Clean up
                 if request_id in self.in_flight_requests:
@@ -795,7 +795,7 @@ class PersistentRAGSystem:
                 self.request_queue.task_done()
                 
             except Exception as e:
-                logger.error(f"❌ Error processing RAG request: {e}")
+                logger.error(f" Error processing RAG request: {e}")
                 
                 # Create error response
                 response = ServiceResponse(
@@ -811,7 +811,7 @@ class PersistentRAGSystem:
                     try:
                         await request.callback(response)
                     except Exception as callback_error:
-                        logger.error(f"❌ Callback error: {callback_error}")
+                        logger.error(f" Callback error: {callback_error}")
                 
                 # Clean up
                 if 'request' in locals():
@@ -866,7 +866,7 @@ class PersistentRAGSystem:
         """Mark request as cancelled"""
         if request_id in self.in_flight_requests:
             self.in_flight_requests[request_id]['cancelled'] = True
-            logger.debug(f"🚫 Cancelled RAG request: {request_id}")
+            logger.debug(f" Cancelled RAG request: {request_id}")
             self.stats['cancelled_requests'] += 1
     
     def _generate_cache_key(self, text: str, context: Dict = None, session_id: str = None) -> str:
@@ -916,28 +916,28 @@ class PersistentRAGSystem:
         - Builds vector store if missing
         """
         try:
-            logger.debug("🔥 Pre-warming Leibniz RAG models...")
+            logger.debug(" Pre-warming Leibniz RAG models...")
             
             # Comment 1.1: Explicitly access embeddings to warm model
             if self.rag_system.embeddings:
                 _ = self.rag_system.embeddings.client
-                logger.debug("   ✓ Embeddings model accessed")
+                logger.debug("    Embeddings model accessed")
             
             # Comment 1.2: Build vector store if None (ensures FAISS ready)
             if self.rag_system.vector_store is None:
-                logger.debug("   🏗️ Vector store not found, building from knowledge base...")
+                logger.debug("    Vector store not found, building from knowledge base...")
                 self.rag_system._build_vector_store_from_knowledge_base()
-                logger.debug("   ✓ Vector store built")
+                logger.debug("    Vector store built")
             else:
                 # Access vector store to warm FAISS index
                 _ = self.rag_system.vector_store.ntotal
-                logger.debug("   ✓ Vector store accessed")
+                logger.debug("    Vector store accessed")
             
             # Comment 1.3: Warm Gemini session with 1-2 token no-op generate
             if self.rag_system.gemini_model:
                 # Access model name to initialize session
                 _ = self.rag_system.gemini_model.model_name
-                logger.debug("   ✓ Gemini model accessed")
+                logger.debug("    Gemini model accessed")
                 
                 # Optional: Lightweight no-op generation to fully warm session
                 try:
@@ -949,12 +949,12 @@ class PersistentRAGSystem:
                             temperature=0.0
                         )
                     )
-                    logger.debug("   ✓ Gemini session warmed with no-op generation")
+                    logger.debug("    Gemini session warmed with no-op generation")
                 except Exception as gen_err:
                     # Silent failure for no-op generation (optional optimization)
-                    logger.debug(f"   ⚠ No-op generation skipped: {gen_err}")
+                    logger.debug(f"    No-op generation skipped: {gen_err}")
             
-            logger.debug("✅ RAG pre-warm completed")
+            logger.debug(" RAG pre-warm completed")
             
         except Exception as e:
             # Silent failure (non-critical)
@@ -963,7 +963,7 @@ class PersistentRAGSystem:
     async def prewarm_with_inference(self):
         """Full pre-warm with test inference"""
         try:
-            logger.debug("🔥 Pre-warming RAG with test inference...")
+            logger.debug(" Pre-warming RAG with test inference...")
             
             # Run test query
             test_context = {'extracted_meaning': 'test prewarm query'}
@@ -982,7 +982,7 @@ class PersistentRAGSystem:
                 cancelled_count += 1
         
         if cancelled_count > 0:
-            logger.info(f"🚫 Cancelled {cancelled_count} speculative RAG requests")
+            logger.info(f" Cancelled {cancelled_count} speculative RAG requests")
 
 
 # ============================================================================
@@ -1030,7 +1030,7 @@ class PersistentServicesManager:
     async def initialize(self):
         """Initialize both services in parallel"""
         try:
-            logger.info("🎓 Initializing Leibniz Persistent Services Manager...")
+            logger.info(" Initializing Leibniz Persistent Services Manager...")
             start_time = time.time()
             
             # Initialize services in parallel
@@ -1043,11 +1043,11 @@ class PersistentServicesManager:
             self.initialization_time = time.time() - start_time
             self.is_initialized = True
             
-            logger.info(f"✅ Leibniz Persistent Services ready in {self.initialization_time:.2f}s")
-            logger.info(f"📊 Intent parser ready, RAG system ready with {self.rag_system.stats['vector_store_size']} documents")
+            logger.info(f" Leibniz Persistent Services ready in {self.initialization_time:.2f}s")
+            logger.info(f" Intent parser ready, RAG system ready with {self.rag_system.stats['vector_store_size']} documents")
             
         except Exception as e:
-            logger.error(f"❌ Failed to initialize services: {e}")
+            logger.error(f" Failed to initialize services: {e}")
             raise
     
     async def fast_classify_intent(self, text: str, extra_data: Dict = None, callback: Callable = None) -> str:
@@ -1115,7 +1115,7 @@ class PersistentServicesManager:
                 return_exceptions=True
             )
             
-            logger.debug(f"🔥 Pre-warmed services during TTS playback (delay={delay:.2f}s)")
+            logger.debug(f" Pre-warmed services during TTS playback (delay={delay:.2f}s)")
             
         except Exception as e:
             # Silent failure (non-critical)
@@ -1213,7 +1213,7 @@ async def trigger_prewarm_on_speech_detection():
     # Run pre-warming in background (non-blocking)
     asyncio.create_task(_prewarm_models_lightweight())
     
-    logger.debug("🔥 Triggered lightweight pre-warming on speech detection")
+    logger.debug(" Triggered lightweight pre-warming on speech detection")
 
 
 async def _prewarm_models_lightweight():
@@ -1230,7 +1230,7 @@ async def _prewarm_models_lightweight():
             return_exceptions=True
         )
         
-        logger.debug("✅ Lightweight pre-warming completed")
+        logger.debug(" Lightweight pre-warming completed")
         
     except Exception as e:
         # Silent failure (non-critical)
@@ -1245,7 +1245,7 @@ async def reset_leibniz_services():
     """Reset global services manager (useful for testing and recovery)"""
     global _leibniz_services_manager
     _leibniz_services_manager = None
-    logger.info("🔄 Leibniz services reset")
+    logger.info(" Leibniz services reset")
 
 
 async def get_leibniz_performance_metrics() -> Dict[str, Any]:
@@ -1288,20 +1288,20 @@ async def get_leibniz_performance_metrics() -> Dict[str, Any]:
 async def test_leibniz_persistent_services():
     """Test the Leibniz persistent services"""
     print("\n" + "="*80)
-    print("🎓 Leibniz Persistent Services Test")
+    print(" Leibniz Persistent Services Test")
     print("="*80 + "\n")
     
     # Ensure Leibniz namespace is set
     os.environ["RAG_NAMESPACE"] = "leibniz"
     
     # Initialize services
-    print("📦 Initializing services...")
+    print(" Initializing services...")
     manager = await get_leibniz_services_manager()
-    print(f"✅ Services initialized in {manager.initialization_time:.2f}s\n")
+    print(f" Services initialized in {manager.initialization_time:.2f}s\n")
     
     # Test intent classification
     print("="*80)
-    print("🧠 Testing Intent Classification")
+    print(" Testing Intent Classification")
     print("="*80)
     
     test_queries = [
@@ -1336,7 +1336,7 @@ async def test_leibniz_persistent_services():
     
     # Test RAG queries
     print("\n" + "="*80)
-    print("📚 Testing Context-Aware RAG")
+    print(" Testing Context-Aware RAG")
     print("="*80)
     
     rag_test_queries = [
@@ -1383,16 +1383,16 @@ async def test_leibniz_persistent_services():
     
     # Test pre-warming
     print("\n" + "="*80)
-    print("🔥 Testing Pre-warming")
+    print(" Testing Pre-warming")
     print("="*80)
     
     print("\nTriggering pre-warming during simulated TTS playback (5.0s)...")
     await manager.prewarm_during_tts_audio(5.0)
-    print("✅ Pre-warming completed")
+    print(" Pre-warming completed")
     
     # Print performance metrics
     print("\n" + "="*80)
-    print("📊 Performance Metrics")
+    print(" Performance Metrics")
     print("="*80)
     
     status = manager.get_service_status()
@@ -1412,7 +1412,7 @@ async def test_leibniz_persistent_services():
     print(f"  Average response time: {rag_stats['average_response_time']:.3f}s")
     
     print("\n" + "="*80)
-    print("✅ All tests completed successfully!")
+    print(" All tests completed successfully!")
     print("="*80 + "\n")
 
 

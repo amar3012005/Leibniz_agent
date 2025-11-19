@@ -1,0 +1,11 @@
+{
+  "session_id": "test_session_greeting",
+  "turn_number": 1,
+  "dialogue_type": "greeting",
+  "text": "Hello, welcome to Leibniz University!",
+  "audio_file": "turn_001_Hello_welcome_to_Leibniz_University_e9e2b15c.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_test_session_greeting_1_o_zj8xyp.wav",
+  "timestamp": 1763422440.061806,
+  "text_length": 37,
+  "text_hash": "e9e2b15c"
+}

@@ -150,7 +150,7 @@ async def get_redis_client() -> redis.Redis:
             for attempt in range(max_retries):
                 try:
                     await _redis_client.ping()
-                    logger.info("✅ Redis client connected successfully")
+                    logger.info(" Redis client connected successfully")
                     break
                 except redis.exceptions.ConnectionError as e:
                     if attempt < max_retries - 1:
@@ -161,7 +161,7 @@ async def get_redis_client() -> redis.Redis:
                         )
                         await asyncio.sleep(delay)
                     else:
-                        logger.error(f"❌ Redis connection failed after {max_retries} attempts: {e}")
+                        logger.error(f" Redis connection failed after {max_retries} attempts: {e}")
                         _redis_client = None
                         raise
         
@@ -277,14 +277,14 @@ async def _test_connection():
         
         # Test PING
         if await ping_redis(client):
-            print("✅ PING successful")
+            print(" PING successful")
         else:
-            print("❌ PING failed")
+            print(" PING failed")
             return
         
         # Get server info
         info = await get_redis_info(client)
-        print(f"\n📊 Redis Server Info:")
+        print(f"\n Redis Server Info:")
         print(f"   Version: {info.get('redis_version')}")
         print(f"   Uptime: {info.get('uptime_seconds')}s")
         print(f"   Connected clients: {info.get('connected_clients')}")
@@ -296,18 +296,18 @@ async def _test_connection():
         test_value = "Hello from Leibniz microservices!"
         
         await client.set(test_key, test_value, ex=60)
-        print(f"\n✅ SET {test_key}={test_value}")
+        print(f"\n SET {test_key}={test_value}")
         
         retrieved = await client.get(test_key)
-        print(f"✅ GET {test_key}={retrieved}")
+        print(f" GET {test_key}={retrieved}")
         
         await client.delete(test_key)
-        print(f"✅ DEL {test_key}")
+        print(f" DEL {test_key}")
         
-        print("\n🎉 All tests passed!")
+        print("\n All tests passed!")
         
     except Exception as e:
-        print(f"\n❌ Connection test failed: {e}")
+        print(f"\n Connection test failed: {e}")
     finally:
         await close_redis_client()
 
