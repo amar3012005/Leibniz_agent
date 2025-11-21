@@ -100,11 +100,11 @@ except ImportError:
     print(" aiohttp not available. Install with: pip install aiohttp")
 
 # Import Leibniz config
-from leibniz_agent.leibniz_config import get_leibniz_config
+from .leibniz_config import get_leibniz_config
 
 # Import VAD and STT for agent speaking state and prewarm
-from leibniz_agent.leibniz_vad import get_leibniz_vad
-from leibniz_agent.leibniz_stt import prewarm_during_tts
+from .leibniz_vad import get_leibniz_vad
+from .leibniz_stt import prewarm_during_tts
 
 # Load environment variables
 load_dotenv()

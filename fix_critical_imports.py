@@ -16,19 +16,19 @@ def fix_import_paths(content: str) -> str:
     """Fix import paths to use proper module prefixes."""
     # Fix Leibniz component imports
     replacements = [
-        ('from leibniz_config import', 'from leibniz_agent.leibniz_config import'),
-        ('from leibniz_messages import', 'from leibniz_agent.leibniz_messages import'),
-        ('from leibniz_stt import', 'from leibniz_agent.leibniz_stt import'),
-        ('from leibniz_tts import', 'from leibniz_agent.leibniz_tts import'),
-        ('from leibniz_intent_parser import', 'from leibniz_agent.leibniz_intent_parser import'),
-        ('from leibniz_rag import', 'from leibniz_agent.leibniz_rag import'),
-        ('from leibniz_appointment_fsm import', 'from leibniz_agent.leibniz_appointment_fsm import'),
-        ('from leibniz_persistent_services import', 'from leibniz_agent.leibniz_persistent_services import'),
-        ('from leibniz_semantic_translator import', 'from leibniz_agent.leibniz_semantic_translator import'),
-        ('from leibniz_vad import', 'from leibniz_agent.leibniz_vad import'),
-        ('from leibniz_continuous_vad import', 'from leibniz_agent.leibniz_continuous_vad import'),
-        ('from leibniz_dialogue_manager import', 'from leibniz_agent.leibniz_dialogue_manager import'),
-        ('from leibniz_agent.leibniz_pro import', 'from leibniz_agent.leibniz_pro import'),
+        ('from leibniz_config import', 'from .leibniz_config import'),
+        ('from leibniz_messages import', 'from .leibniz_messages import'),
+        ('from leibniz_stt import', 'from .leibniz_stt import'),
+        ('from leibniz_tts import', 'from .leibniz_tts import'),
+        ('from leibniz_intent_parser import', 'from .leibniz_intent_parser import'),
+        ('from leibniz_rag import', 'from .leibniz_rag import'),
+        ('from leibniz_appointment_fsm import', 'from .leibniz_appointment_fsm import'),
+        ('from leibniz_persistent_services import', 'from .leibniz_persistent_services import'),
+        ('from leibniz_semantic_translator import', 'from .leibniz_semantic_translator import'),
+        ('from leibniz_vad import', 'from .leibniz_vad import'),
+        ('from leibniz_continuous_vad import', 'from .leibniz_continuous_vad import'),
+        ('from leibniz_dialogue_manager import', 'from .leibniz_dialogue_manager import'),
+        ('from leibniz_agent.leibniz_pro import', 'from .leibniz_pro import'),
     ]
 
     for old, new in replacements:
@@ -107,29 +107,6 @@ def process_critical_files():
                     print(f"  [ERROR] Failed to process {filepath}: {e}")
             else:
                 print(f"  [SKIP] File not found: {filepath}")
-
-    print("Critical file fixes completed!")
-            try:
-                # Read file
-                with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
-                    content = f.read()
-
-                # Fix import paths
-                content = fix_import_paths(content)
-
-                # Remove emojis
-                content = remove_emojis_from_content(content)
-
-                # Write back
-                with open(filepath, 'w', encoding='utf-8') as f:
-                    f.write(content)
-
-                print(f"  [OK] Fixed {filepath}")
-
-            except Exception as e:
-                print(f"  [ERROR] Failed to process {filepath}: {e}")
-        else:
-            print(f"  [SKIP] File not found: {filepath}")
 
     print("Critical file fixes completed!")
 

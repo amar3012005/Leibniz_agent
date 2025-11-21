@@ -49,7 +49,7 @@ import faiss
 from langchain_huggingface import HuggingFaceEmbeddings
 import google.generativeai as genai
 from dotenv import load_dotenv
-from leibniz_agent.leibniz_config import get_leibniz_config, SEMANTIC_CONTEXT_DEBUG
+from .leibniz_config import get_leibniz_config, SEMANTIC_CONTEXT_DEBUG
 from rag_cache import get_rag_cache_manager
 import logging
 

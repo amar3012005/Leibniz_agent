@@ -39,7 +39,7 @@ import warnings
 
 # Emit deprecation warning if continuous VAD is available
 try:
-    from leibniz_continuous_vad import get_continuous_vad
+    from .leibniz_continuous_vad import get_continuous_vad
     warnings.warn(
         "Per-turn VAD pattern is available but continuous VAD is recommended for better performance. "
         "Set LEIBNIZ_ENABLE_CONTINUOUS_VAD=true to enable.",
@@ -69,7 +69,7 @@ except ImportError:
     AudioSource = None  # Fallback if not available
 
 # Import prewarm trigger for speech detection
-from leibniz_agent.leibniz_stt import normalize_english_transcript
+from .leibniz_stt import normalize_english_transcript
 
 # Load environment variables
 load_dotenv()
@@ -1294,7 +1294,7 @@ class LeibnizBidirectionalVAD:
                                     # Trigger RAG prewarm on first speech (fire-and-forget)
                                     try:
                                         print(" Pre-warming RAG models...")
-                                        from leibniz_persistent_services import trigger_prewarm_on_speech_detection
+                                        from .leibniz_persistent_services import trigger_prewarm_on_speech_detection
                                         await trigger_prewarm_on_speech_detection()
                                         logger.info(" RAG prewarm triggered on speech detection")
                                         print(" RAG models pre-warmed successfully")
@@ -1562,7 +1562,7 @@ async def set_leibniz_agent_speaking(is_speaking: bool, context: str = ""):
 
     # SIMPLE SOLUTION: Turn off mic during TTS to prevent audio feedback
     try:
-        from leibniz_continuous_vad import get_continuous_vad
+        from .leibniz_continuous_vad import get_continuous_vad
         continuous_vad = get_continuous_vad()
 
         if is_speaking:

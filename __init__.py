@@ -92,7 +92,7 @@ Usage Example:
     await run_conversation_session()
     
     # Or run the full multi-session orchestrator
-    from leibniz_agent.leibniz_pro import main
+    from .leibniz_pro import main
     asyncio.run(main())
 ```Message Flow:
     Audio Input → STT (TranscriptMessage) → Intent Classification (IntentMessage with context) 
@@ -195,7 +195,7 @@ from leibniz_agent.leibniz_vad import (
     cleanup_leibniz_vad,
 )
 
-from leibniz_agent.leibniz_pro import (
+from .leibniz_pro import (
     run_conversation_session,
     initialize_leibniz_services,
     speak_friendly,

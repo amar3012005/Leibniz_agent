@@ -98,14 +98,14 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from leibniz_agent.leibniz_intent_parser import get_leibniz_parser, classify_leibniz_intent
+from .leibniz_intent_parser import get_leibniz_parser, classify_leibniz_intent
 from fast_intent_router import get_fast_router
-from leibniz_agent.leibniz_rag import (
+from .leibniz_rag import (
     LeibnizRAG,
     get_leibniz_rag,
     process_leibniz_query
 )
-from leibniz_agent.leibniz_config import get_leibniz_config
+from .leibniz_config import get_leibniz_config
 
 # Configure logging
 logger = logging.getLogger(__name__)

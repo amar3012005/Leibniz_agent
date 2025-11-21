@@ -63,7 +63,7 @@ Key Differences from TARA:
 - Friendly casual tone (not formal academic)
 
 Usage:
-    from leibniz_agent.leibniz_pro import main
+    from .leibniz_pro import main
     
     # Run agent
     asyncio.run(main())
@@ -81,14 +81,13 @@ import time
 import re  # FIX: Add missing re import for sentence splitting
 import soundfile as sf  # For audio duration detection (smart warmup)
 import hashlib  # For deduplication hash set (Comment 7)
-import numpy as np  # For audio processing
 from collections import deque  # For staging buffer (Comment 1 & 2)
 from typing import List, Dict, Any, Optional, Tuple, Callable
 from pathlib import Path
 
-# Fix module imports when running script directly (not as module)
+# Fix module imports when running script directly OR when imported as module
 # Add parent directory to sys.path so 'leibniz_agent' package is importable
-if __name__ == "__main__":
+if __name__ == "__main__" or __name__ == "leibniz_pro":
     # Get parent directory (SINDH-Orchestra-Complete)
     parent_dir = Path(__file__).parent.parent
     if str(parent_dir) not in sys.path:
@@ -129,34 +128,34 @@ try:
     import sys
     original_stdout = sys.stdout
 
-    print("INITIALIZING PYGAME MIXER FOR AUDIO PLAYBACK...", flush=True)
-    print("This may take a few seconds on Windows systems...", flush=True)
+    print(" INITIALIZING PYGAME MIXER FOR AUDIO PLAYBACK...", flush=True)
+    print(" This may take a few seconds on Windows systems...", flush=True)
 
     # Attempt 1: Preferred settings (high quality)
     try:
         pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
         pygame_init_success = True
-        print("PYGAME MIXER INITIALIZED: frequency=44100, channels=2, buffer=512", flush=True)
+        print(" PYGAME MIXER INITIALIZED: frequency=44100, channels=2, buffer=512", flush=True)
     except Exception as e:
-        print(f"PYGAME MIXER ATTEMPT 1 FAILED: {e}", flush=True)
+        print(f" PYGAME MIXER ATTEMPT 1 FAILED: {e}", flush=True)
 
     # Attempt 2: More compatible settings
     if not pygame_init_success:
         try:
             pygame.mixer.init(frequency=22050, size=-16, channels=1, buffer=1024)
             pygame_init_success = True
-            print("PYGAME MIXER INITIALIZED WITH FALLBACK: frequency=22050, channels=1, buffer=1024", flush=True)
+            print(" PYGAME MIXER INITIALIZED WITH FALLBACK: frequency=22050, channels=1, buffer=1024", flush=True)
         except Exception as e:
-            print(f"PYGAME MIXER ATTEMPT 2 FAILED: {e}", flush=True)
+            print(f" PYGAME MIXER ATTEMPT 2 FAILED: {e}", flush=True)
 
     # Attempt 3: Default settings
     if not pygame_init_success:
         try:
             pygame.mixer.init()
             pygame_init_success = True
-            print("PYGAME MIXER INITIALIZED WITH DEFAULTS", flush=True)
+            print(" PYGAME MIXER INITIALIZED WITH DEFAULTS", flush=True)
         except Exception as e:
-            print(f"PYGAME MIXER INITIALIZATION FAILED - AUDIO PLAYBACK WILL NOT WORK: {e}", flush=True)
+            print(f" PYGAME MIXER INITIALIZATION FAILED - AUDIO PLAYBACK WILL NOT WORK: {e}", flush=True)
 
     # Windows-specific diagnostics
     if pygame_init_success:
@@ -165,55 +164,38 @@ try:
             mixer_info = pygame.mixer.get_init()
             if mixer_info:
                 freq, size, channels = mixer_info
-                print(f"PYGAME MIXER INFO: {freq}Hz, {size}bit, {channels}ch", flush=True)
+                print(f" PYGAME MIXER INFO: {freq}Hz, {size}bit, {channels}ch", flush=True)
             else:
-                print("PYGAME MIXER INFO UNAVAILABLE", flush=True)
+                print(" PYGAME MIXER INFO UNAVAILABLE", flush=True)
         except Exception as e:
-            print(f"PYGAME MIXER INFO ERROR: {e}", flush=True)
+            print(f" PYGAME MIXER INFO ERROR: {e}", flush=True)
 
         # Test basic mixer functionality
         try:
             pygame.mixer.music.set_volume(0.8)  # Test volume control
-            print("PYGAME MIXER FUNCTIONALITY TEST PASSED", flush=True)
+            print(" PYGAME MIXER FUNCTIONALITY TEST PASSED", flush=True)
         except Exception as e:
-            print(f"PYGAME MIXER FUNCTIONALITY TEST FAILED: {e}", flush=True)
+            print(f" PYGAME MIXER FUNCTIONALITY TEST FAILED: {e}", flush=True)
             pygame_init_success = False  # Mark as failed if basic functionality doesn't work
 
     PYGAME_AVAILABLE = pygame_init_success
-    print(f"PYGAME_AVAILABLE = {PYGAME_AVAILABLE}", flush=True)
+    print(f" PYGAME_AVAILABLE = {PYGAME_AVAILABLE}", flush=True)
 
     # Force stdout flush to ensure visibility
     sys.stdout.flush()
 
 except ImportError as e:
-    print(f"WARNING: PYGAME NOT AVAILABLE - INTRO/BACKGROUND AUDIO DISABLED: {e}", flush=True)
+    print(f" PYGAME NOT AVAILABLE - INTRO/BACKGROUND AUDIO DISABLED: {e}", flush=True)
     PYGAME_AVAILABLE = False
 
 # Import sounddevice for audio fallback (optional)
 try:
     import sounddevice as sd
     SOUNDDEVICE_AVAILABLE = True
-    print("sounddevice available for audio fallback")
+    print(" sounddevice available for audio fallback")
 except ImportError:
-    print("WARNING: sounddevice not available - audio fallback disabled")
+    print(" sounddevice not available - audio fallback disabled")
     SOUNDDEVICE_AVAILABLE = False
-
-# Import FastRTC for WebRTC audio streaming (optional)
-try:
-    from fastrtc import Stream, ReplyOnPause
-    import fastapi
-    from fastapi import FastAPI, BackgroundTasks
-    import uvicorn
-    FASTRTC_AVAILABLE = True
-    print("FastRTC available for WebRTC audio streaming")
-except ImportError:
-    print("WARNING: FastRTC not available - WebRTC mode disabled")
-    FASTRTC_AVAILABLE = False
-    Stream = None
-    ReplyOnPause = None
-    FastAPI = None
-    BackgroundTasks = None
-    uvicorn = None
 
 # Import RAG infrastructure (TARA pattern)
 try:
@@ -231,31 +213,31 @@ except ImportError as e:
 
 # Import Leibniz components
 try:
-    from leibniz_agent.leibniz_config import get_leibniz_config, SEMANTIC_CONTEXT_DEBUG
-    from leibniz_agent.leibniz_messages import (
+    from leibniz_config import get_leibniz_config, SEMANTIC_CONTEXT_DEBUG
+    from leibniz_messages import (
         TranscriptMessage, IntentMessage, RAGMessage, TTSMessage
     )
-    from leibniz_agent.leibniz_stt import get_leibniz_stt
-    from leibniz_agent.leibniz_tts import get_leibniz_tts
+    from leibniz_stt import get_leibniz_stt
+    from leibniz_tts import get_leibniz_tts
     # Use Leibniz's native intent parser with Gemini 2.0 (NOT TARA's fast router!)
-    from leibniz_agent.leibniz_intent_parser import get_leibniz_parser, classify_leibniz_intent
-    from leibniz_agent.leibniz_rag import get_leibniz_rag
-    from leibniz_agent.leibniz_appointment_fsm import (
+    from leibniz_intent_parser import get_leibniz_parser
+    from leibniz_rag import get_leibniz_rag
+    from leibniz_appointment_fsm import (
         create_appointment_fsm,
         format_appointment_for_submission,
         AppointmentState
     )
-    from leibniz_agent.leibniz_persistent_services import (
+    from leibniz_persistent_services import (
         get_leibniz_services_manager,
         get_leibniz_service_status,
         prewarm_leibniz_during_tts  # Comment 3 - import real prewarm function
     )
-    from leibniz_agent.leibniz_stt import normalize_english_transcript
-    from leibniz_agent.leibniz_semantic_translator import (
+    from leibniz_stt import normalize_english_transcript
+    from leibniz_semantic_translator import (
         generate_semantic_context_for_fsm,
         get_semantic_translator
     )
-    from leibniz_agent.leibniz_vad import (
+    from leibniz_vad import (
         get_leibniz_vad,
         capture_leibniz_speech,
         set_leibniz_agent_speaking,
@@ -266,13 +248,13 @@ try:
         smart_warmup_leibniz_vad  # NEW: Smart warmup for TTS pre-warming
     )
     # NEW: Continuous background VAD for barge-in support
-    from leibniz_agent.leibniz_continuous_vad import (
+    from leibniz_continuous_vad import (
         get_continuous_vad,
         start_leibniz_continuous_listening,
         stop_leibniz_continuous_listening,
         wait_for_leibniz_speech
     )
-    from leibniz_agent.leibniz_dialogue_manager import get_leibniz_dialogue_manager
+    from leibniz_dialogue_manager import get_leibniz_dialogue_manager
 except ImportError as e:
     logger.warning(f"Leibniz components imports failed: {e}")
     # Set all Leibniz functions to None for graceful degradation
@@ -479,1037 +461,6 @@ _continuous_vad_instance = None  # Singleton instance
 _user_speech_ready = asyncio.Event()  # Event to signal main loop
 _current_user_transcript = None  # Latest transcript from background listener
 _current_user_intent = None  # Latest intent from callback
-
-# WebRTC Mode Configuration
-WEBRTC_MODE_ENABLED = os.getenv("LEIBNIZ_WEBRTC_MODE", "false").lower() == "true"
-WEBRTC_PORT = int(os.getenv("LEIBNIZ_WEBRTC_PORT", "8000"))
-WEBRTC_SESSION_REGISTRY = None  # Will be initialized if WebRTC mode enabled
-_current_webrtc_source = None  # Current WebRTC audio source
-_current_webrtc_sink = None  # Current WebRTC audio sink
-
-
-# ============================================================================
-# Unified WebRTC Integration Class
-# ============================================================================
-
-class LeibnizWebRTCIntegration:
-    """
-    Unified WebRTC integration class that handles both TTS streaming to WebRTC
-    and STT/VAD gathering from WebRTC in the main pipeline.
-
-    This consolidates WebRTC functionality into a single, reusable class that
-    integrates seamlessly with the existing Leibniz conversation pipeline.
-    """
-
-    def __init__(self, session_id: str = None):
-        """
-        Initialize WebRTC integration with session management.
-
-        Args:
-            session_id: Optional session identifier, auto-generated if not provided
-        """
-        self.session_id = session_id or f"webrtc_{int(time.time())}"
-        self.turn_number = 0
-        self.conversation_active = True
-        self.audio_source = None  # WebRTC audio source for STT/VAD
-        self.audio_sink = None    # WebRTC audio sink for TTS streaming
-
-        logger.info(f" Leibniz WebRTC Integration initialized - Session: {self.session_id}")
-
-    async def setup_webrtc_adapters(self, source: Any = None, sink: Any = None):
-        """
-        Set up WebRTC audio adapters for bidirectional audio flow.
-
-        Args:
-            source: WebRTC audio source (e.g., WebRTCSource from leibniz_webrtc_io)
-            sink: WebRTC audio sink (e.g., WebRTCSink from leibniz_webrtc_io)
-        """
-        self.audio_source = source
-        self.audio_sink = sink
-
-        if source:
-            logger.info(" WebRTC audio source configured for STT/VAD input")
-        if sink:
-            logger.info(" WebRTC audio sink configured for TTS output streaming")
-
-    async def capture_speech_webrtc(self, context: Optional[Dict[str, Any]] = None) -> Optional[str]:
-        """
-        Capture speech using WebRTC audio source through VAD pipeline.
-
-        Args:
-            context: Optional conversation context for VAD
-
-        Returns:
-            Transcript string or None if no speech captured
-        """
-        if not self.audio_source:
-            logger.error(" No WebRTC audio source configured")
-            return None
-
-        try:
-            logger.info(" Listening for speech via WebRTC...")
-
-            # Use existing VAD pipeline with WebRTC source
-            transcript = await capture_leibniz_speech(
-                audio_source=self.audio_source,
-                context=context or {'webrtc_session': True, 'session_id': self.session_id}
-            )
-
-            if transcript:
-                logger.info(f" WebRTC speech captured: '{transcript[:100]}{'...' if len(transcript) > 100 else ''}'")
-                return transcript
-            else:
-                logger.debug(" No speech detected via WebRTC")
-                return None
-
-        except Exception as e:
-            logger.error(f" WebRTC speech capture error: {e}")
-            return None
-
-    async def speak_via_webrtc(self, text: str, emotion: str = "helpful", **kwargs) -> TTSMessage:
-        """
-        Speak text by streaming audio to WebRTC sink.
-
-        Args:
-            text: Text to speak
-            emotion: Voice emotion/tone
-            **kwargs: Additional parameters for speak_friendly
-
-        Returns:
-            TTSMessage with synthesis results
-        """
-        if not self.audio_sink:
-            logger.warning(" No WebRTC audio sink configured, falling back to local playback")
-            return await speak_friendly(text=text, emotion=emotion, **kwargs)
-
-        try:
-            logger.info(f" Streaming TTS to WebRTC: '{text[:50]}{'...' if len(text) > 50 else ''}'")
-
-            # Use speak_friendly with WebRTC sink for streaming
-            return await speak_friendly(
-                text=text,
-                emotion=emotion,
-                sink=self.audio_sink,
-                session_id=self.session_id,
-                turn_number=self.turn_number,
-                **kwargs
-            )
-
-        except Exception as e:
-            logger.error(f" WebRTC TTS streaming error: {e}")
-            # Fallback to local playback
-            return await speak_friendly(text=text, emotion=emotion, **kwargs)
-
-    async def process_conversation_turn_webrtc(self) -> Optional[str]:
-        """
-        Process a complete conversation turn using WebRTC for both input and output.
-
-        Returns:
-            User transcript if speech was captured, None otherwise
-        """
-        try:
-            self.turn_number += 1
-            logger.info(f" WebRTC Turn {self.turn_number} - Starting conversation turn")
-
-            # Step 1: Capture speech via WebRTC
-            transcript = await self.capture_speech_webrtc()
-            if not transcript:
-                return None
-
-            # Step 2: Process through conversation pipeline
-            response_text = await self._process_transcript_to_response(transcript)
-
-            # Step 3: Stream response via WebRTC
-            if response_text:
-                await self.speak_via_webrtc(response_text, emotion="helpful")
-
-            return transcript
-
-        except Exception as e:
-            logger.error(f" WebRTC conversation turn error: {e}")
-            return None
-
-    async def _process_transcript_to_response(self, transcript: str) -> Optional[str]:
-        """
-        Process user transcript through the full conversation pipeline.
-
-        Args:
-            transcript: User speech transcript
-
-        Returns:
-            Agent response text or None
-        """
-        try:
-            # Transcribe and classify using existing pipeline
-            transcript_msg, intent_msg = await transcribe_and_classify(
-                streaming_callback=None,
-                context={'webrtc_session': True, 'session_id': self.session_id}
-            )
-
-            if not transcript_msg or not transcript_msg.transcript:
-                logger.warning(" No transcript available for processing")
-                return "I'm sorry, I didn't catch what you said. Could you please repeat that?"
-
-            intent = intent_msg.intent
-            user_context = intent_msg.user_context or transcript_msg.transcript
-
-            logger.info(f" WebRTC Intent: {intent} (confidence: {intent_msg.confidence:.2f})")
-
-            # Route based on intent
-            if intent == 'APPOINTMENT_SCHEDULING':
-                # Handle appointment booking
-                booking_data = await handle_appointment_booking(initial_input=transcript_msg.transcript)
-                if booking_data:
-                    return "Appointment scheduled successfully! Thank you for using Leibniz Assistant."
-                else:
-                    return "Let's schedule your appointment. When would you like to meet?"
-
-            elif intent == 'RAG_QUERY':
-                # Handle RAG query
-                rag_result = await handle_rag_query(
-                    text=user_context,
-                    context={'last_intent': {'intent': intent, 'user_context': user_context}},
-                    enable_streaming=False,  # We'll handle TTS separately
-                    user_id=self.session_id
-                )
-                return rag_result.answer
-
-            elif intent == 'GREETING':
-                return "Hello! I'm your Leibniz University assistant. How can I help you today?"
-
-            elif intent == 'EXIT':
-                self.conversation_active = False
-                return "Thank you for using Leibniz Assistant. Have a great day!"
-
-            else:  # UNCLEAR or other
-                return "I didn't quite catch that. Could you rephrase your question?"
-
-        except Exception as e:
-            logger.error(f" Transcript processing error: {e}")
-            return "I'm sorry, I encountered an error processing your request. Please try again."
-
-    async def stream_rag_response_webrtc(self, text: str, context: Dict[str, Any]) -> None:
-        """
-        Stream RAG response with TTS streaming to WebRTC sink.
-
-        Args:
-            text: User query text
-            context: Conversation context
-        """
-        if not self.audio_sink:
-            logger.warning(" No WebRTC sink available for streaming")
-            return
-
-        try:
-            # Get RAG response with streaming enabled
-            rag_result = await handle_rag_query(
-                text=text,
-                context=context,
-                enable_streaming=True,
-                user_id=self.session_id
-            )
-
-            # Stream the response using TTS streaming queue to WebRTC sink
-            await consume_tts_streaming_queue(sink=self.audio_sink)
-
-        except Exception as e:
-            logger.error(f" WebRTC RAG streaming error: {e}")
-
-    def is_webrtc_ready(self) -> bool:
-        """
-        Check if WebRTC integration is properly configured.
-
-        Returns:
-            True if both source and sink are available
-        """
-        return self.audio_source is not None and self.audio_sink is not None
-
-    def get_session_info(self) -> Dict[str, Any]:
-        """
-        Get current session information.
-
-        Returns:
-            Dictionary with session details
-        """
-        return {
-            'session_id': self.session_id,
-            'turn_number': self.turn_number,
-            'conversation_active': self.conversation_active,
-            'webrtc_source_available': self.audio_source is not None,
-            'webrtc_sink_available': self.audio_sink is not None,
-            'timestamp': time.time()
-        }
-
-
-# ============================================================================
-# WebRTC Integration Utilities
-# ============================================================================
-
-async def create_webrtc_integration(source: Any = None, sink: Any = None, session_id: str = None) -> LeibnizWebRTCIntegration:
-    """
-    Create and configure a WebRTC integration instance.
-
-    Args:
-        source: WebRTC audio source
-        sink: WebRTC audio sink
-        session_id: Optional session identifier
-
-    Returns:
-        Configured LeibnizWebRTCIntegration instance
-    """
-    integration = LeibnizWebRTCIntegration(session_id=session_id)
-    await integration.setup_webrtc_adapters(source=source, sink=sink)
-    return integration
-
-
-async def run_webrtc_conversation_loop(integration: LeibnizWebRTCIntegration) -> None:
-    """
-    Run the main conversation loop using WebRTC integration.
-
-    Args:
-        integration: Configured WebRTC integration instance
-    """
-    logger.info(" Starting WebRTC conversation loop")
-
-    try:
-        # Send initial greeting
-        await integration.speak_via_webrtc(
-            "Hello! I'm your Leibniz University assistant. How can I help you today?",
-            emotion="helpful"
-        )
-
-        # Main conversation loop
-        while integration.conversation_active:
-            try:
-                # Process one conversation turn
-                transcript = await integration.process_conversation_turn_webrtc()
-
-                if not transcript:
-                    # No speech detected, continue listening
-                    continue
-
-                # Check for exit intent (handled in process_conversation_turn_webrtc)
-                if not integration.conversation_active:
-                    break
-
-            except Exception as turn_error:
-                logger.error(f" Conversation turn error: {turn_error}")
-                await integration.speak_via_webrtc(
-                    "I'm sorry, I encountered an error. Please try again.",
-                    emotion="calm"
-                )
-
-    except Exception as e:
-        logger.error(f" WebRTC conversation loop error: {e}")
-    finally:
-        logger.info(" WebRTC conversation loop ended")
-
-
-# ============================================================================
-# WebRTC Conversation Handler (Legacy - kept for backward compatibility)
-# ============================================================================
-
-class LeibnizWebRTCHandler:
-    """
-    FastRTC conversation handler using ReplyOnPause for turn-taking.
-    Processes audio through Leibniz pipeline: STT → Intent → RAG → TTS.
-    """
-
-    def __init__(self):
-        """Initialize WebRTC handler with session management"""
-        self.session_id = f"webrtc_{int(time.time())}"
-        self.turn_number = 0
-        self.conversation_active = True
-        logger.info(f" Leibniz WebRTC handler initialized - Session: {self.session_id}")
-
-    async def __call__(self, audio: tuple[int, np.ndarray]):
-        """
-        Async FastRTC handler function - called when user pauses speaking.
-
-        Args:
-            audio: Tuple of (sample_rate, audio_array) from FastRTC
-
-        Yields:
-            Tuple of (sample_rate, audio_array) for response audio
-        """
-        sample_rate = 24000  # Default fallback
-        turn_success = False
-
-        try:
-            # Increment turn counter
-            self.turn_number += 1
-            logger.info(f"WebRTC Turn {self.turn_number} - Processing audio...")
-
-            # Validate audio input
-            if not audio or len(audio) != 2:
-                logger.error("Invalid audio format received from FastRTC")
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-                return
-
-            # Extract audio data with validation
-            sample_rate, audio_array = audio
-
-            if audio_array is None or len(audio_array) == 0:
-                logger.warning("Empty audio array received")
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-                return
-
-            # Validate audio array type and shape
-            if not isinstance(audio_array, np.ndarray):
-                logger.error(f"Invalid audio array type: {type(audio_array)}")
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-                return
-
-            logger.debug(f"Processing audio: {len(audio_array)} samples at {sample_rate}Hz")
-
-            # Process audio through STT pipeline with timeout
-            try:
-                transcript = await asyncio.wait_for(
-                    self._process_audio_for_stt_async(audio),
-                    timeout=10.0  # 10 second timeout for STT
-                )
-            except asyncio.TimeoutError:
-                logger.error("STT processing timeout")
-                transcript = ""
-            except Exception as stt_error:
-                logger.error(f"STT processing failed: {stt_error}")
-                transcript = ""
-
-            if not transcript:
-                logger.debug("No speech detected in WebRTC audio")
-                # Return minimal silence to maintain stream
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-                return
-
-            logger.info(f"WebRTC Transcript: '{transcript[:100]}{'...' if len(transcript) > 100 else ''}'")
-
-            # Process through conversation pipeline with timeout
-            try:
-                response_text = await asyncio.wait_for(
-                    self._process_conversation_async(transcript),
-                    timeout=30.0  # 30 second timeout for conversation processing
-                )
-            except asyncio.TimeoutError:
-                logger.error("Conversation processing timeout")
-                response_text = "I'm sorry, I took too long to process your request. Please try again."
-            except Exception as conv_error:
-                logger.error(f"Conversation processing failed: {conv_error}")
-                response_text = "I'm sorry, I encountered an error processing your request."
-
-            if response_text and len(response_text.strip()) > 0:
-                try:
-                    # Stream response as audio through FastRTC with timeout
-                    audio_chunks = []
-                    async for audio_chunk in asyncio.wait_for(
-                        self._generate_response_audio_async(response_text, sample_rate),
-                        timeout=60.0  # 60 second timeout for TTS
-                    ):
-                        audio_chunks.append(audio_chunk)
-                        yield audio_chunk
-
-                    turn_success = len(audio_chunks) > 0
-                    logger.info(f"WebRTC Response streamed: {len(response_text)} chars, {len(audio_chunks)} chunks")
-
-                except asyncio.TimeoutError:
-                    logger.error("TTS generation timeout")
-                    yield (sample_rate, np.zeros(1024, dtype=np.float32))
-                except Exception as tts_error:
-                    logger.error(f"TTS generation failed: {tts_error}")
-                    yield (sample_rate, np.zeros(1024, dtype=np.float32))
-            else:
-                logger.warning("No response text generated")
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-
-        except Exception as e:
-            logger.error(f"Critical WebRTC turn error: {e}")
-            import traceback
-            logger.debug(f"Traceback: {traceback.format_exc()}")
-            # Always yield something to maintain stream
-            try:
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-            except Exception as yield_error:
-                logger.error(f"Failed to yield error response: {yield_error}")
-        finally:
-            # Log turn completion status
-            status = "SUCCESS" if turn_success else "FAILED"
-            logger.info(f"WebRTC Turn {self.turn_number} completed: {status}")
-
-    async def _process_audio_for_stt_async(self, audio: tuple[int, np.ndarray]) -> str:
-        """
-        Process audio tuple for STT using Leibniz components (async version).
-
-        Args:
-            audio: Tuple of (sample_rate, audio_array) from FastRTC
-
-        Returns:
-            str: Transcribed text or empty string
-        """
-        temp_filepath = None
-
-        try:
-            # Extract audio data from FastRTC tuple
-            sample_rate, audio_array = audio
-
-            # Validate audio parameters
-            if sample_rate <= 0 or sample_rate > 192000:
-                logger.error(f"Invalid sample rate: {sample_rate}")
-                return ""
-
-            if len(audio_array) == 0:
-                logger.warning("Empty audio array for STT processing")
-                return ""
-
-            # Convert to format expected by Leibniz STT
-            try:
-                if audio_array.dtype != np.float32:
-                    audio_array = audio_array.astype(np.float32)
-
-                # Normalize audio levels if needed (ensure within [-1, 1] range)
-                max_abs = np.max(np.abs(audio_array))
-                if max_abs > 1.0:
-                    audio_array = audio_array / max_abs
-                elif max_abs == 0:
-                    logger.warning("Audio array contains only silence")
-                    return ""
-
-            except Exception as audio_error:
-                logger.error(f"Audio preprocessing failed: {audio_error}")
-                return ""
-
-            # Create temporary WAV file for STT processing
-            import tempfile
-            import soundfile as sf
-
-            try:
-                temp_file = tempfile.NamedTemporaryFile(suffix='.wav', delete=False)
-                temp_filepath = temp_file.name
-                temp_file.close()
-
-                # Write audio to temporary file
-                sf.write(temp_filepath, audio_array, int(sample_rate), subtype='FLOAT')
-
-            except Exception as file_error:
-                logger.error(f"Failed to create temporary audio file: {file_error}")
-                return ""
-
-            try:
-                # Use direct STT transcription on the file
-                stt = get_leibniz_stt()
-                if stt and hasattr(stt, 'transcribe_file'):
-                    result = await stt.transcribe_file(temp_filepath, language_code='en-US')
-                    transcript = result.get('text', '').strip() if result else ""
-                else:
-                    # Fallback: STT service not available
-                    logger.warning("STT service not available for WebRTC processing")
-                    transcript = ""
-
-            except Exception as stt_error:
-                logger.error(f"STT transcription failed: {stt_error}")
-                transcript = ""
-
-        except Exception as e:
-            logger.error(f"WebRTC STT processing error: {e}")
-            transcript = ""
-        finally:
-            # Clean up temporary file
-            if temp_filepath:
-                import os
-                try:
-                    os.unlink(temp_filepath)
-                except Exception as cleanup_error:
-                    logger.warning(f"Failed to cleanup temp STT file: {cleanup_error}")
-
-        return transcript
-
-
-    async def _process_conversation_async(self, transcript: str) -> str:
-        """
-        Process user input through the full conversation pipeline (async).
-
-        Args:
-            transcript: User speech transcript
-
-        Returns:
-            str: Agent response text
-        """
-        try:
-            # Validate input
-            if not transcript or len(transcript.strip()) == 0:
-                logger.warning("Empty transcript provided to conversation processing")
-                return "I'm sorry, I didn't catch what you said. Could you please repeat that?"
-
-            # Extract semantic context with error handling
-            try:
-                from leibniz_agent.leibniz_semantic_extractor import extract_semantic_context
-                semantic_context = extract_semantic_context(transcript)
-                if not semantic_context:
-                    logger.warning("Semantic context extraction failed, using raw transcript")
-                    semantic_context = {'normalized_query': transcript, 'user_goal': '', 'key_entities': {}}
-            except Exception as semantic_error:
-                logger.error(f"Semantic context extraction failed: {semantic_error}")
-                semantic_context = {'normalized_query': transcript, 'user_goal': '', 'key_entities': {}}
-
-            # Classify intent with error handling
-            try:
-                intent_msg = await classify_leibniz_intent(transcript, semantic_context)
-                if not intent_msg:
-                    logger.warning("Intent classification failed, using fallback")
-                    intent_msg = {'intent': 'UNCLEAR', 'confidence': 0.0, 'entities': {}}
-            except Exception as intent_error:
-                logger.error(f"Intent classification failed: {intent_error}")
-                intent_msg = {'intent': 'UNCLEAR', 'confidence': 0.0, 'entities': {}}
-
-            # Generate RAG response with error handling
-            try:
-                rag = get_leibniz_rag()
-                if rag:
-                    context = {
-                        'user_goal': intent_msg.get('intent', 'general_information'),
-                        'key_entities': intent_msg.get('entities', {}),
-                        'extracted_meaning': semantic_context.get('normalized_query', transcript),
-                        'language': 'english',  # Leibniz is English-only
-                        'session_id': self.session_id,
-                        'turn_number': self.turn_number
-                    }
-                    rag_response = rag.process_rag_query(context=context, query=transcript)
-
-                    # Validate RAG response
-                    if rag_response and len(rag_response.strip()) > 0:
-                        return rag_response
-                    else:
-                        logger.warning("RAG returned empty response")
-                        return "I'm sorry, I'm having trouble finding information about that. Could you rephrase your question?"
-                else:
-                    logger.error("RAG service not available")
-                    return "I'm sorry, my knowledge base is currently unavailable. Please try again later."
-
-            except Exception as rag_error:
-                logger.error(f"RAG processing failed: {rag_error}")
-                return "I'm sorry, I encountered an error while searching for information. Please try again."
-
-        except Exception as e:
-            logger.error(f"Critical conversation processing error: {e}")
-            import traceback
-            logger.debug(f"Conversation processing traceback: {traceback.format_exc()}")
-            return "I'm sorry, I encountered an unexpected error. Please try again."
-
-    async def _generate_response_audio_async(self, text: str, sample_rate: int):
-        """
-        Generate audio response from text using Leibniz TTS (async version).
-
-        Args:
-            text: Response text to speak
-            sample_rate: Target sample rate for output
-
-        Yields:
-            Tuples of (sample_rate, audio_array) for streaming
-        """
-        try:
-            # Validate input parameters
-            if not text or len(text.strip()) == 0:
-                logger.warning("Empty text provided to TTS generation")
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-                return
-
-            if sample_rate <= 0 or sample_rate > 192000:
-                logger.error(f"Invalid sample rate for TTS: {sample_rate}")
-                yield (24000, np.zeros(1024, dtype=np.float32))
-                return
-
-            # Generate TTS audio chunks
-            audio_chunks = await self._generate_tts_audio(text, sample_rate)
-
-            # Validate chunks before yielding
-            if not audio_chunks or len(audio_chunks) == 0:
-                logger.warning("No audio chunks generated by TTS")
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-                return
-
-            # Yield audio chunks with validation
-            chunks_yielded = 0
-            for chunk in audio_chunks:
-                try:
-                    # Validate chunk format (should be numpy array)
-                    if not isinstance(chunk, np.ndarray):
-                        logger.error(f"Invalid audio chunk type: {type(chunk)}")
-                        continue
-
-                    if len(chunk) == 0:
-                        logger.warning("Empty audio chunk, skipping")
-                        continue
-
-                    if chunk.dtype != np.float32:
-                        try:
-                            chunk = chunk.astype(np.float32)
-                        except Exception as convert_error:
-                            logger.error(f"Failed to convert audio chunk to float32: {convert_error}")
-                            continue
-
-                    yield (sample_rate, chunk)
-                    chunks_yielded += 1
-
-                except Exception as chunk_error:
-                    logger.error(f"Error yielding audio chunk: {chunk_error}")
-                    continue
-
-            if chunks_yielded == 0:
-                logger.warning("No valid audio chunks yielded, sending silence")
-                yield (sample_rate, np.zeros(1024, dtype=np.float32))
-
-        except Exception as e:
-            logger.error(f"WebRTC TTS generation error: {e}")
-            import traceback
-            logger.debug(f"TTS generation traceback: {traceback.format_exc()}")
-            # Yield silence on error
-            yield (sample_rate, np.zeros(1024, dtype=np.float32))
-
-    async def _generate_tts_audio(self, text: str, sample_rate: int) -> list[np.ndarray]:
-        """
-        Generate TTS audio chunks for WebRTC streaming.
-
-        Args:
-            text: Text to synthesize
-            sample_rate: Target sample rate
-
-        Returns:
-            List of audio chunks as numpy arrays
-        """
-        try:
-            # Use speak_friendly to generate audio
-            tts_message = await speak_friendly(
-                text=text,
-                emotion="helpful",
-                enable_streaming=False,  # Generate complete audio file, not streaming
-                session_id=self.session_id,
-                turn_number=self.turn_number
-            )
-
-            # Extract audio from TTS message
-            if tts_message and tts_message.audio_path and os.path.exists(tts_message.audio_path):
-                # Load audio file
-                import soundfile as sf
-                audio_data, file_sr = sf.read(tts_message.audio_path)
-
-                # Convert to float32 if needed
-                if audio_data.dtype != np.float32:
-                    audio_data = audio_data.astype(np.float32)
-
-                # Normalize to [-1, 1] range if needed
-                if np.max(np.abs(audio_data)) > 1.0:
-                    audio_data = audio_data / np.max(np.abs(audio_data))
-
-                # Resample if sample rate doesn't match (simple implementation)
-                if file_sr != sample_rate:
-                    # For now, use simple resampling - could be improved with librosa
-                    ratio = sample_rate / file_sr
-                    new_length = int(len(audio_data) * ratio)
-                    # Simple linear interpolation (not ideal but functional)
-                    import scipy.signal
-                    audio_data = scipy.signal.resample(audio_data, new_length)
-
-                # Split into chunks for streaming
-                chunk_size = 1024  # FastRTC typical chunk size
-                chunks = []
-                for i in range(0, len(audio_data), chunk_size):
-                    chunk = audio_data[i:i + chunk_size]
-                    if len(chunk) < chunk_size:
-                        # Pad last chunk with zeros
-                        chunk = np.pad(chunk, (0, chunk_size - len(chunk)), 'constant')
-                    chunks.append(chunk)
-
-                # Ensure we have at least one chunk
-                if not chunks:
-                    chunks = [np.zeros(chunk_size, dtype=np.float32)]
-
-                logger.debug(f" Generated {len(chunks)} audio chunks for WebRTC streaming")
-                return chunks
-            else:
-                logger.warning(" No audio file generated by TTS")
-                # Return silence if no audio generated
-                return [np.zeros(1024, dtype=np.float32)]
-
-        except Exception as e:
-            logger.error(f" TTS audio generation error: {e}")
-            return [np.zeros(1024, dtype=np.float32)]
-
-    def _should_end_conversation(self, transcript: str) -> bool:
-        """
-        Check if conversation should end based on transcript content.
-
-        Args:
-            transcript: User transcript
-
-        Returns:
-            bool: True if conversation should end
-        """
-        end_signals = ["goodbye", "bye", "exit", "quit", "stop", "end conversation"]
-        transcript_lower = transcript.lower()
-
-        return any(signal in transcript_lower for signal in end_signals)
-
-    def stop_conversation(self):
-        """Stop the conversation"""
-        self.conversation_active = False
-        logger.info(" WebRTC conversation stopped")
-
-
-# ============================================================================
-# FastAPI WebRTC Server Setup
-# ============================================================================
-
-async def create_webrtc_app():
-    """
-    Create FastAPI application with WebRTC streaming routes.
-
-    Returns:
-        FastAPI app instance configured for WebRTC
-    """
-    if not FASTRTC_AVAILABLE:
-        raise RuntimeError("FastRTC not available - cannot create WebRTC app")
-
-    try:
-        app = FastAPI(title="Leibniz WebRTC Agent", version="1.0.0")
-    except Exception as app_error:
-        logger.error(f"Failed to create FastAPI app: {app_error}")
-        raise
-
-    # Health check endpoint
-    @app.get("/health")
-    async def health_check():
-        """Health check endpoint for load balancers and monitoring"""
-        try:
-            return {
-                "status": "healthy",
-                "timestamp": time.time(),
-                "version": "1.0.0",
-                "webrtc_enabled": True
-            }
-        except Exception as health_error:
-            logger.error(f"Health check failed: {health_error}")
-            return {
-                "status": "unhealthy",
-                "timestamp": time.time(),
-                "error": str(health_error)
-            }
-
-    # WebRTC streaming endpoint
-    @app.get("/")
-    async def get_webrtc_app():
-        """Serve the WebRTC streaming interface"""
-        try:
-            # Validate services are available
-            if not get_leibniz_stt():
-                raise RuntimeError("STT service not available for WebRTC")
-
-            if not get_leibniz_tts():
-                raise RuntimeError("TTS service not available for WebRTC")
-
-            # Create Leibniz WebRTC handler
-            leibniz_handler = LeibnizWebRTCHandler()
-
-            # Create FastRTC ReplyOnPause with Leibniz handler
-            # This provides proper turn-taking with VAD integration
-            reply_on_pause = ReplyOnPause(
-                leibniz_handler,  # Our handler function
-                model=None,  # Use default VAD model
-                can_interrupt=True,  # Allow barge-in
-                expected_layout="mono",
-                output_sample_rate=24000,
-                input_sample_rate=16000
-            )
-
-            # Create WebRTC stream with ReplyOnPause handler
-            stream = Stream(
-                handler=reply_on_pause,
-                modality="audio",
-                mode="send-receive"
-            )
-
-            logger.info("Leibniz WebRTC stream created with FastRTC ReplyOnPause")
-            return stream.app
-
-        except Exception as e:
-            logger.error(f"Failed to create WebRTC stream: {e}")
-            import traceback
-            logger.debug(f"WebRTC creation traceback: {traceback.format_exc()}")
-            raise
-
-    return app
-
-
-async def start_webrtc_server():
-    """
-    Start the WebRTC server with FastAPI and uvicorn.
-    This runs the WebRTC streaming interface on the configured port.
-    """
-    try:
-        if not FASTRTC_AVAILABLE:
-            logger.error(" FastRTC not available - cannot start WebRTC server")
-            return
-
-        # Create the FastAPI app
-        app = await create_webrtc_app()
-
-        # Configure uvicorn
-        config = uvicorn.Config(
-            app=app,
-            host="0.0.0.0",
-            port=WEBRTC_PORT,
-            log_level="info"
-        )
-
-        server = uvicorn.Server(config)
-
-        logger.info(f" Starting Leibniz WebRTC server on port {WEBRTC_PORT}")
-        logger.info(f" WebRTC interface will be available at: http://localhost:{WEBRTC_PORT}")
-
-        # Start the server
-        await server.serve()
-
-    except Exception as e:
-        logger.error(f" Failed to start WebRTC server: {e}")
-        raise
-
-
-async def cleanup_leibniz_services():
-    """
-    Cleanup all Leibniz services and resources.
-    Called on shutdown or error conditions.
-    """
-    try:
-        logger.info(" Cleaning up Leibniz services...")
-
-        # Stop background audio
-        stop_background_audio()
-
-        # Cleanup VAD
-        if cleanup_leibniz_vad:
-            await cleanup_leibniz_vad()
-
-        # Cleanup pygame
-        if PYGAME_AVAILABLE:
-            try:
-                pygame.quit()
-            except Exception as e:
-                logger.warning(f" Pygame cleanup error: {e}")
-
-        # Cleanup WebRTC session registry
-        global WEBRTC_SESSION_REGISTRY
-        if WEBRTC_SESSION_REGISTRY:
-            try:
-                # Add cleanup method to registry if needed
-                WEBRTC_SESSION_REGISTRY = None
-            except Exception as e:
-                logger.warning(f" WebRTC registry cleanup error: {e}")
-
-        logger.info(" Leibniz services cleanup complete")
-
-    except Exception as e:
-        logger.error(f" Error during service cleanup: {e}")
-
-
-async def run_unified_webrtc_mode():
-    """
-    Run the agent in unified WebRTC integration mode.
-    This uses the LeibnizWebRTCIntegration class for bidirectional audio flow.
-    """
-    try:
-        # Initialize services
-        await initialize_leibniz_services()
-
-        # Import WebRTC I/O adapters
-        try:
-            from leibniz_agent.leibniz_webrtc_io import WebRTCSource, WebRTCSink
-            webrtc_available = True
-        except ImportError:
-            logger.error(" WebRTC I/O adapters not available")
-            webrtc_available = False
-
-        if not webrtc_available:
-            logger.error(" Cannot run unified WebRTC mode - WebRTC I/O adapters not available")
-            return
-
-        # Create WebRTC adapters
-        try:
-            source = WebRTCSource(sample_rate=16000)  # 16kHz for WebRTC
-            sink = WebRTCSink(sample_rate=16000)
-            logger.info(" WebRTC adapters created successfully")
-        except Exception as adapter_error:
-            logger.error(f" Failed to create WebRTC adapters: {adapter_error}")
-            return
-
-        # Create unified WebRTC integration
-        integration = await create_webrtc_integration(
-            source=source,
-            sink=sink,
-            session_id=f"unified_{int(time.time())}"
-        )
-
-        if not integration.is_webrtc_ready():
-            logger.error(" WebRTC integration not properly configured")
-            return
-
-        logger.info(" Unified WebRTC integration ready - starting conversation loop")
-
-        # Run the WebRTC conversation loop
-        await run_webrtc_conversation_loop(integration)
-
-    except Exception as e:
-        logger.error(f" Unified WebRTC mode error: {e}")
-        raise
-
-
-# ============================================================================
-# Main Entry Points
-# ============================================================================
-
-async def main():
-    """
-    Main entry point for Leibniz Pro agent.
-    Supports both console mode, WebRTC server mode, and unified WebRTC integration.
-    """
-    try:
-        # Check mode from environment
-        webrtc_mode = os.getenv("LEIBNIZ_WEBRTC_MODE", "false").lower() == "true"
-        unified_webrtc = os.getenv("LEIBNIZ_UNIFIED_WEBRTC", "false").lower() == "true"
-
-        if webrtc_mode:
-            logger.info(" Starting in legacy WebRTC server mode")
-            await start_webrtc_server()
-        elif unified_webrtc:
-            logger.info(" Starting in unified WebRTC integration mode")
-            await run_unified_webrtc_mode()
-        else:
-            logger.info(" Starting in console mode")
-            await run_console_mode()
-
-    except KeyboardInterrupt:
-        logger.info(" Shutdown requested by user")
-    except Exception as e:
-        logger.error(f" Fatal error in main: {e}")
-        import traceback
-        traceback.print_exc()
-    finally:
-        await cleanup_leibniz_services()
-
-
-async def run_console_mode():
-    """
-    Run the agent in console mode (original behavior).
-    """
-    try:
-        # Initialize services
-        await initialize_leibniz_services()
-
-        # Start background audio if enabled
-        start_background_audio()
-
-        # Run conversation loop
-        await run_conversation_session()
-
-    except Exception as e:
-        logger.error(f" Console mode error: {e}")
-        raise
 
 
 async def cancel_continuous_vad():
@@ -2148,7 +1099,7 @@ async def finalize_tts_streaming():
         _first_enqueue_at = None  # Comment 7: Reset for next stream
 
 
-async def consume_tts_streaming_queue(sink: Optional[Any] = None) -> bool:
+async def consume_tts_streaming_queue() -> bool:
     """
     Consumer: Read sentences from queue and speak them with barge-in support.
     Runs in parallel with RAG generation for perceived latency reduction.
@@ -2204,14 +1155,14 @@ async def consume_tts_streaming_queue(sink: Optional[Any] = None) -> bool:
                 logger.debug(" TTS consumer cancelled")
                 # Comment 5: Clear agent speaking state if set
                 if agent_speaking_set:
-                    from leibniz_agent.leibniz_vad import get_leibniz_vad
+                    from leibniz_vad import get_leibniz_vad
                     vad = get_leibniz_vad()
                     await vad.set_agent_speaking_state(False, context="TTS cancelled")
                 break
             
             # Check for user speech (barge-in detection)
             # Works with both per-turn and continuous VAD modes
-            from leibniz_agent.leibniz_vad import check_leibniz_barge_in
+            from leibniz_vad import check_leibniz_barge_in
             try:
                 # Check existing barge-in flag (set by VAD during capture or continuous listener)
                 if check_leibniz_barge_in():
@@ -2430,98 +1381,58 @@ async def consume_tts_streaming_queue(sink: Optional[Any] = None) -> bool:
                     logger.debug(f"   audio_path = '{audio_path}'")
                     sentences_played += 1
                     
-                    # WEBSOCKET INTEGRATION: If sink provided, stream to WebRTC instead of local playback
-                    if sink is not None:
-                        try:
-                            logger.debug(" Streaming TTS to WebRTC sink instead of local playback")
-                            
-                            # Load audio data with soundfile
-                            import numpy as np
-                            import resampy
-                            
-                            file_data, file_sr = await asyncio.to_thread(sf.read, audio_path)
-                            
-                            # Convert to mono float32
-                            if file_data.ndim == 2:
-                                file_data = file_data.mean(axis=1)
-                            file_data = file_data.astype(np.float32)
-                            
-                            # Resample to 16kHz if needed
-                            if file_sr != 16000:
-                                file_data = resampy.resample(file_data, file_sr, 16000)
-                            
-                            # Stream in 50ms chunks (800 samples at 16kHz)
-                            chunk_size = 800
-                            for i in range(0, len(file_data), chunk_size):
-                                chunk = file_data[i:i + chunk_size]
-                                if len(chunk) < chunk_size:
-                                    # Pad last chunk with zeros
-                                    padded_chunk = np.zeros(chunk_size, dtype=np.float32)
-                                    padded_chunk[:len(chunk)] = chunk
-                                    chunk = padded_chunk
-                                
-                                await sink.put_frames(chunk)
-                            
-                            logger.info(" TTS file streamed to WebRTC sink")
-                            playback_successful = True
-                            playback_method = "webrtc_sink"
-                        
-                        except Exception as sink_error:
-                            logger.error(f" WebRTC sink streaming failed: {sink_error}")
-                            playback_successful = False
-                            playback_method = "webrtc_error"
+                    # Comment 6 FIX: Check playing_now guard to prevent overlapping playback
+                    global _playing_now
+                    if _playing_now:
+                        logger.warning(f" Skipping playback (already playing): '{sentence[:30]}...'")
+                        continue
                     
-                    else:
-                        # Comment 6 FIX: Check playing_now guard to prevent overlapping playback
-                        global _playing_now
-                        if _playing_now:
-                            logger.warning(f" Skipping playback (already playing): '{sentence[:30]}...'")
-                            continue
+                    # Calculate audio duration for smart warmup scheduling
+                    audio_duration = duration_ms / 1000.0 if duration_ms else len(sentence) * 0.05
+                    
+                    try:
+                        # Comment 5: Set agent speaking state BEFORE first playback
+                        if not agent_speaking_set:
+                            from leibniz_vad import get_leibniz_vad
+                            vad = get_leibniz_vad()
+                            await vad.set_agent_speaking_state(True, context="TTS streaming playback")
+                            agent_speaking_set = True
+                            logger.debug(" Agent speaking state set (first sentence)")
+                            
+                            # IMMEDIATE WARMUP: Start VAD warmup right when agent starts speaking
+                            # This runs in parallel with TTS playback so user can speak immediately after
+                            async def immediate_warmup():
+                                try:
+                                    await smart_warmup_leibniz_vad()
+                                    logger.debug(" Immediate VAD warmup completed (parallel with TTS)")
+                                except Exception as e:
+                                    logger.debug(f" Immediate warmup failed: {e}")
+                            
+                            asyncio.create_task(immediate_warmup())
                         
-                        # Calculate audio duration for smart warmup scheduling
-                        audio_duration = duration_ms / 1000.0 if duration_ms else len(sentence) * 0.05
+                        # Comment 6 FIX: Set playing_now=True before play()
+                        _playing_now = True
                         
-                        try:
-                            # Comment 5: Set agent speaking state BEFORE first playback
-                            if not agent_speaking_set:
-                                from leibniz_agent.leibniz_vad import get_leibniz_vad
-                                vad = get_leibniz_vad()
-                                await vad.set_agent_speaking_state(True, context="TTS streaming playback")
-                                agent_speaking_set = True
-                                logger.debug(" Agent speaking state set (first sentence)")
-                                
-                                # IMMEDIATE WARMUP: Start VAD warmup right when agent starts speaking
-                                # This runs in parallel with TTS playback so user can speak immediately after
-                                async def immediate_warmup():
-                                    try:
-                                        await smart_warmup_leibniz_vad()
-                                        logger.debug(" Immediate VAD warmup completed (parallel with TTS)")
-                                    except Exception as e:
-                                        logger.debug(f" Immediate warmup failed: {e}")
-                                
-                                asyncio.create_task(immediate_warmup())
-                            
-                            # Comment 6 FIX: Set playing_now=True before play()
-                            _playing_now = True
-                            
-                            # VERIFICATION COMMENT 2: Log first-playback latency
-                            global _first_enqueue_at
-                            if _first_enqueue_at is not None and sentences_played == 1:
-                                first_play_latency_ms = (time.time() - _first_enqueue_at) * 1000
-                                logger.info(f"⏱ First playback started {first_play_latency_ms:.1f}ms after first enqueue")
-                                _first_enqueue_at = None  # Reset to avoid duplicate logs
-                            
-                            # Comment 10: Use sounddevice with device=12 for consistent audio playback
-                            # Load audio data with soundfile and play with sounddevice
-                            audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_path)
-                            await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
-                            await asyncio.to_thread(sd.wait)  # Wait for playback to complete
-                            
-                            logger.debug(" TTS streaming playback completed with sounddevice")
+                        # VERIFICATION COMMENT 2: Log first-playback latency
+                        global _first_enqueue_at
+                        if _first_enqueue_at is not None and sentences_played == 1:
+                            first_play_latency_ms = (time.time() - _first_enqueue_at) * 1000
+                            logger.info(f"⏱ First playback started {first_play_latency_ms:.1f}ms after first enqueue")
+                            _first_enqueue_at = None  # Reset to avoid duplicate logs
                         
-                        finally:
-                            # Comment 6 FIX: Always set playing_now=False after unload (even on error)
-                            _playing_now = False                    # Removed old delayed warmup - now using immediate warmup when TTS starts
+                        # Comment 10: Use sounddevice with device=12 for consistent audio playback
+                        # Load audio data with soundfile and play with sounddevice
+                        audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_path)
+                        await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
+                        await asyncio.to_thread(sd.wait)  # Wait for playback to complete
+                        
+                        logger.debug(" TTS streaming playback completed with sounddevice")
+                    
+                    finally:
+                        # Comment 6 FIX: Always set playing_now=False after unload (even on error)
+                        _playing_now = False
+                    
+                    # Removed old delayed warmup - now using immediate warmup when TTS starts
 
                 else:
                     sentences_failed += 1
@@ -2562,7 +1473,7 @@ async def consume_tts_streaming_queue(sink: Optional[Any] = None) -> bool:
         
         # Comment 5 & 9: Clear agent speaking state in finally block (always executed)
         if agent_speaking_set:
-            from leibniz_agent.leibniz_vad import get_leibniz_vad
+            from leibniz_vad import get_leibniz_vad
             vad = get_leibniz_vad()
             await vad.set_agent_speaking_state(False, context="TTS consumer finished")
         
@@ -2593,7 +1504,7 @@ async def _synthesize_only(text: str, emotion: str = "helpful") -> Optional[Any]
         TTSMessage with synthesis result or None on error
     """
     try:
-        from leibniz_agent.leibniz_tts import get_leibniz_tts
+        from leibniz_tts import get_leibniz_tts
         tts = get_leibniz_tts()
         
         result = await tts.synthesize_to_file(
@@ -2754,7 +1665,7 @@ async def speak_friendly(
     enable_streaming: bool = False,
     session_id: Optional[str] = None,
     turn_number: Optional[int] = None,
-    sink: Optional[Any] = None
+    audio_sink: Optional[object] = None
 ) -> TTSMessage:
     """
     Speak text with friendly casual tone
@@ -2767,7 +1678,7 @@ async def speak_friendly(
         enable_streaming: Enable streaming TTS for long responses
         session_id: Optional session identifier for dialogue archiving
         turn_number: Optional turn number for dialogue archiving
-        sink: Optional AudioSink for WebRTC streaming (bypasses local playback)
+        audio_sink: Optional audio sink adapter (e.g., FastRTCAudioSink) for routing audio output
         
     Returns:
         TTSMessage with synthesis results or None if TTS unavailable
@@ -2870,17 +1781,13 @@ async def speak_friendly(
                 elif any(word in text_lower for word in ['thinking', 'processing', 'working']):
                     cache_name = get_dialogue_cache_name('thinking_indicator')
         
-        # Display agent speaking notification to user
-        if text:  # Only show if there's actual text to speak
-            print(f"\n AGENT SPEAKING: {text[:100]}{'...' if len(text) > 100 else ''}\n", flush=True)
-        
         # Set agent speaking state
         await set_leibniz_agent_speaking(True, context="TTS synthesis")
         
         # CRITICAL FIX: Explicitly ensure continuous VAD is stopped before TTS
         # This prevents the agent from transcribing its own speech
         try:
-            from leibniz_agent.leibniz_continuous_vad import get_continuous_vad
+            from leibniz_continuous_vad import get_continuous_vad
             continuous_vad = get_continuous_vad()
             if continuous_vad.is_running:
                 logger.info(" Force-stopping continuous VAD before TTS to prevent feedback loop")
@@ -2895,7 +1802,10 @@ async def speak_friendly(
             await vad.set_agent_speaking_state(True, "TTS synthesis - forced")
         
         try:
-            if enable_streaming:
+            if enable_streaming and audio_sink is None:
+                # NOTE: Streaming TTS only supported for local playback (not FastRTC mode)
+                # FastRTC provides real-time audio streaming, so streaming TTS is disabled
+                # when audio_sink is provided to avoid complexity and latency issues
                 # NOTE: Direct streaming via speak_friendly is deprecated
                 # Use stream_rag_to_tts() + consume_tts_streaming_queue() pattern instead
                 # This legacy streaming path is kept for backward compatibility only
@@ -2915,11 +1825,11 @@ async def speak_friendly(
                             clear_leibniz_barge_in()
                             break
                         
-                        # Synthesize sentence (caching disabled - always generate fresh audio)
+                        # Synthesize sentence
                         result = await tts.synthesize_to_file(
                             text=sentence,
                             emotion=emotion,
-                            cache_name=None  # Disabled: Always generate fresh audio
+                            cache_name=f"{cache_name}_{len(audio_files)}" if cache_name else None
                         )
                         
                         if result and result.get("success"):
@@ -2930,7 +1840,7 @@ async def speak_friendly(
                             total_duration += duration
                             
                             # Comment 6: Offload pygame operations to thread
-                            if PYGAME_AVAILABLE and audio_file and os.path.exists(audio_file):
+                            if PYGAME_AVAILABLE and os.path.exists(audio_file):
                                 # Comment 2: Duck background audio during TTS playback
                                 original_bg_volume = None
                                 try:
@@ -3027,11 +1937,11 @@ async def speak_friendly(
                     duration_ms=total_duration * 1000
                 )
             else:
-                # File-based TTS (caching disabled - always generate fresh audio)
+                # File-based TTS
                 result = await tts.synthesize_to_file(
                     text=text,
                     emotion=emotion,
-                    cache_name=None  # Disabled: Always generate fresh audio
+                    cache_name=cache_name
                 )
                 
                 if result and result.get("success"):
@@ -3042,218 +1952,90 @@ async def speak_friendly(
                     sample_rate = result.get('sample_rate', 24000)
                     is_temporary = result.get('is_temporary', False)
                     
-                    # Check if we have any audio to play
-                    if not audio_file and not audio_bytes:
-                        logger.error(" TTS synthesis succeeded but returned no audio file or bytes")
-                        return TTSMessage(text=text, audio_path=None, duration_ms=0)
+                    # Comment 6: Unconditional fallback chain - prioritize sounddevice with device 12
+                    # Always attempt playback, starting with sounddevice (device 12) as primary
+                    # If audio_sink provided, route audio to sink instead of local playback
                     
-                    # WEBSOCKET INTEGRATION: If sink provided, stream to WebRTC instead of local playback
-                    if sink is not None:
+                    # Track playback success/failure
+                    playback_successful = False
+                    playback_method = "none"
+
+                    # Check if audio_sink is provided (FastRTC mode)
+                    if audio_sink is not None:
+                        # FAST RTC MODE: Route audio to sink instead of local playback
                         try:
-                            logger.debug(" Streaming TTS to WebRTC sink instead of local playback")
+                            print("▶ TTS routing to FastRTC audio sink...", flush=True)
                             
-                            # Convert audio to 16kHz mono float32 for WebRTC
+                            # Load audio data for sink
                             if audio_bytes:
-                                # Convert raw bytes to numpy array
+                                # Use raw bytes if available
                                 import numpy as np
                                 audio_data = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32) / 32767.0
-                                
-                                # Ensure mono
-                                if audio_data.ndim == 2:
-                                    audio_data = audio_data.mean(axis=1)  # Convert stereo to mono
-                                
-                                # Resample to 16kHz if needed
-                                if sample_rate != 16000:
-                                    import resampy
-                                    audio_data = resampy.resample(audio_data, sample_rate, 16000)
-                                
-                                # Stream in 50ms chunks (800 samples at 16kHz)
-                                chunk_size = 800
-                                for i in range(0, len(audio_data), chunk_size):
-                                    chunk = audio_data[i:i + chunk_size]
-                                    if len(chunk) < chunk_size:
-                                        # Pad last chunk with zeros
-                                        padded_chunk = np.zeros(chunk_size, dtype=np.float32)
-                                        padded_chunk[:len(chunk)] = chunk
-                                        chunk = padded_chunk
-                                    
-                                    await sink.put_frames(chunk)
-                                
-                                logger.info(" TTS streamed to WebRTC sink")
-                                playback_successful = True
-                                playback_method = "webrtc_sink"
-                            
-                            elif audio_file and os.path.exists(audio_file):
-                                # Load from file and stream
-                                import numpy as np
-                                import resampy
-                                
-                                file_data, file_sr = await asyncio.to_thread(sf.read, audio_file)
-                                
-                                # Convert to mono float32
-                                if file_data.ndim == 2:
-                                    file_data = file_data.mean(axis=1)
-                                file_data = file_data.astype(np.float32)
-                                
-                                # Resample to 16kHz if needed
-                                if file_sr != 16000:
-                                    file_data = resampy.resample(file_data, file_sr, 16000)
-                                
-                                # Stream in 50ms chunks
-                                chunk_size = 800
-                                for i in range(0, len(file_data), chunk_size):
-                                    chunk = file_data[i:i + chunk_size]
-                                    if len(chunk) < chunk_size:
-                                        # Pad last chunk with zeros
-                                        padded_chunk = np.zeros(chunk_size, dtype=np.float32)
-                                        padded_chunk[:len(chunk)] = chunk
-                                        chunk = padded_chunk
-                                    
-                                    await sink.put_frames(chunk)
-                                
-                                logger.info(" TTS file streamed to WebRTC sink")
-                                playback_successful = True
-                                playback_method = "webrtc_sink_file"
-                            
+                            elif os.path.exists(audio_file):
+                                # Load from file
+                                import soundfile as sf
+                                audio_data, file_sample_rate = await asyncio.to_thread(sf.read, audio_file)
+                                audio_data = audio_data.astype(np.float32)
                             else:
-                                logger.error(" No audio data available for WebRTC streaming")
-                                playback_successful = False
-                                playback_method = "webrtc_failed"
-                        
-                        except Exception as sink_error:
-                            logger.error(f" WebRTC sink streaming failed: {sink_error}")
-                            playback_successful = False
-                            playback_method = "webrtc_error"
+                                raise ValueError("No audio data available for sink")
+                            
+                            # Send to audio sink
+                            await audio_sink.write_audio(audio_data, sample_rate)
+                            
+                            logger.info(" TTS audio routed to FastRTC sink")
+                            playback_successful = True
+                            playback_method = "fastrtc_sink"
+                            
+                        except Exception as e:
+                            logger.error(f" FastRTC sink routing failed: {e}")
+                            print(f" FastRTC sink routing failed: {e}", flush=True)
+                            # Continue to local playback fallback
                     
-                    # WEBSOCKET INTEGRATION: Skip local playback when WebRTC sink is provided
-                    if sink is not None:
-                        logger.debug(" WebRTC sink provided - skipping local audio playback")
-                        playback_successful = True
-                        playback_method = "webrtc_only"
-                    else:
-                        if audio_bytes and SOUNDDEVICE_AVAILABLE:
-                            # Play raw audio bytes directly
-                            try:
-                                print(" TTS playback starting (sounddevice device 12 - raw bytes)...", flush=True)
-                                # Convert bytes to numpy array (assuming int16 PCM)
-                                import numpy as np
-                                audio_data = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32) / 32767.0
-                                
-                                # Determine audio format and channel configuration
-                                if audio_data.ndim == 1:
-                                    # Mono audio - reshape for explicit channel specification
-                                    num_channels = 1
-                                    audio_data = audio_data.reshape(-1, 1)
-                                elif audio_data.ndim == 2:
-                                    num_channels = audio_data.shape[1]
-                                    if num_channels == 1:
-                                        # Already correct shape for mono
-                                        pass
-                                    elif num_channels == 2:
-                                        # Stereo - already correct
-                                        pass
-                                    else:
-                                        # Unexpected channel count - force to stereo
-                                        logger.warning(f" Unexpected {num_channels} channels, forcing stereo")
-                                        audio_data = audio_data[:, :2]
-                                        num_channels = 2
-                                else:
-                                    raise ValueError(f"Unexpected audio data shape: {audio_data.shape}")
-                                
-                                # Try playback with device capability detection
-                                playback_success_inner = False
-                                
-                                # Strategy 1: Try with detected channel count
-                                try:
-                                    await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12, channels=num_channels)
-                                    await asyncio.to_thread(sd.wait)
-                                    playback_success_inner = True
-                                    logger.debug(f" Sounddevice playback succeeded with {num_channels} channels")
-                                except Exception as e1:
-                                    logger.debug(f" {num_channels}-channel playback failed: {e1}")
-                                    
-                                    # Strategy 2: Try stereo (most common Windows configuration)
-                                    if num_channels != 2:
-                                        try:
-                                            # Convert mono to stereo by duplicating channel
-                                            if num_channels == 1:
-                                                audio_data_stereo = np.repeat(audio_data, 2, axis=1)
-                                            else:
-                                                audio_data_stereo = audio_data[:, :2]
-                                            
-                                            await asyncio.to_thread(sd.play, audio_data_stereo, sample_rate, device=12, channels=2)
-                                            await asyncio.to_thread(sd.wait)
-                                            playback_success_inner = True
-                                            logger.debug(" Sounddevice playback succeeded with stereo conversion")
-                                        except Exception as e2:
-                                            logger.debug(f" Stereo playback failed: {e2}")
-                                            
-                                            # Strategy 3: Try without explicit channel specification
-                                            try:
-                                                await asyncio.to_thread(sd.play, audio_data.flatten(), sample_rate, device=12)
-                                                await asyncio.to_thread(sd.wait)
-                                                playback_success_inner = True
-                                                logger.debug(" Sounddevice playback succeeded without channel spec")
-                                            except Exception as e3:
-                                                raise Exception(f"All sounddevice strategies failed: {e1}, {e2}, {e3}")
-                                
-                                if playback_success_inner:
-                                    logger.info(" TTS playback completed with sounddevice (device 12) - raw bytes")
-                                    playback_successful = True
-                                    playback_method = "sounddevice_raw"
-
-                            except Exception as e:
-                                logger.error(f" Sounddevice raw bytes playback failed: {e}")
-                                print(f"WARNING: Sounddevice raw bytes playback failed: {e}", flush=True)
-                                # Continue to file-based fallback
-
-                    if not playback_successful and audio_file and os.path.exists(audio_file) and SOUNDDEVICE_AVAILABLE:
+                    # Local playback fallback (only if not using FastRTC sink)
+                    if not playback_successful or audio_sink is None:
+                        # Play raw audio bytes directly
                         try:
-                            print(" TTS playback starting (sounddevice device 12)...", flush=True)
+                            print("▶ TTS playback starting (sounddevice device 12 - raw bytes)...", flush=True)
+                            # Convert bytes to numpy array (assuming int16 PCM)
+                            import numpy as np
+                            audio_data = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32) / 32767.0
+                            
+                            # Play with sounddevice on device 12 (Realtek primary)
+                            await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
+                            await asyncio.to_thread(sd.wait)  # Wait for playback to complete
+
+                            logger.info(" TTS playback completed with sounddevice (device 12) - raw bytes")
+                            playback_successful = True
+                            playback_method = "sounddevice_raw"
+
+                        except Exception as e:
+                            logger.error(f" Sounddevice raw bytes playback failed: {e}")
+                            print(f" Sounddevice raw bytes playback failed: {e}", flush=True)
+                            # Continue to file-based fallback
+
+                    if not playback_successful and os.path.exists(audio_file) and SOUNDDEVICE_AVAILABLE:
+                        try:
+                            print("▶ TTS playback starting (sounddevice device 12)...", flush=True)
                             # Load audio data with soundfile
                             audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_file)
-                            
-                            # Determine channel configuration
-                            if audio_data.ndim == 1:
-                                num_channels = 1
-                                audio_data = audio_data.reshape(-1, 1)
-                            else:
-                                num_channels = audio_data.shape[1]
-                            
-                            # Try playback with capability detection
-                            playback_success_inner = False
-                            
-                            try:
-                                await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12, channels=num_channels)
-                                await asyncio.to_thread(sd.wait)
-                                playback_success_inner = True
-                            except Exception as e1:
-                                # Try stereo conversion if needed
-                                if num_channels == 1:
-                                    try:
-                                        audio_data_stereo = np.repeat(audio_data, 2, axis=1)
-                                        await asyncio.to_thread(sd.play, audio_data_stereo, sample_rate, device=12, channels=2)
-                                        await asyncio.to_thread(sd.wait)
-                                        playback_success_inner = True
-                                    except Exception as e2:
-                                        raise Exception(f"File playback failed: {e1}, {e2}")
-                                else:
-                                    raise e1
-                            
-                            if playback_success_inner:
-                                logger.info(" TTS playback completed with sounddevice (device 12)")
-                                playback_successful = True
-                                playback_method = "sounddevice"
+
+                            # Play with sounddevice on device 12 (Realtek primary)
+                            await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
+                            await asyncio.to_thread(sd.wait)  # Wait for playback to complete
+
+                            logger.info(" TTS playback completed with sounddevice (device 12)")
+                            playback_successful = True
+                            playback_method = "sounddevice"
 
                         except Exception as e:
                             logger.error(f" Sounddevice playback failed: {e}")
-                            print(f"WARNING: Sounddevice playback failed: {e}", flush=True)
+                            print(f" Sounddevice playback failed: {e}", flush=True)
                             # Continue to pygame fallback
 
                     # Fallback to pygame if sounddevice failed or file doesn't exist
-                    if not playback_successful and PYGAME_AVAILABLE and audio_file and os.path.exists(audio_file):
+                    if not playback_successful and PYGAME_AVAILABLE and os.path.exists(audio_file):
                         try:
-                            print("RETRY: Attempting pygame fallback...", flush=True)
+                            print(" Attempting pygame fallback...", flush=True)
                             await asyncio.to_thread(pygame.mixer.music.load, audio_file)
                             await asyncio.to_thread(pygame.mixer.music.play)
                             
@@ -3366,7 +2148,8 @@ async def speak_friendly(
 
 async def capture_and_transcribe(
     streaming_callback: Optional[Callable] = None,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, Any]] = None,
+    audio_source: Optional['FastRTCAudioSource'] = None
 ) -> Optional[str]:
     """
     Capture audio and transcribe with Gemini Live VAD (SINDH Pattern)
@@ -3376,6 +2159,7 @@ async def capture_and_transcribe(
         context: Optional conversation context dict with keys:
             - conversation_context: str (greeting, decision, complex_query, post_service, retry, initial)
             - attempt_count: int (number of retry attempts for dynamic timeout)
+        audio_source: Optional FastRTC audio source for browser input (None = use native microphone)
             
     Returns:
         Transcript string only (NO audio file) - matches SINDH/TARA pattern
@@ -3394,7 +2178,8 @@ async def capture_and_transcribe(
         # Capture speech with VAD (returns transcript only)
         transcript = await capture_leibniz_speech(
             streaming_callback=streaming_callback,
-            context=context
+            context=context,
+            audio_source=audio_source  # NEW: Pass through to VAD
         )
         
         if transcript:
@@ -3415,7 +2200,8 @@ async def capture_and_transcribe(
 
 async def transcribe_and_classify(
     streaming_callback: Optional[Callable] = None,
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[Dict[str, Any]] = None,
+    audio_source: Optional['FastRTCAudioSource'] = None
 ) -> Tuple[TranscriptMessage, IntentMessage]:
     """
     Capture, transcribe, and classify speech (SINDH/TARA Pattern)
@@ -3423,6 +2209,7 @@ async def transcribe_and_classify(
     Args:
         streaming_callback: Optional callback(fragment: str, is_final: bool) for real-time transcript display
         context: Optional conversation context dict for VAD (see capture_and_transcribe)
+        audio_source: Optional FastRTC audio source for browser input (None = use native microphone)
         
     Returns:
         Tuple of (TranscriptMessage, IntentMessage)
@@ -3441,7 +2228,8 @@ async def transcribe_and_classify(
         # Capture and transcribe (single call, returns transcript only - SINDH pattern)
         transcript = await capture_and_transcribe(
             streaming_callback=streaming_callback,
-            context=context
+            context=context,
+            audio_source=audio_source  # NEW: Pass through to capture function
         )
         
         if not transcript:
@@ -3470,7 +2258,7 @@ async def transcribe_and_classify(
         
         # STEP 1: Extract semantic context IMMEDIATELY (fast pattern-based, <5ms)
         # This runs BEFORE intent classification to provide enriched context
-        from leibniz_agent.leibniz_semantic_extractor import extract_semantic_context
+        from leibniz_semantic_extractor import extract_semantic_context
         
         context_gen_start = time.time()
         semantic_context = extract_semantic_context(transcript)
@@ -3564,7 +2352,7 @@ async def transcribe_and_classify(
         else:
             # Fallback: direct classification with Leibniz parser
             # STEP 1: Extract semantic context FIRST (fast, <5ms)
-            from leibniz_agent.leibniz_semantic_extractor import extract_semantic_context
+            from leibniz_semantic_extractor import extract_semantic_context
             
             context_gen_start = time.time()
             semantic_context = extract_semantic_context(transcript)
@@ -3667,14 +2455,14 @@ async def handle_continuous_user_speech(transcript: str):
         logger.debug(f" User (continuous): {transcript}")
         
         # CHECK IF AGENT IS CURRENTLY SPEAKING - prevent false barge-in during TTS playback
-        from leibniz_agent.leibniz_vad import get_leibniz_vad
+        from leibniz_vad import get_leibniz_vad
         vad = get_leibniz_vad()
         if vad and vad.is_agent_speaking:
             logger.debug(" Agent is speaking - ignoring continuous VAD detection during TTS playback")
             return  # Ignore speech detection while agent is speaking
         
         # Extract semantic context
-        from leibniz_agent.leibniz_semantic_extractor import extract_semantic_context
+        from leibniz_semantic_extractor import extract_semantic_context
         
         context_gen_start = time.time()
         semantic_context = extract_semantic_context(transcript)
@@ -3747,7 +2535,7 @@ async def handle_continuous_user_speech(transcript: str):
             _cancel_streaming.set()
             
             # Set barge-in flag for existing detection
-            from leibniz_agent.leibniz_vad import get_leibniz_vad
+            from .leibniz_vad import get_leibniz_vad
             vad = get_leibniz_vad()
             vad.barge_in_detected = True
         else:
@@ -4374,13 +3162,15 @@ async def handle_rag_query(
 # ============================================================================
 
 async def handle_appointment_booking(
-    initial_input: Optional[str] = None
+    initial_input: Optional[str] = None,
+    audio_sink: Optional[object] = None
 ) -> Optional[Dict[str, Any]]:
     """
     Handle appointment booking conversation flow
     
     Args:
         initial_input: Optional initial user input (e.g., "I want to schedule an appointment")
+        audio_sink: Optional audio sink adapter for routing TTS output
         
     Returns:
         Booking data dictionary if completed, None if cancelled
@@ -4406,7 +3196,7 @@ async def handle_appointment_booking(
             result = await fsm.process_input("")
         
         # Speak FSM response
-        await speak_friendly(result['response'], emotion="helpful")
+        await speak_friendly(result['response'], emotion="helpful", audio_sink=audio_sink)
         
         # Enter FSM loop
         while True:
@@ -4420,7 +3210,8 @@ async def handle_appointment_booking(
                 # Speak confirmation
                 await speak_friendly(
                     dialogue_key='appointment_confirm',
-                    emotion="excited"
+                    emotion="excited",
+                    audio_sink=audio_sink
                 )
                 
                 return booking_data
@@ -4445,7 +3236,8 @@ async def handle_appointment_booking(
                     # Not in confirmation state - ask user to retry
                     await speak_friendly(
                         dialogue_key='timeout',
-                        emotion="calm"
+                        emotion="calm",
+                        audio_sink=audio_sink
                     )
                     continue
             
@@ -4490,7 +3282,7 @@ async def handle_appointment_booking(
             result = await fsm.process_input(fsm_input)
             
             # Speak FSM response
-            await speak_friendly(result['response'], emotion="helpful")
+            await speak_friendly(result['response'], emotion="helpful", audio_sink=audio_sink)
         
     except Exception as e:
         logger.error(f"Appointment booking error: {e}", exc_info=True)
@@ -4498,7 +3290,8 @@ async def handle_appointment_booking(
         # Apologize and exit
         await speak_friendly(
             dialogue_key='errors.general',
-            emotion="calm"
+            emotion="calm",
+            audio_sink=audio_sink
         )
         
         return None
@@ -4506,7 +3299,7 @@ async def handle_appointment_booking(
         # FIX: Resume continuous VAD if it was running before appointment booking
         if continuous_vad_was_running:
             try:
-                logger.info(" Resuming continuous VAD after appointment booking")
+                logger.info("▶ Resuming continuous VAD after appointment booking")
                 await start_leibniz_continuous_listening()
             except Exception as e:
                 logger.error(f" Failed to resume continuous VAD: {e}")
@@ -4518,7 +3311,7 @@ async def handle_appointment_booking(
 # Greeting and Introduction
 # ============================================================================
 
-async def play_natural_intro():
+async def play_natural_intro(audio_sink: Optional[object] = None):
     """Play introduction audio or speak greeting"""
     # Check if intro audio enabled
     if os.getenv("LEIBNIZ_ENABLE_INTRO_AUDIO", "true").lower() == "true":
@@ -4556,7 +3349,8 @@ async def play_natural_intro():
                 print("\n AGENT SPEAKING...")
                 await speak_friendly(
                     text=greeting,
-                    emotion="helpful"
+                    emotion="helpful",
+                    audio_sink=audio_sink
                 )
                 print(" AGENT LISTENING...")
                 return
@@ -4577,7 +3371,8 @@ async def play_natural_intro():
     print("\n AGENT SPEAKING...")
     await speak_friendly(
         text=greeting,
-        emotion="helpful"
+        emotion="helpful",
+        audio_sink=audio_sink
     )
     print(" AGENT LISTENING...")
 
@@ -4587,18 +3382,15 @@ async def play_natural_intro():
 # ============================================================================
 
 async def initialize_leibniz_services():
-    """One-time startup initialization with robust error handling"""
+    """One-time startup initialization"""
     global services_manager, leibniz_config, _streaming_mode_logged
-
+    
     try:
         # Set event loop policy for Windows
         if sys.platform == "win32":
-            try:
-                asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-            except Exception as policy_error:
-                logger.warning(f"Failed to set Windows event loop policy: {policy_error}")
-
-        logger.info("Initializing Leibniz Pro services...")
+            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        
+        logger.info(" Initializing Leibniz Pro services...")
         print("=" * 70)
         print(" LEIBNIZ PRO - University Customer Service Agent")
         print(" Persistent Services | Gemini Live VAD | Dual Prewarm Strategy")
@@ -4720,7 +3512,8 @@ async def initialize_leibniz_services():
                 await speak_friendly(
                     text=test_message,
                     emotion="professional",
-                    enable_streaming=False  # Use non-streaming for immediate test
+                    enable_streaming=False,
+                    audio_sink=None  # No sink for startup test
                 )
                 logger.info(" Startup audio test passed")
                 print(" Audio playback test successful")
@@ -4805,7 +3598,7 @@ def is_exit_phrase(transcript: str) -> bool:
     return False
 
 
-async def run_conversation_session():
+async def run_conversation_session(audio_source=None, audio_sink=None):
     """
     Run a single conversation session with bidirectional conversation loop.
     
@@ -4814,6 +3607,10 @@ async def run_conversation_session():
     Includes VAD session health checks (reset after 3 consecutive timeouts) and automatic resets.
     Resets speculative coordinator between attempts to prevent stale executions.
     Adds inter-attempt pause (0.5s) for VAD stabilization.
+    
+    Args:
+        audio_source: Optional audio source adapter (e.g., FastRTCAudioSource) for input
+        audio_sink: Optional audio sink adapter (e.g., FastRTCAudioSink) for output
     
     Flow:
         1. Play natural intro
@@ -4839,7 +3636,7 @@ async def run_conversation_session():
         logger.info(f" Starting conversation session at {time.strftime('%H:%M:%S')}")
         
         # Natural introduction
-        await play_natural_intro()
+        await play_natural_intro(audio_sink=audio_sink)
         
         # Start continuous VAD after intro (only for this session)
         continuous_vad_enabled = os.getenv("LEIBNIZ_ENABLE_CONTINUOUS_VAD", "true").lower() == "true"
@@ -4967,7 +3764,7 @@ async def run_conversation_session():
                     timeout = timeout_map.get(current_context, 20.0)
                     
                     # Wait for user speech using helper (handles event internally)
-                    from leibniz_agent.leibniz_continuous_vad import wait_for_leibniz_speech
+                    from .leibniz_continuous_vad import wait_for_leibniz_speech
                     transcript = await wait_for_leibniz_speech(timeout=timeout)
                     
                     if transcript:
@@ -5031,10 +3828,12 @@ async def run_conversation_session():
                     # Log VAD listening state entry with context
                     logger.debug(f" Entering VAD listening state (context: {current_context}, attempt: {attempt})")
                     
-                    # Existing per-turn capture
+                    # Always call transcribe_and_classify with audio_source parameter
+                    # Both native and FastRTC modes use the same path, only differing by audio_source
                     transcript_msg, intent_msg = await transcribe_and_classify(
                         streaming_callback=display_streaming_transcript,
-                        context=vad_context
+                        context=vad_context,
+                        audio_source=audio_source  # Pass through to capture (None for native, adapter for FastRTC)
                     )
                 
                 # Continue with existing code - transcript and intent processing
@@ -5090,7 +3889,8 @@ async def run_conversation_session():
                         await reset_leibniz_conversation()
                         await speak_friendly(
                             dialogue_key='errors.general',
-                            emotion="professional"
+                            emotion="professional",
+                            audio_sink=audio_sink
                         )
                         break  # Exit conversation loop
                     
@@ -5107,7 +3907,8 @@ async def run_conversation_session():
                         print("\n AGENT SPEAKING...")
                         await speak_friendly(
                             dialogue_key='timeout',
-                            emotion="calm"
+                            emotion="calm",
+                            audio_sink=audio_sink
                         )
                         last_interaction_type = "fallback"
                         # No blocking sleep - VAD's configured timeout (20-30s) handles the waiting period
@@ -5117,7 +3918,8 @@ async def run_conversation_session():
                         print("\n AGENT SPEAKING...")
                         await speak_friendly(
                             dialogue_key='timeout',
-                            emotion="calm"
+                            emotion="calm",
+                            audio_sink=audio_sink
                         )
                         last_interaction_type = "fallback"
                         # No blocking sleep - VAD's configured timeout handles the waiting period
@@ -5127,7 +3929,8 @@ async def run_conversation_session():
                         print("\n AGENT SPEAKING...")
                         await speak_friendly(
                             dialogue_key='timeout',
-                            emotion="calm"
+                            emotion="calm",
+                            audio_sink=audio_sink
                         )
                         last_interaction_type = "fallback"
                         # No blocking sleep - VAD's configured timeout handles the waiting period
@@ -5150,7 +3953,8 @@ async def run_conversation_session():
                     print("\n AGENT SPEAKING...")
                     await speak_friendly(
                         dialogue_key='farewells.exit',
-                        emotion="calm"
+                        emotion="calm",
+                        audio_sink=audio_sink
                     )
                     conversation_active = False
                     break
@@ -5159,7 +3963,7 @@ async def run_conversation_session():
                 if intent == "APPOINTMENT_SCHEDULING":
                     logger.debug(" Routing to appointment booking FSM")
                     
-                    booking_data = await handle_appointment_booking(initial_input=transcript)
+                    booking_data = await handle_appointment_booking(initial_input=transcript, audio_sink=audio_sink)
                     
                     if booking_data:
                         logger.debug(f" Booking completed: {booking_data}")
@@ -5168,7 +3972,8 @@ async def run_conversation_session():
                         print("\n AGENT SPEAKING...")
                         await speak_friendly(
                             dialogue_key='prompts.continue',
-                            emotion="helpful"
+                            emotion="helpful",
+                            audio_sink=audio_sink
                         )
                     
                     last_interaction_type = "appointment"
@@ -5208,7 +4013,8 @@ async def run_conversation_session():
                         print("\n AGENT SPEAKING...")
                         await speak_friendly(
                             dialogue_key='errors.general',
-                            emotion="apologetic"
+                            emotion="apologetic",
+                            audio_sink=audio_sink
                         )
                         print(" AGENT LISTENING...")
                         last_interaction_type = "fallback"
@@ -5256,7 +4062,8 @@ async def run_conversation_session():
                     await speak_friendly(
                         text=clean_answer,
                         emotion="helpful",
-                        enable_streaming=False
+                        enable_streaming=False,
+                        audio_sink=audio_sink
                     )
                     print(" AGENT LISTENING...")
                     
@@ -5282,7 +4089,8 @@ async def run_conversation_session():
                     print("\n AGENT SPEAKING...")
                     await speak_friendly(
                         dialogue_key='greetings.intro',
-                        emotion="helpful"
+                        emotion="helpful",
+                        audio_sink=audio_sink
                     )
                     print(" AGENT LISTENING...")
                     last_interaction_type = "greeting"
@@ -5295,7 +4103,8 @@ async def run_conversation_session():
                     print("\n AGENT SPEAKING...")
                     await speak_friendly(
                         dialogue_key='farewells.exit',
-                        emotion="calm"
+                        emotion="calm",
+                        audio_sink=audio_sink
                     )
                     
                     conversation_active = False
@@ -5309,7 +4118,8 @@ async def run_conversation_session():
                     print("\n AGENT SPEAKING...")
                     await speak_friendly(
                         dialogue_key='prompts.clarify',
-                        emotion="helpful"
+                        emotion="helpful",
+                        audio_sink=audio_sink
                     )
                     print(" AGENT LISTENING...")
                     last_interaction_type = "fallback"
@@ -5331,7 +4141,8 @@ async def run_conversation_session():
                 print("\n AGENT SPEAKING...")
                 await speak_friendly(
                     dialogue_key='errors.general',
-                    emotion="calm"
+                    emotion="calm",
+                    audio_sink=audio_sink
                 )
                 print(" AGENT LISTENING...")
                 last_interaction_type = "fallback"
@@ -5462,59 +4273,7 @@ async def main():
         await initialize_leibniz_services()
         
         # FIX 5: Test microphone independently before starting sessions
-        print("\n" + "="*60)
-        print("MICROPHONE TEST - Please speak into your microphone")
-        print("="*60)
         await test_microphone()
-        
-        # Check audio playback system (sounddevice)
-        print("\n" + "="*60)
-        print("AUDIO PLAYBACK TEST - Checking TTS system")
-        print("="*60)
-        
-        audio_system_ok = False
-        if SOUNDDEVICE_AVAILABLE:
-            try:
-                import numpy as np
-                # Test sounddevice with a simple tone
-                print("  Testing sounddevice audio output...")
-                test_tone = np.sin(2 * np.pi * 440 * np.linspace(0, 0.2, int(24000 * 0.2))).astype(np.float32) * 0.3
-                await asyncio.to_thread(sd.play, test_tone, 24000, device=12)
-                await asyncio.to_thread(sd.wait)
-                print("   Sounddevice audio playback working!")
-                audio_system_ok = True
-            except Exception as e:
-                print(f"   Sounddevice test failed: {e}")
-                print("  TTS may not work properly. Consider checking audio drivers.")
-        else:
-            print("   Sounddevice not available")
-        
-        if PYGAME_AVAILABLE and not audio_system_ok:
-            try:
-                # Fallback: test pygame
-                print("  Testing pygame audio output (fallback)...")
-                # pygame test would go here if needed
-                print("   Pygame audio available as fallback")
-                audio_system_ok = True
-            except Exception as e:
-                print(f"   Pygame test failed: {e}")
-        
-        print("="*60)
-        
-        # Display warnings if systems aren't working
-        if not audio_system_ok:
-            print("\n" + ""*30)
-            print("  WARNING: Audio playback system issues detected!")
-            print("  TTS (Text-to-Speech) may not work properly.")
-            print("  You may only see text responses without audio.")
-            print(""*30 + "\n")
-        
-        # Wait for user confirmation before proceeding
-        print("\n Please verify all tests passed before continuing.")
-        if not audio_system_ok:
-            print(" Audio playback issues detected - proceed with caution!")
-        await asyncio.to_thread(input, "Press ENTER to continue (or Ctrl+C to exit)...")
-        print(" Tests confirmed. Proceeding...\n")
         
         # Check readiness
         if services_manager:

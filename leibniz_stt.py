@@ -26,7 +26,7 @@ Enhanced Features (v2):
 
 Usage Example - File Transcription:
     ```python
-    from leibniz_agent.leibniz_stt import leibniz_transcribe_file, validate_audio_file
+    from .leibniz_stt import leibniz_transcribe_file, validate_audio_file
     
     # Validate file first
     validation = validate_audio_file("audio.wav")
@@ -39,7 +39,7 @@ Usage Example - File Transcription:
 
 Usage Example - Streaming Capture:
     ```python
-    from leibniz_agent.leibniz_stt import leibniz_capture_audio
+    from .leibniz_stt import leibniz_capture_audio
     
     def callback(fragment, is_final):
         print(f"{'FINAL' if is_final else 'Fragment'}: {fragment}")
@@ -50,7 +50,7 @@ Usage Example - Streaming Capture:
 
 Usage Example - VAD-based Transcription:
     ```python
-    from leibniz_agent.leibniz_stt import transcribe_with_vad
+    from .leibniz_stt import transcribe_with_vad
     
     # Use VAD for better session management
     audio_file, transcript = await transcribe_with_vad(
@@ -60,7 +60,7 @@ Usage Example - VAD-based Transcription:
 
 Usage Example - Performance Monitoring:
     ```python
-    from leibniz_agent.leibniz_stt import get_stt_statistics, log_performance_summary
+    from .leibniz_stt import get_stt_statistics, log_performance_summary
     
     # Get statistics
     stats = get_stt_statistics()
@@ -135,7 +135,7 @@ from google import genai
 from google.genai import types
 
 # Import Leibniz config
-from leibniz_agent.leibniz_config import get_leibniz_config
+from .leibniz_config import get_leibniz_config
 
 # Load environment variables
 load_dotenv()
@@ -186,7 +186,7 @@ def _get_vad_function(func_name: str):
 
 # Import prewarm trigger from persistent services
 try:
-    from leibniz_persistent_services import trigger_prewarm_on_speech_detection
+    from .leibniz_persistent_services import trigger_prewarm_on_speech_detection
     _PREWARM_AVAILABLE = True
 except ImportError as e:
     logger.debug(f"Persistent services not available: {e}")
@@ -1324,6 +1324,217 @@ class LeibnizSTT:
                     await asyncio.to_thread(self.client.files.delete, uploaded_file.name)
                 except Exception as e:
                     print(f" Failed to delete uploaded file: {e}")
+
+    async def transcribe_audio_bytes(
+        self,
+        audio_bytes: bytes,
+        sample_rate: int,
+        language_code: str = "en-US",
+        validate_english: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Transcribe raw audio bytes using Gemini Live API.
+        
+        Args:
+            audio_bytes: Raw audio bytes (int16 PCM format expected)
+            sample_rate: Sample rate of the audio data in Hz
+            language_code: Language code (default: en-US)
+            validate_english: Validate English-only requirement
+            
+        Returns:
+            Dict with success flag, text, language_code, confidence, duration
+            
+        Raises:
+            ValueError: If non-English detected in strict mode
+            asyncio.TimeoutError: If transcription times out
+        """
+        # Track start time for metrics
+        start_time = time.time()
+        
+        temp_file_path = None
+        uploaded_file = None
+        
+        try:
+            # Convert bytes to numpy array
+            audio_data = np.frombuffer(audio_bytes, dtype=np.int16)
+            
+            # Calculate duration
+            duration = len(audio_data) / sample_rate
+            
+            # Check audio quality
+            quality_info = check_audio_quality(audio_data.astype(np.float32) / 32767.0, sample_rate)
+            if quality_info['warnings']:
+                for warning in quality_info['warnings']:
+                    logger.warning(f"Audio quality issue: {warning}")
+            
+            # Convert to required format (16-bit PCM, 16kHz, mono)
+            if sample_rate != self.config.sample_rate:
+                # Convert to float32 for resampling
+                audio_float = audio_data.astype(np.float32) / 32767.0
+                
+                # Resample if needed
+                converted_audio = convert_audio_format(
+                    audio_data=audio_float,
+                    source_rate=sample_rate,
+                    target_rate=self.config.sample_rate,
+                    target_channels=1
+                )
+                
+                # Convert back to int16
+                audio_data = (converted_audio * 32767).astype(np.int16)
+            
+            # Create temporary WAV file
+            temp_file = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+            temp_file_path = temp_file.name
+            temp_file.close()
+            
+            # Write WAV file
+            with wave.open(temp_file_path, 'wb') as wf:
+                wf.setnchannels(1)  # Mono
+                wf.setsampwidth(2)  # 16-bit
+                wf.setframerate(self.config.sample_rate)
+                wf.writeframes(audio_data.tobytes())
+            
+            # Retry logic with exponential backoff
+            last_error = None
+            for attempt in range(self.config.max_retries):
+                try:
+                    # Upload file using google.genai client methods
+                    print(f" Uploading audio bytes (attempt {attempt + 1}/{self.config.max_retries})...")
+                    uploaded_file = await asyncio.wait_for(
+                        asyncio.to_thread(self.client.files.upload, path=temp_file_path),
+                        timeout=15.0
+                    )
+                    
+                    # Create transcription prompt
+                    prompt = (
+                        "Transcribe this audio accurately in English. "
+                        "If no speech detected, return: NO_SPEECH. "
+                        "If non-English language detected, return: NON_ENGLISH_DETECTED."
+                    )
+                    
+                    # Call Gemini API with uploaded file
+                    print(" Transcribing audio with Gemini...")
+                    response = await asyncio.wait_for(
+                        asyncio.to_thread(
+                            self.client.models.generate_content,
+                            model=self.config.model_name,
+                            contents=[prompt, uploaded_file]
+                        ),
+                        timeout=self.config.file_transcription_timeout
+                    )
+                    
+                    # Extract raw transcript
+                    raw_text = response.text.strip()
+                    
+                    # Check for special responses BEFORE normalization
+                    raw_upper = raw_text.upper()
+                    if raw_upper == "NO_SPEECH":
+                        return {
+                            "success": True,
+                            "text": "",
+                            "language_code": language_code,
+                            "confidence": 0.0,
+                            "duration": duration
+                        }
+                    
+                    if raw_upper == "NON_ENGLISH_DETECTED" and validate_english:
+                        # Track non-English rejection
+                        self.non_english_rejections += 1
+                        raise ValueError("Non-English language detected in audio")
+                    
+                    # Apply English transcript normalization
+                    transcript = normalize_english_transcript(raw_text)
+                    
+                    # Validate English-only if required
+                    confidence = 1.0
+                    if validate_english and self.config.enable_language_detection:
+                        # Track language check
+                        self.english_checks += 1
+                        
+                        validation = await self.language_detector.validate_english_only(
+                            transcript,
+                            strict_mode=self.config.strict_english_mode
+                        )
+                        confidence = validation["confidence"]
+                        
+                        # Track confidence sum
+                        self.english_confidence_sum += confidence
+                    
+                    # Track successful transcription
+                    transcription_duration = time.time() - start_time
+                    self.total_captures += 1
+                    self.successful_captures += 1
+                    self.total_capture_time += transcription_duration
+                    
+                    print(f" Audio bytes transcription complete: {len(transcript)} characters ({transcription_duration:.2f}s)")
+                    
+                    return {
+                        "success": True,
+                        "text": transcript,
+                        "language_code": language_code,
+                        "confidence": confidence,
+                        "duration": duration
+                    }
+                
+                except asyncio.TimeoutError as e:
+                    last_error = e
+                    # Track failed attempt
+                    self.total_captures += 1
+                    self.failed_captures += 1
+                    print(f"⏱ Timeout on attempt {attempt + 1}")
+                    if attempt < self.config.max_retries - 1:
+                        delay = self.config.retry_delay_base * (2 ** attempt)
+                        await asyncio.sleep(delay)
+                    continue
+                
+                except Exception as e:
+                    last_error = e
+                    # Don't retry on non-transient errors
+                    if isinstance(e, ValueError):
+                        # Track failed attempt
+                        self.total_captures += 1
+                        self.failed_captures += 1
+                        raise
+                    # Track failed attempt
+                    self.total_captures += 1
+                    self.failed_captures += 1
+                    print(f" Error on attempt {attempt + 1}: {e}")
+                    if attempt < self.config.max_retries - 1:
+                        delay = self.config.retry_delay_base * (2 ** attempt)
+                        await asyncio.sleep(delay)
+                    continue
+            
+            # All retries exhausted
+            raise last_error or Exception("Transcription failed after all retries")
+        
+        except Exception as e:
+            # Track failed attempt
+            self.total_captures += 1
+            self.failed_captures += 1
+            return {
+                "success": False,
+                "text": "",
+                "language_code": language_code,
+                "confidence": 0.0,
+                "duration": 0.0,
+                "error": str(e)
+            }
+        
+        finally:
+            # Cleanup
+            if temp_file_path and os.path.exists(temp_file_path):
+                try:
+                    os.remove(temp_file_path)
+                except Exception as e:
+                    print(f" Failed to remove temp file: {e}")
+            
+            if uploaded_file:
+                try:
+                    # Delete using google.genai client methods
+                    await asyncio.to_thread(self.client.files.delete, uploaded_file.name)
+                except Exception as e:
+                    print(f" Failed to delete uploaded file: {e}")
     
     async def capture_audio(
         self,
@@ -1872,6 +2083,28 @@ async def leibniz_capture_audio(
     return await stt.capture_audio(streaming_callback)
 
 
+async def leibniz_transcribe_audio_bytes(
+    audio_bytes: bytes,
+    sample_rate: int,
+    language_code: str = "en-US",
+    validate_english: bool = True
+) -> Dict[str, Any]:
+    """
+    Convenience function for audio bytes transcription using global instance.
+    
+    Args:
+        audio_bytes: Raw audio bytes (int16 PCM format expected)
+        sample_rate: Sample rate of the audio data in Hz
+        language_code: Language code (default: en-US)
+        validate_english: Validate English-only requirement
+        
+    Returns:
+        Dict with success flag, text, language_code, confidence, duration
+    """
+    stt = get_leibniz_stt()
+    return await stt.transcribe_audio_bytes(audio_bytes, sample_rate, language_code, validate_english=validate_english)
+
+
 async def warmup_leibniz_stt(preconnect_s: float = 1.0, is_speculative: bool = False, warmup_vad: bool = True):
     """
     Pre-warm Gemini connection and optionally VAD session.
@@ -1936,7 +2169,7 @@ async def prewarm_during_tts(audio_duration: float):
     # Also prewarm RAG/intent services (fire-and-forget)
     async def prewarm_services():
         try:
-            from leibniz_persistent_services import get_leibniz_services_manager
+            from .leibniz_persistent_services import get_leibniz_services_manager
             services = await get_leibniz_services_manager()
             if services and hasattr(services, 'prewarm_rag'):
                 await services.prewarm_rag()

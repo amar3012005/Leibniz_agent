@@ -72,8 +72,8 @@ from datetime import datetime
 import sounddevice as sd
 import numpy as np
 
-from leibniz_agent.leibniz_stt import normalize_english_transcript
-from leibniz_agent.leibniz_persistent_services import trigger_prewarm_on_speech_detection
+from .leibniz_stt import normalize_english_transcript
+from .leibniz_persistent_services import trigger_prewarm_on_speech_detection
 
 logger = logging.getLogger(__name__)
 
@@ -340,7 +340,7 @@ class LeibnizSarvamSTTService:
 
                         if transcript:
                             # Check if agent is currently speaking (barge-in prevention)
-                            from leibniz_agent.leibniz_vad import get_leibniz_vad
+                            from .leibniz_vad import get_leibniz_vad
                             vad = get_leibniz_vad()
 
                             if vad.is_agent_speaking:
