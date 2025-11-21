@@ -23,11 +23,15 @@ elevenlabs>=0.2.26
 google-genai>=1.33.0
 
 # XTTS Local TTS (optional - LARGE ~2GB - for voice cloning)
-# Uncomment only if needed:
-# TTS>=0.22.0
-# torch>=2.1.0
-# torchaudio>=2.1.0
-# scipy>=1.11.0
+# For Linux CPU (recommended for most deployments):
+TTS>=0.22.0
+torch>=2.1.0+cpu --index-url https://download.pytorch.org/whl/cpu
+torchaudio>=2.1.0+cpu --index-url https://download.pytorch.org/whl/cpu
+scipy>=1.11.0
+
+# For Linux GPU (CUDA 11.8+):
+# torch>=2.1.0+cu118 --index-url https://download.pytorch.org/whl/cu118
+# torchaudio>=2.1.0+cu118 --index-url https://download.pytorch.org/whl/cu118
 
 # FastRTC Integration (for browser-based audio I/O)
 fastrtc[vad,stt,tts]>=0.1.0

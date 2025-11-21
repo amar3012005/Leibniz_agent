@@ -6,21 +6,91 @@ A friendly, casual English-only customer service agent for **Leibniz University 
 
 ## 🚀 Quick Start
 
-### Installation
+### Linux Installation
 
-```powershell
-# 1. Install dependencies (from SINDH-Orchestra-Complete directory)
+For Ubuntu/Debian Linux systems, use the automated installation script:
+
+```bash
+# Make script executable and run
+chmod +x install_linux.sh
+./install_linux.sh
+```
+
+This script will:
+- Update package lists and install system dependencies (ffmpeg, portaudio, etc.)
+- Create a Python virtual environment
+- Install Python dependencies with Linux-compatible versions
+- Set up audio permissions and create a desktop shortcut
+- Configure the system for optimal performance
+
+**Manual Linux Installation:**
+
+```bash
+# 1. Install system dependencies
+sudo apt update
+sudo apt install -y python3 python3-pip python3-venv ffmpeg portaudio19-dev python3-dev build-essential libsndfile1 libsndfile1-dev alsa-utils pulseaudio pulseaudio-utils
+
+# 2. Create virtual environment
+python3 -m venv leibniz_env
+source leibniz_env/bin/activate
+
+# 3. Install Python dependencies
+pip install --upgrade pip
 pip install -r requirements.txt
+pip install -r services/tts/requirements.txt
 
-# 2. Configure environment
-# Edit leibniz_agent/.env.leibniz with your API keys
+# 4. Set audio permissions (may require logout/login)
+sudo usermod -a -G audio $USER
+sudo usermod -a -G pulse-access $USER
 
-# 3. Run tests to verify setup
-python leibniz_agent/run_stt_test.py
-python leibniz_agent/run_tts_test.py
+# 5. Run the agent
+source leibniz_env/bin/activate
+python leibniz_fastrtc_server.py
+```
 
-# 4. Start the agent
-python -m leibniz_agent.leibniz_pro
+**Linux-Specific Configuration:**
+
+For optimal performance on Linux, update your `.env.leibniz` file:
+
+```bash
+# Use CPU versions for better compatibility
+# (torch CPU versions are installed by default on Linux)
+
+# Audio device settings (Linux uses PulseAudio/ALSA)
+AUDIO_INPUT_DEVICE=default
+AUDIO_OUTPUT_DEVICE=default
+
+# TTS device settings (prefer CPU for Linux deployments)
+XTTS_DEVICE=cpu
+
+# Performance optimizations for Linux
+LEIBNIZ_ENABLE_PREWARM=true
+LEIBNIZ_CACHE_ENABLED=true
+```
+
+**Troubleshooting Linux Audio:**
+
+- **Permission denied**: Run `sudo usermod -a -G audio,pulse-access $USER` and log out/in
+- **No audio devices**: Install `pavucontrol` and check PulseAudio settings
+- **Torch CUDA issues**: The installation script uses CPU versions by default
+- **PortAudio errors**: Ensure `portaudio19-dev` is installed
+
+### macOS Installation
+
+```bash
+# Install system dependencies
+brew install portaudio ffmpeg
+
+# Create virtual environment
+python3 -m venv leibniz_env
+source leibniz_env/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -r services/tts/requirements.txt
+
+# Run the agent
+python leibniz_fastrtc_server.py
 ```
 
 ### Essential Configuration (`.env.leibniz`)
