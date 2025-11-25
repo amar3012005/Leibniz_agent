@@ -51,6 +51,9 @@ class LeibnizFastRTCHandler:
         # Coordination event for signaling main loop when user finishes speaking
         self.user_finished_speaking = asyncio.Event()
 
+        # Event for signaling when user first starts speaking (mic pressed)
+        self.user_started_speaking = asyncio.Event()
+
         # For potential future use (transcript tracking, etc.)
         self.current_transcript = None
 
@@ -80,17 +83,20 @@ class LeibnizFastRTCHandler:
                 sample_rate, audio_array = audio
                 # Ensure mono audio by flattening
                 audio_flat = audio_array.flatten()
-                # Run async operation in sync context
-                import asyncio
-                asyncio.run(self.source.push_audio_from_fastrtc(audio_flat))
+                # Push audio directly to source (now synchronous)
+                self.source.push_audio_from_fastrtc(audio_flat)
                 logger.debug("Pushed browser audio to source buffer")
 
                 # Step 2: Signal main conversation loop to process
                 # The main loop will call capture_speech_bidirectional() with this source
                 self.user_finished_speaking.set()
+
+                # Signal that user has started speaking (for intro greeting)
+                self.user_started_speaking.set()
+
                 logger.debug("Signaled main loop to process audio")
             else:
-                logger.debug("No input audio provided, streaming response only")
+                logger.debug("No input audio provided - this may be initialization or response streaming")
 
             # Step 3: Wait for TTS response generation
             # The main loop will call sink.write_audio() when TTS completes

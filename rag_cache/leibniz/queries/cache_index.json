@@ -66,8 +66,40 @@
   "e7885e31d8636fb1e0bd41d9723ad3e9": {
     "key": "e7885e31d8636fb1e0bd41d9723ad3e9",
     "filename": "e7885e31d8636fb1e0bd41d9723ad3e9.entry",
-    "created_at": "2025-11-19T17:53:58.910752",
-    "last_accessed": "2025-11-19T17:53:58.910752",
+    "created_at": "2025-11-25T08:40:23.814961",
+    "last_accessed": "2025-11-25T09:33:59.632137",
+    "access_count": 1,
+    "ttl_seconds": 3600
+  },
+  "dccba7fb92521436b844ba149ad009a0": {
+    "key": "dccba7fb92521436b844ba149ad009a0",
+    "filename": "dccba7fb92521436b844ba149ad009a0.entry",
+    "created_at": "2025-11-25T09:34:47.668726",
+    "last_accessed": "2025-11-25T09:34:47.668726",
+    "access_count": 0,
+    "ttl_seconds": 3600
+  },
+  "5648fff5c63ded74fdea9f4237c66280": {
+    "key": "5648fff5c63ded74fdea9f4237c66280",
+    "filename": "5648fff5c63ded74fdea9f4237c66280.entry",
+    "created_at": "2025-11-25T09:34:47.669730",
+    "last_accessed": "2025-11-25T09:34:47.669730",
+    "access_count": 0,
+    "ttl_seconds": 3600
+  },
+  "538551559d4e465e3cdeeb077dded73b": {
+    "key": "538551559d4e465e3cdeeb077dded73b",
+    "filename": "538551559d4e465e3cdeeb077dded73b.entry",
+    "created_at": "2025-11-25T09:35:22.596906",
+    "last_accessed": "2025-11-25T09:35:22.596906",
+    "access_count": 0,
+    "ttl_seconds": 3600
+  },
+  "eec587407b5f684169055dc60b9b0eba": {
+    "key": "eec587407b5f684169055dc60b9b0eba",
+    "filename": "eec587407b5f684169055dc60b9b0eba.entry",
+    "created_at": "2025-11-25T09:35:22.600428",
+    "last_accessed": "2025-11-25T09:35:22.600428",
     "access_count": 0,
     "ttl_seconds": 3600
   }

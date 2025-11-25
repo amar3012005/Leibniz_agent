@@ -62,14 +62,18 @@ import numpy as np
 from google.genai import types
 import queue
 
-from .leibniz_vad import (
+from leibniz_vad import (
     get_leibniz_vad,
     LeibnizBidirectionalVAD,
     LeibnizPersistentSession,
     TranscriptBuffer
 )
-from .leibniz_stt import normalize_english_transcript
-from .leibniz_persistent_services import trigger_prewarm_on_speech_detection
+from leibniz_stt import normalize_english_transcript
+try:
+    from leibniz_persistent_services import trigger_prewarm_on_speech_detection
+except ImportError:  # Optional dependency for standalone VAD tests
+    async def trigger_prewarm_on_speech_detection(*args, **kwargs):
+        return False
 
 logger = logging.getLogger(__name__)
 
@@ -303,6 +307,7 @@ class LeibnizContinuousVAD:
                         
                         # Python 3.10 compatible timeout for async for loop
                         async def _receive_with_timeout():
+                            nonlocal first_speech_detected
                             async for response in self.session.receive():
                                 # Update activity time on any response
                                 self.last_activity_time = time.time()

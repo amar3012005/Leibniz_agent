@@ -63,7 +63,7 @@ Key Differences from TARA:
 - Friendly casual tone (not formal academic)
 
 Usage:
-    from .leibniz_pro import main
+    # from .leibniz_pro import main
     
     # Run agent
     asyncio.run(main())
@@ -78,6 +78,8 @@ import sys
 import asyncio
 import logging
 import time
+import io
+import numpy as np
 import re  # FIX: Add missing re import for sentence splitting
 import soundfile as sf  # For audio duration detection (smart warmup)
 import hashlib  # For deduplication hash set (Comment 7)
@@ -211,32 +213,93 @@ except ImportError as e:
     RAGPerformanceMetrics = None
     get_fallback_manager = None
 
-# Import Leibniz components
+# Import Leibniz components individually to avoid cascading failures
 try:
     from leibniz_config import get_leibniz_config, SEMANTIC_CONTEXT_DEBUG
+except Exception as e:
+    logger.warning(f"Leibniz config import failed: {e}")
+    get_leibniz_config = None
+    SEMANTIC_CONTEXT_DEBUG = None
+
+try:
     from leibniz_messages import (
         TranscriptMessage, IntentMessage, RAGMessage, TTSMessage
     )
+except Exception as e:
+    logger.warning(f"Leibniz messages import failed: {e}")
+    TranscriptMessage = None
+    IntentMessage = None
+    RAGMessage = None
+    TTSMessage = None
+
+try:
     from leibniz_stt import get_leibniz_stt
+except Exception as e:
+    logger.warning(f"Leibniz STT import failed: {e}")
+    get_leibniz_stt = None
+
+try:
     from leibniz_tts import get_leibniz_tts
+except Exception as e:
+    logger.warning(f"Leibniz TTS import failed: {e}")
+    get_leibniz_tts = None
+
+try:
     # Use Leibniz's native intent parser with Gemini 2.0 (NOT TARA's fast router!)
     from leibniz_intent_parser import get_leibniz_parser
+except Exception as e:
+    logger.warning(f"Leibniz intent parser import failed: {e}")
+    get_leibniz_parser = None
+
+try:
     from leibniz_rag import get_leibniz_rag
+except Exception as e:
+    logger.warning(f"Leibniz RAG import failed: {e}")
+    get_leibniz_rag = None
+
+try:
     from leibniz_appointment_fsm import (
         create_appointment_fsm,
         format_appointment_for_submission,
         AppointmentState
     )
+except Exception as e:
+    logger.warning(f"Leibniz appointment FSM import failed: {e}")
+    create_appointment_fsm = None
+    format_appointment_for_submission = None
+    AppointmentState = None
+
+try:
     from leibniz_persistent_services import (
         get_leibniz_services_manager,
         get_leibniz_service_status,
         prewarm_leibniz_during_tts  # Comment 3 - import real prewarm function
     )
+except Exception as e:
+    import traceback
+    logger.warning(f"Leibniz persistent services import failed: {e}")
+    traceback.print_exc()  # Print full stack trace for debugging
+    get_leibniz_services_manager = None
+    get_leibniz_service_status = None
+    prewarm_leibniz_during_tts = None
+
+try:
     from leibniz_stt import normalize_english_transcript
+except Exception as e:
+    logger.warning(f"Leibniz STT normalize import failed: {e}")
+    normalize_english_transcript = None
+
+try:
     from leibniz_semantic_translator import (
         generate_semantic_context_for_fsm,
         get_semantic_translator
     )
+except Exception as e:
+    logger.warning(f"Leibniz semantic translator import failed: {e}")
+    generate_semantic_context_for_fsm = None
+    get_semantic_translator = None
+
+try:
     from leibniz_vad import (
         get_leibniz_vad,
         capture_leibniz_speech,
@@ -247,35 +310,8 @@ try:
         clear_leibniz_barge_in,  # Comment 2
         smart_warmup_leibniz_vad  # NEW: Smart warmup for TTS pre-warming
     )
-    # NEW: Continuous background VAD for barge-in support
-    from leibniz_continuous_vad import (
-        get_continuous_vad,
-        start_leibniz_continuous_listening,
-        stop_leibniz_continuous_listening,
-        wait_for_leibniz_speech
-    )
-    from leibniz_dialogue_manager import get_leibniz_dialogue_manager
-except ImportError as e:
-    logger.warning(f"Leibniz components imports failed: {e}")
-    # Set all Leibniz functions to None for graceful degradation
-    get_leibniz_config = None
-    SEMANTIC_CONTEXT_DEBUG = None
-    TranscriptMessage = None
-    IntentMessage = None
-    TTSMessage = None
-    get_leibniz_stt = None
-    get_leibniz_tts = None
-    get_leibniz_parser = None
-    get_leibniz_rag = None
-    create_appointment_fsm = None
-    format_appointment_for_submission = None
-    AppointmentState = None
-    get_leibniz_services_manager = None
-    get_leibniz_service_status = None
-    prewarm_leibniz_during_tts = None
-    normalize_english_transcript = None
-    generate_semantic_context_for_fsm = None
-    get_semantic_translator = None
+except Exception as e:
+    logger.warning(f"Leibniz VAD import failed: {e}")
     get_leibniz_vad = None
     capture_leibniz_speech = None
     set_leibniz_agent_speaking = None
@@ -284,10 +320,26 @@ except ImportError as e:
     check_leibniz_barge_in = None
     clear_leibniz_barge_in = None
     smart_warmup_leibniz_vad = None
+
+try:
+    # NEW: Continuous background VAD for barge-in support
+    from leibniz_continuous_vad import (
+        get_continuous_vad,
+        start_leibniz_continuous_listening,
+        stop_leibniz_continuous_listening,
+        wait_for_leibniz_speech
+    )
+except Exception as e:
+    logger.warning(f"Leibniz continuous VAD import failed: {e}")
     get_continuous_vad = None
     start_leibniz_continuous_listening = None
     stop_leibniz_continuous_listening = None
     wait_for_leibniz_speech = None
+
+try:
+    from leibniz_dialogue_manager import get_leibniz_dialogue_manager
+except Exception as e:
+    logger.warning(f"Leibniz dialogue manager import failed: {e}")
     get_leibniz_dialogue_manager = None
 
 # ============================================================================
@@ -683,6 +735,32 @@ def stop_background_audio():
 # Global queue for sentence-level streaming from RAG to TTS (bounded for backpressure)
 _tts_streaming_queue = asyncio.Queue(maxsize=15)  # Bounded queue to prevent memory bloat
 _streaming_active = False
+_current_audio_sink = None  # Global reference for barge-in
+_last_sentence_time = 0  # Timestamp of last sentence playback start (for echo cancellation)
+
+# Robust State Tracking for VAD Locking
+_agent_speech_end_time = 0.0  # Predicted timestamp when agent speech will finish in browser
+_agent_speaking_lock = asyncio.Lock()  # Thread-safety for time updates
+
+def update_agent_speech_end_time(new_end_time: float):
+    """
+    Update the predicted time when agent speech will finish playing in the browser.
+    This is used to lock the VAD and prevent self-hearing (echo loops).
+    
+    Args:
+        new_end_time: Unix timestamp when playback is expected to finish
+    """
+    global _agent_speech_end_time
+    # Only extend the time, never reduce it (unless resetting)
+    if new_end_time > _agent_speech_end_time:
+        _agent_speech_end_time = new_end_time
+        # Diagnostic log for high-precision timing
+        # logger.debug(f"🔒 VAD Lock extended to: {new_end_time:.3f} (delta: {new_end_time - time.time():.3f}s)")
+
+def get_agent_speech_end_time() -> float:
+    """Get the current predicted speech end time."""
+    return _agent_speech_end_time
+
 _tts_consumer_task: Optional[asyncio.Task] = None  # Shared consumer task handle
 _cancel_streaming = asyncio.Event()  # Cancellation signal for barge-in
 _sentence_buffer = []  # Global sentence buffer for progressive streaming
@@ -967,11 +1045,14 @@ async def stream_rag_to_tts(rag_response: str, pace: float = 1.0, is_final: bool
                 logger.error(f" Failed to send error sentinel: {queue_err}")
 
 
-async def start_tts_consumer() -> asyncio.Task:
+async def start_tts_consumer(audio_sink: Optional[object] = None) -> asyncio.Task:
     """
     Start TTS consumer task (idempotent).
     Returns shared task handle, creates new one only if absent/done.
     Comment 4 & 7: Reset all streaming state at stream start.
+    
+    Args:
+        audio_sink: Optional audio sink adapter (e.g., FastRTCAudioSink) for routing audio output.
     """
     global _tts_consumer_task, _sentinel_sent, _sentence_buffer, _first_enqueue_at, _cancel_streaming, _streaming_active
     
@@ -982,8 +1063,8 @@ async def start_tts_consumer() -> asyncio.Task:
         _first_enqueue_at = None
         _cancel_streaming.clear()
         
-        # Create consumer task
-        _tts_consumer_task = asyncio.create_task(consume_tts_streaming_queue())
+        # Create consumer task with audio_sink parameter
+        _tts_consumer_task = asyncio.create_task(consume_tts_streaming_queue(audio_sink=audio_sink))
         
         # CRITICAL FIX: Remove premature _streaming_active = True
         # Let the consumer set this when it actually starts running (line 912)
@@ -992,7 +1073,7 @@ async def start_tts_consumer() -> asyncio.Task:
     return _tts_consumer_task
 
 
-async def speak_streaming(text: str, pace: float = 1.0) -> None:
+async def speak_streaming(text: str, pace: float = 1.0, audio_sink: Optional[object] = None) -> None:
     """
     Helper to stream text to TTS with sentence-level playback (Comment 4).
     Factored out to eliminate duplicate blocks across cache/speculative/persistent paths.
@@ -1000,9 +1081,10 @@ async def speak_streaming(text: str, pace: float = 1.0) -> None:
     Args:
         text: Text to speak
         pace: Speech pace (1.0 = normal)
+        audio_sink: Optional audio sink adapter (e.g., FastRTCAudioSink) for routing audio output.
     """
     # PHASE 3 CHANGE 3.1: Use shared consumer task instead of creating duplicate
-    consumer_task = await start_tts_consumer()
+    consumer_task = await start_tts_consumer(audio_sink=audio_sink)
     
     # Stream text to TTS queue sentence-by-sentence
     await stream_rag_to_tts(text, pace=pace, is_final=True)
@@ -1099,7 +1181,7 @@ async def finalize_tts_streaming():
         _first_enqueue_at = None  # Comment 7: Reset for next stream
 
 
-async def consume_tts_streaming_queue() -> bool:
+async def consume_tts_streaming_queue(audio_sink: Optional[object] = None) -> bool:
     """
     Consumer: Read sentences from queue and speak them with barge-in support.
     Runs in parallel with RAG generation for perceived latency reduction.
@@ -1111,10 +1193,14 @@ async def consume_tts_streaming_queue() -> bool:
     - Synthesize N+1 while playing N without blocking
     - Never await synthesis before starting playback
     
+    Args:
+        audio_sink: Optional audio sink adapter (e.g., FastRTCAudioSink) for routing audio output.
+                   If provided, routes audio to sink instead of local playback.
+    
     Returns:
         bool: True if all sentences played successfully, False if any failed
     """
-    global _streaming_active, _sentinel_sent, _sentinels_received_count
+    global _streaming_active, _sentinel_sent, _sentinels_received_count, _last_sentence_time
     
     # Prevent multiple concurrent consumers
     if _streaming_active:
@@ -1166,7 +1252,7 @@ async def consume_tts_streaming_queue() -> bool:
             try:
                 # Check existing barge-in flag (set by VAD during capture or continuous listener)
                 if check_leibniz_barge_in():
-                    logger.info(" User started speaking (barge-in), stopping TTS queue")
+                    logger.debug(" User started speaking (barge-in), stopping TTS queue")
                     # Comment 8: Don't push sentinel, just drain
                     await clear_tts_queue()
                     break
@@ -1374,7 +1460,50 @@ async def consume_tts_streaming_queue() -> bool:
                         audio_path = result.audio_path
                         duration_ms = result.duration_ms if hasattr(result, 'duration_ms') else 0.0
                 
-                if audio_path and PYGAME_AVAILABLE:
+                # FASTRTC MODE: Route to audio sink if provided
+                if audio_sink is not None:
+                    try:
+                        # Set agent speaking state
+                        if not agent_speaking_set:
+                            await set_leibniz_agent_speaking(True, "FastRTC TTS streaming - First Sentence")
+                            agent_speaking_set = True
+                        
+                        # Load audio data
+                        if result:
+                            if isinstance(result, dict):
+                                audio_bytes = result.get('audio_bytes')
+                                sample_rate = result.get('sample_rate', 24000)
+                                
+                                if audio_bytes:
+                                    # Convert bytes to float32 array
+                                    audio_data = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32) / 32767.0
+                                elif audio_path and os.path.exists(audio_path):
+                                    import soundfile as sf
+                                    audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_path)
+                                    audio_data = audio_data.astype(np.float32)
+                                else:
+                                    logger.error(f"No audio data available for FastRTC sink")
+                                    sentences_failed += 1
+                                    continue
+                                
+                                # Route to FastRTC sink
+                                _last_sentence_time = time.time()
+                                await audio_sink.write_audio(audio_data, sample_rate)
+                                sentences_played += 1
+                                logger.debug(f"✅ Routed {len(audio_data)} samples to FastRTC sink")
+                            else:
+                                logger.error(f"Unexpected result format for FastRTC sink")
+                                sentences_failed += 1
+                        else:
+                            sentences_failed += 1
+                    except Exception as sink_error:
+                        logger.error(f"FastRTC sink error: {sink_error}")
+                        import traceback
+                        logger.error(traceback.format_exc())
+                        sentences_failed += 1
+                
+                elif audio_path and PYGAME_AVAILABLE:
+                    # LOCAL PLAYBACK MODE: Use pygame/sounddevice
                     # DIAGNOSTIC: Log TTS playback guard conditions
                     logger.debug(f" TTS Playback Guard Check (streaming):")
                     logger.debug(f"   PYGAME_AVAILABLE = {PYGAME_AVAILABLE}")
@@ -1423,10 +1552,11 @@ async def consume_tts_streaming_queue() -> bool:
                         # Comment 10: Use sounddevice with device=12 for consistent audio playback
                         # Load audio data with soundfile and play with sounddevice
                         audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_path)
-                        await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
-                        await asyncio.to_thread(sd.wait)  # Wait for playback to complete
+                        _last_sentence_time = time.time()
+                        # await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
+                        # await asyncio.to_thread(sd.wait)  # Wait for playback to complete
                         
-                        logger.debug(" TTS streaming playback completed with sounddevice")
+                        logger.debug(" TTS streaming playback completed with sounddevice (fastrtc mode)")
                     
                     finally:
                         # Comment 6 FIX: Always set playing_now=False after unload (even on error)
@@ -1447,10 +1577,10 @@ async def consume_tts_streaming_queue() -> bool:
                     audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_path)
                     
                     # Play with sounddevice (blocking call in thread)
-                    await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
-                    await asyncio.to_thread(sd.wait)  # Wait for playback to complete
+                    # await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
+                    # await asyncio.to_thread(sd.wait)  # Wait for playback to complete
                     
-                    logger.info(" Sounddevice fallback playback successful")
+                    logger.info(" Sounddevice fallback playback successful (fastrtc mode)")
                     
                 except Exception as sd_error:
                     logger.error(f" Sounddevice fallback also failed: {sd_error}")
@@ -1478,8 +1608,8 @@ async def consume_tts_streaming_queue() -> bool:
             await vad.set_agent_speaking_state(False, context="TTS consumer finished")
         
         # Log playback summary
-        logger.info(f" TTS Streaming Complete: {sentences_queued} queued, {sentences_played} played, {sentences_failed} failed")
-        logger.info(" TTS consumer finished - Ready for next conversation turn")
+        logger.debug(f" TTS Streaming Complete: {sentences_queued} queued, {sentences_played} played, {sentences_failed} failed")
+        logger.debug(" TTS consumer finished - Ready for next conversation turn")
         
         # Drain remaining queue items and staging buffer
         while not _tts_streaming_queue.empty():
@@ -1668,8 +1798,8 @@ async def speak_friendly(
     audio_sink: Optional[object] = None
 ) -> TTSMessage:
     """
-    Speak text with friendly casual tone
-    
+    Speak text with friendly casual tone - ULTRA LOW LATENCY
+
     Args:
         text: Text to speak
         emotion: Emotion for voice modulation (helpful, excited, calm)
@@ -1679,10 +1809,11 @@ async def speak_friendly(
         session_id: Optional session identifier for dialogue archiving
         turn_number: Optional turn number for dialogue archiving
         audio_sink: Optional audio sink adapter (e.g., FastRTCAudioSink) for routing audio output
-        
+
     Returns:
         TTSMessage with synthesis results or None if TTS unavailable
     """
+    global _last_sentence_time
     try:
         # Comment 5: Wrap get_leibniz_tts() in try/except for graceful degradation
         try:
@@ -1840,7 +1971,7 @@ async def speak_friendly(
                             total_duration += duration
                             
                             # Comment 6: Offload pygame operations to thread
-                            if PYGAME_AVAILABLE and os.path.exists(audio_file):
+                            if PYGAME_AVAILABLE and audio_file and os.path.exists(audio_file):
                                 # Comment 2: Duck background audio during TTS playback
                                 original_bg_volume = None
                                 try:
@@ -1872,6 +2003,7 @@ async def speak_friendly(
                                     if not load_success:
                                         raise RuntimeError(f"Failed to load audio file after 3 attempts: {audio_file}")
                                     
+                                    _last_sentence_time = time.time()
                                     await asyncio.to_thread(pygame.mixer.music.play)
                                     
                                     # Wait for playback to complete with barge-in polling
@@ -1938,11 +2070,13 @@ async def speak_friendly(
                 )
             else:
                 # File-based TTS
+                print(f"▶ Requesting TTS synthesis for: {text[:30]}...", flush=True)
                 result = await tts.synthesize_to_file(
                     text=text,
                     emotion=emotion,
                     cache_name=cache_name
                 )
+                print("▶ TTS synthesis completed", flush=True)
                 
                 if result and result.get("success"):
                     # Handle both file-based and raw bytes results
@@ -1968,10 +2102,11 @@ async def speak_friendly(
                             
                             # Load audio data for sink
                             if audio_bytes:
-                                # Use raw bytes if available
-                                import numpy as np
-                                audio_data = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32) / 32767.0
-                            elif os.path.exists(audio_file):
+                                # Use raw bytes if available (decode MP3/WAV to PCM)
+                                import soundfile as sf
+                                audio_data, _ = sf.read(io.BytesIO(audio_bytes))
+                                audio_data = audio_data.astype(np.float32)
+                            elif audio_file and os.path.exists(audio_file):
                                 # Load from file
                                 import soundfile as sf
                                 audio_data, file_sample_rate = await asyncio.to_thread(sf.read, audio_file)
@@ -1980,6 +2115,7 @@ async def speak_friendly(
                                 raise ValueError("No audio data available for sink")
                             
                             # Send to audio sink
+                            _last_sentence_time = time.time()
                             await audio_sink.write_audio(audio_data, sample_rate)
                             
                             logger.info(" TTS audio routed to FastRTC sink")
@@ -1996,11 +2132,13 @@ async def speak_friendly(
                         # Play raw audio bytes directly
                         try:
                             print("▶ TTS playback starting (sounddevice device 12 - raw bytes)...", flush=True)
-                            # Convert bytes to numpy array (assuming int16 PCM)
-                            import numpy as np
-                            audio_data = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32) / 32767.0
+                            # Convert bytes to numpy array (using soundfile for decoding)
+                            import soundfile as sf
+                            audio_data, _ = sf.read(io.BytesIO(audio_bytes))
+                            audio_data = audio_data.astype(np.float32)
                             
                             # Play with sounddevice on device 12 (Realtek primary)
+                            _last_sentence_time = time.time()
                             await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
                             await asyncio.to_thread(sd.wait)  # Wait for playback to complete
 
@@ -2013,13 +2151,14 @@ async def speak_friendly(
                             print(f" Sounddevice raw bytes playback failed: {e}", flush=True)
                             # Continue to file-based fallback
 
-                    if not playback_successful and os.path.exists(audio_file) and SOUNDDEVICE_AVAILABLE:
+                    if not playback_successful and audio_file and os.path.exists(audio_file) and SOUNDDEVICE_AVAILABLE:
                         try:
                             print("▶ TTS playback starting (sounddevice device 12)...", flush=True)
                             # Load audio data with soundfile
                             audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_file)
 
                             # Play with sounddevice on device 12 (Realtek primary)
+                            _last_sentence_time = time.time()
                             await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
                             await asyncio.to_thread(sd.wait)  # Wait for playback to complete
 
@@ -2033,10 +2172,11 @@ async def speak_friendly(
                             # Continue to pygame fallback
 
                     # Fallback to pygame if sounddevice failed or file doesn't exist
-                    if not playback_successful and PYGAME_AVAILABLE and os.path.exists(audio_file):
+                    if not playback_successful and PYGAME_AVAILABLE and audio_file and os.path.exists(audio_file):
                         try:
                             print(" Attempting pygame fallback...", flush=True)
                             await asyncio.to_thread(pygame.mixer.music.load, audio_file)
+                            _last_sentence_time = time.time()
                             await asyncio.to_thread(pygame.mixer.music.play)
                             
                             # IMMEDIATE WARMUP: Start VAD warmup right when agent starts speaking
@@ -2449,7 +2589,7 @@ async def handle_continuous_user_speech(transcript: str):
     Args:
         transcript: User speech transcript from continuous VAD
     """
-    global _current_user_transcript, _current_user_intent, _user_speech_ready
+    global _current_user_transcript, _current_user_intent, _user_speech_ready, _current_audio_sink, _last_sentence_time, _last_sentence_time
     
     try:
         logger.debug(f" User (continuous): {transcript}")
@@ -2457,6 +2597,12 @@ async def handle_continuous_user_speech(transcript: str):
         # CHECK IF AGENT IS CURRENTLY SPEAKING - prevent false barge-in during TTS playback
         from leibniz_vad import get_leibniz_vad
         vad = get_leibniz_vad()
+        
+        # ECHO CANCELLATION: Debounce barge-in immediately after TTS start
+        if _streaming_active and (time.time() - _last_sentence_time < 0.8):
+            logger.debug(" Ignoring speech detected immediately after TTS start (likely echo/feedback)")
+            return
+
         if vad and vad.is_agent_speaking:
             logger.debug(" Agent is speaking - ignoring continuous VAD detection during TTS playback")
             return  # Ignore speech detection while agent is speaking
@@ -2529,13 +2675,27 @@ async def handle_continuous_user_speech(transcript: str):
         # Note: _streaming_active and _cancel_streaming are module-level globals
         
         if _streaming_active:
+            # Echo cancellation: Extended window for robust prevention
+            time_since_tts = time.time() - _last_sentence_time
+            if time_since_tts < 3.0:  # 3000ms debounce (extended for safety)
+                logger.debug(f" Ignoring speech detected {time_since_tts:.1f}s after TTS start (echo prevention)")
+                return
+
             logger.debug(" BARGE-IN: User spoke during TTS playback - stopping agent")
             
             # Set cancel streaming event
             _cancel_streaming.set()
             
+            # Clear audio sink immediately (Seamless Barge-In)
+            if _current_audio_sink and hasattr(_current_audio_sink, 'clear'):
+                try:
+                    _current_audio_sink.clear()
+                    logger.info("🧹 Audio sink cleared for barge-in")
+                except Exception as e:
+                    logger.error(f"Failed to clear audio sink: {e}")
+            
             # Set barge-in flag for existing detection
-            from .leibniz_vad import get_leibniz_vad
+            from leibniz_vad import get_leibniz_vad
             vad = get_leibniz_vad()
             vad.barge_in_detected = True
         else:
@@ -2699,7 +2859,8 @@ async def handle_rag_query(
     enable_streaming: bool = True,
     user_id: str = "anonymous",
     streaming_callback=None,
-    extra_data: dict = None
+    extra_data: dict = None,
+    audio_sink: Optional[object] = None
 ) -> RAGMessage:
     """
     Comprehensive RAG query handler with TARA pattern (cache, speculative, adaptive timeout, fallbacks).
@@ -2749,7 +2910,7 @@ async def handle_rag_query(
         # PHASE 3 CHANGE 3.1: Use shared consumer task instead of creating duplicate
         consumer_task = None
         if enable_streaming:
-            consumer_task = await start_tts_consumer()
+            consumer_task = await start_tts_consumer(audio_sink=audio_sink)
             logger.debug(" TTS consumer task started for progressive playback")
         
         # === 1. Context Extraction ===
@@ -2802,8 +2963,18 @@ async def handle_rag_query(
         try:
             # === 2. Cache Check (1-5ms) ===
             cache_check_start = time.time()
-            cache_mgr = get_rag_cache_manager()
-            cached_response = cache_mgr.get_query_response(text, language='english')
+            
+            cache_mgr = None
+            cached_response = None
+            
+            if get_rag_cache_manager and callable(get_rag_cache_manager):
+                try:
+                    cache_mgr = get_rag_cache_manager()
+                    if cache_mgr:
+                        cached_response = cache_mgr.get_query_response(text, language='english')
+                except Exception as e:
+                    logger.warning(f"RAG cache manager error: {e}")
+            
             cache_check_time = (time.time() - cache_check_start) * 1000  # ms
             
             if cached_response:
@@ -2943,8 +3114,28 @@ async def handle_rag_query(
             else:
                 adaptive_timeout = base_timeout
             
-            # Get persistent services (singleton, fast)
+            # Get persistent services (singleton, fast) - with null check
+            if get_leibniz_services_manager is None or not callable(get_leibniz_services_manager):
+                logger.warning("RAG services manager not available - returning fallback response")
+                return RAGMessage(
+                    answer="I'm sorry, I'm having some technical difficulties. Please try again or ask about something else.",
+                    sources=[],
+                    confidence=0.3,
+                    processing_time_ms=0.0,
+                    timing_breakdown={'method': 'fallback_no_services', 'error': 'services_manager_unavailable'}
+                )
+            
             services = await get_leibniz_services_manager()
+            
+            if services is None or not hasattr(services, 'rag_system'):
+                logger.warning("RAG system not available in services manager - returning fallback response")
+                return RAGMessage(
+                    answer="I'm sorry, I'm having some technical difficulties. Please try again or ask about something else.",
+                    sources=[],
+                    confidence=0.3,
+                    processing_time_ms=0.0,
+                    timing_breakdown={'method': 'fallback_no_rag', 'error': 'rag_system_unavailable'}
+                )
             
             # Comment 1.3: Start RAG call immediately - no formatting before this point
             rag_start = time.time()
@@ -3361,11 +3552,11 @@ async def play_natural_intro(audio_sink: Optional[object] = None):
         except Exception as e:
             logger.warning(f"Failed to read intro greeting file: {e}")
             # Fallback to dialogue manager
-            greeting = get_dialogue_text('greeting', "Hello! I'm TARA, the receptionist at Leibniz University. Welcome! How may I assist you today?")
+            greeting = get_dialogue_text('greeting', "Hello! I'm Tara , receptionist at Leibniz University. Welcome! How may I assist you today?")
     else:
         logger.warning(f"Intro greeting file not found: {intro_file}")
         # Fallback to dialogue manager
-        greeting = get_dialogue_text('greeting', "Hello! I'm TARA, the receptionist at Leibniz University. Welcome! How may I assist you today?")
+        greeting = get_dialogue_text('greeting', "Hello! I'm Tara , receptionist at Leibniz University. Welcome! How may I assist you today?")
     
     # Fallback: Speak greeting from dialogue manager
     print("\n AGENT SPEAKING...")
@@ -3413,8 +3604,16 @@ async def initialize_leibniz_services():
         # Initialize persistent services manager with detailed logging
         print("\n Initializing Persistent Services for Parallel Processing...")
         init_start = time.time()
-        services_manager = await get_leibniz_services_manager()
-        init_elapsed = time.time() - init_start
+        
+        # Check if services manager is available (graceful degradation)
+        if get_leibniz_services_manager is None:
+            logger.warning(" Services manager not available - running without persistent services")
+            print(" Services manager not available - running without persistent services")
+            services_manager = None
+            init_elapsed = time.time() - init_start
+        else:
+            services_manager = await get_leibniz_services_manager()
+            init_elapsed = time.time() - init_start
         
         logger.info(f" Persistent Services initialized in {init_elapsed:.2f}s")
         print(f" Persistent Services ready in {init_elapsed:.2f}s")
@@ -3436,25 +3635,37 @@ async def initialize_leibniz_services():
             print("     Services manager not available")
         
         # Initialize component singletons
-        stt = get_leibniz_stt()
-        logger.info(" STT ready")
+        if get_leibniz_stt is None:
+            logger.warning(" STT not available - running without speech recognition")
+            print(" STT not available - running without speech recognition")
+            stt = None
+        else:
+            stt = get_leibniz_stt()
+            logger.info(" STT ready")
         
         # Comment 5: Wrap TTS initialization with graceful fallback
-        try:
-            tts = get_leibniz_tts()
-            logger.info(" TTS ready")
-            tts_mode = "audio"
-        except Exception as tts_error:
-            mock_mode = os.getenv('MOCK_TTS', 'false').lower() == 'true'
-            allow_no_tts = os.getenv('ALLOW_NO_TTS', 'false').lower() == 'true'
-            
-            if mock_mode or allow_no_tts:
-                logger.warning(f"TTS initialization failed: {tts_error}")
-                logger.info(" Running without TTS (text-only mode)")
-                tts_mode = "text-only"
-            else:
-                logger.error(f"TTS initialization failed and fallback not enabled: {tts_error}")
-                raise
+        if get_leibniz_tts is None:
+            logger.warning(" TTS not available - running in text-only mode")
+            print(" TTS not available - running in text-only mode")
+            tts = None
+            tts_mode = "text-only"
+        else:
+            try:
+                tts = get_leibniz_tts()
+                logger.info(" TTS ready")
+                tts_mode = "audio"
+            except Exception as tts_error:
+                mock_mode = os.getenv('MOCK_TTS', 'false').lower() == 'true'
+                allow_no_tts = os.getenv('ALLOW_NO_TTS', 'false').lower() == 'true'
+                
+                if mock_mode or allow_no_tts:
+                    logger.warning(f"TTS initialization failed: {tts_error}")
+                    logger.info(" Running without TTS (text-only mode)")
+                    tts = None
+                    tts_mode = "text-only"
+                else:
+                    logger.error(f"TTS initialization failed and fallback not enabled: {tts_error}")
+                    raise
         
         # Initialize Leibniz Intent Parser (Gemini 2.0 based)
         try:
@@ -3469,10 +3680,20 @@ async def initialize_leibniz_services():
         global _leibniz_parser
         _leibniz_parser = parser
         
-        rag = get_leibniz_rag()
-        logger.info(" RAG system ready")
+        if get_leibniz_rag is None:
+            logger.warning(" RAG not available - running without knowledge base")
+            print(" RAG not available - running without knowledge base")
+            rag = None
+        else:
+            rag = get_leibniz_rag()
+            logger.info(" RAG system ready")
         
-        vad = get_leibniz_vad()
+        if get_leibniz_vad is None:
+            logger.warning(" VAD not available - running without voice activity detection")
+            print(" VAD not available - running without voice activity detection")
+            vad = None
+        else:
+            vad = get_leibniz_vad()
         
         # VERIFICATION COMMENT 3: Gate VAD verbose logging behind environment variables
         vad_verbose = os.getenv('LEIBNIZ_VAD_VERBOSE', 'false').lower() == 'true'
@@ -3480,20 +3701,23 @@ async def initialize_leibniz_services():
         vad_log_state = os.getenv('LEIBNIZ_VAD_LOG_STATE', 'false').lower() == 'true'
         
         # Configure VAD verbose logging only if environment flags set
-        try:
-            vad.config.log_audio_callbacks = vad_log_audio
-            vad.config.log_timeout_checks = vad_verbose
-            vad.config.log_state_transitions = vad_log_state
-            
-            if vad_verbose or vad_log_audio or vad_log_state:
-                logger.info(f" VAD verbose logging: audio={vad_log_audio}, state={vad_log_state}, verbose={vad_verbose}")
-                print(f" VAD verbose logging ENABLED - audio={vad_log_audio}, state={vad_log_state}, verbose={vad_verbose}")
-            else:
-                logger.info(" VAD ready (verbose logging disabled)")
-        except AttributeError:
-            # Some configs might not have these attributes
-            logger.info(" VAD ready")
-            pass
+        if vad:
+            try:
+                vad.config.log_audio_callbacks = vad_log_audio
+                vad.config.log_timeout_checks = vad_verbose
+                vad.config.log_state_transitions = vad_log_state
+                
+                if vad_verbose or vad_log_audio or vad_log_state:
+                    logger.info(f" VAD verbose logging: audio={vad_log_audio}, state={vad_log_state}, verbose={vad_verbose}")
+                    print(f" VAD verbose logging ENABLED - audio={vad_log_audio}, state={vad_log_state}, verbose={vad_verbose}")
+                else:
+                    logger.info(" VAD ready (verbose logging disabled)")
+            except AttributeError:
+                # Some configs might not have these attributes
+                logger.info(" VAD ready")
+                pass
+        else:
+            logger.info(" VAD not available - skipping configuration")
         
         # Pre-warm VAD session (TARA pattern - create persistent session ahead of time)
         try:
@@ -3598,7 +3822,7 @@ def is_exit_phrase(transcript: str) -> bool:
     return False
 
 
-async def run_conversation_session(audio_source=None, audio_sink=None):
+async def run_conversation_session(audio_source=None, audio_sink=None, skip_intro=False):
     """
     Run a single conversation session with bidirectional conversation loop.
     
@@ -3611,9 +3835,10 @@ async def run_conversation_session(audio_source=None, audio_sink=None):
     Args:
         audio_source: Optional audio source adapter (e.g., FastRTCAudioSource) for input
         audio_sink: Optional audio sink adapter (e.g., FastRTCAudioSink) for output
+        skip_intro: If True, skip playing the natural intro (used for WebRTC where intro is played separately)
     
     Flow:
-        1. Play natural intro
+        1. Play natural intro (unless skipped)
         2. For each attempt (up to max_attempts=5):
             a. Determine conversation context based on attempt and last interaction
             b. Check VAD health (reset if >=3 consecutive timeouts)
@@ -3635,8 +3860,9 @@ async def run_conversation_session(audio_source=None, audio_sink=None):
         session_start = time.time()
         logger.info(f" Starting conversation session at {time.strftime('%H:%M:%S')}")
         
-        # Natural introduction
-        await play_natural_intro(audio_sink=audio_sink)
+        # Natural introduction (skip if already played for WebRTC)
+        if not skip_intro:
+            await play_natural_intro(audio_sink=audio_sink)
         
         # Start continuous VAD after intro (only for this session)
         continuous_vad_enabled = os.getenv("LEIBNIZ_ENABLE_CONTINUOUS_VAD", "true").lower() == "true"
@@ -3764,7 +3990,7 @@ async def run_conversation_session(audio_source=None, audio_sink=None):
                     timeout = timeout_map.get(current_context, 20.0)
                     
                     # Wait for user speech using helper (handles event internally)
-                    from .leibniz_continuous_vad import wait_for_leibniz_speech
+                    from leibniz_continuous_vad import wait_for_leibniz_speech
                     transcript = await wait_for_leibniz_speech(timeout=timeout)
                     
                     if transcript:
@@ -4001,7 +4227,8 @@ async def run_conversation_session(audio_source=None, audio_sink=None):
                     rag_msg = await handle_rag_query(
                         text=query_text,
                         context=context,
-                        enable_streaming=False  # Use non-streaming for complete responses
+                        enable_streaming=False,  # Use non-streaming for complete responses
+                        audio_sink=audio_sink
                     )
                     
                     # Guard against None rag_msg (Comment 2)

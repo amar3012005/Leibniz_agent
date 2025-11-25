@@ -1,3 +1,22 @@
+#!/usr/bin/env python3
+"""
+FastRTC server for Leibniz agent browser-based audio integration.
+
+This module provides a standalone FastAPI application that serves as the FastRTC bridge
+for browser-based audio interaction with the Leibniz agent. It runs the complete
+conversation pipeline in the same process, providing seamless browser-based audio
+interaction.
+
+Architecture Reference: docs/fastrtc-integration.md
+
+Single-process workflow:
+- Terminal 1: python leibniz_fastrtc_server.py (starts server + conversation loop)
+- Browser: http://localhost:7860 (direct audio interaction)
+
+The server initializes a LeibnizFastRTCHandler and runs the conversation pipeline
+in the same process, ensuring proper audio routing between browser and pipeline.
+"""
+
 """
 FastRTC server for Leibniz agent browser-based audio integration.
 
@@ -32,6 +51,10 @@ logger = logging.getLogger(__name__)
 # Create the FastAPI app at module level for uvicorn compatibility
 app = None
 fastrtc_handler = None
+
+# Global session state
+_session_initialized = False
+_intro_played = False
 
 
 def create_monochrome_theme():
@@ -170,7 +193,6 @@ def create_fastrtc_app() -> FastAPI:
 
     # Build ui_args with theme if available
     ui_args = {
-        "title": "Leibniz University Assistant",
         "description": "Speak naturally. I'll respond when you pause."
     }
 
@@ -211,17 +233,40 @@ async def run_conversation_loop():
     This function runs in the same process as the FastRTC server, ensuring proper
     access to the handler instance and seamless audio routing.
     """
+    global _session_initialized, _intro_played
+
     logger.info("Starting conversation loop...")
 
     try:
         while True:
+            # First-time initialization: set up services
+            if not _session_initialized:
+                logger.info("Initializing first WebRTC session...")
+                _session_initialized = True
+
+                # Initialize services once
+                from leibniz_pro import initialize_leibniz_services
+                await initialize_leibniz_services()
+
+                logger.info("Services initialized - waiting for user to start speaking...")
+
+            # Wait for user to start speaking (mic pressed)
+            await fastrtc_handler.user_started_speaking.wait()
+
+            # Play intro greeting on first user speech
+            if not _intro_played:
+                logger.info("User started speaking - playing TARA intro greeting...")
+                _intro_played = True
+                await play_intro_via_sink(fastrtc_handler.sink)
+
             # Wait for user to finish speaking (event set by FastRTC handler)
             await fastrtc_handler.user_finished_speaking.wait()
 
             # Run conversation session with FastRTC audio adapters
             await run_conversation_session(
                 audio_source=fastrtc_handler.source,
-                audio_sink=fastrtc_handler.sink
+                audio_sink=fastrtc_handler.sink,
+                skip_intro=True  # Intro already played when user started speaking
             )
 
     except KeyboardInterrupt:
@@ -230,13 +275,47 @@ async def run_conversation_loop():
         logger.error(f"Error in conversation loop: {e}")
 
 
+async def play_intro_via_sink(audio_sink):
+    """
+    Play TARA's introduction greeting through the FastRTC audio sink.
+
+    This function generates TARA's intro audio and streams it through the WebRTC connection
+    when the user first starts speaking (mic pressed).
+
+    Args:
+        audio_sink: FastRTCAudioSink instance for streaming audio to browser
+    """
+    try:
+        from leibniz_pro import play_natural_intro
+        logger.info("Playing TARA's natural introduction greeting...")
+        await play_natural_intro(audio_sink=audio_sink)
+        logger.info("TARA intro greeting played successfully")
+    except Exception as e:
+        logger.error(f"Failed to play TARA intro greeting: {e}")
+        # Fallback: try to speak a simple greeting
+        try:
+            from leibniz_pro import speak_friendly
+            logger.info("Using fallback greeting for TARA...")
+            await speak_friendly(
+                text="Hello! I'm Tara , receptionist at Leibniz University. Welcome! How may I assist you today?",
+                emotion="helpful",
+                audio_sink=audio_sink
+            )
+            logger.info("TARA fallback greeting spoken")
+        except Exception as fallback_error:
+            logger.error(f"TARA fallback greeting also failed: {fallback_error}")
+            # Final fallback: just log that intro was skipped
+            logger.info("TARA intro greeting skipped - TTS not available, running in text-only mode")
+            print("WebRTC session started - TARA intro greeting skipped (text-only mode)")
+
+
 if __name__ == "__main__":
     # Startup banner
     logger.info("=" * 60)
-    logger.info("🚀 Starting Leibniz FastRTC Server + Conversation Pipeline")
+    logger.info("🚀 Starting Leibniz FastRTC Server + TARA Conversation Pipeline")
     logger.info("=" * 60)
-    logger.info("📱 Browser UI: http://localhost:7860")
-    logger.info("🎤 Single-process: Server + Pipeline integrated")
+    logger.info("📱 Browser UI: http://localhost:7862")
+    logger.info("🎤 Press mic to start - TARA will greet you and begin conversation")
     logger.info("=" * 60)
 
     # Start both the Gradio server and conversation loop
@@ -244,7 +323,7 @@ if __name__ == "__main__":
         # Start the Gradio server in a separate thread (non-blocking)
         import threading
         gradio_thread = threading.Thread(
-            target=lambda: app.launch(server_name="0.0.0.0", server_port=7860, show_error=True),
+            target=lambda: app.launch(server_name="0.0.0.0", server_port=7862, show_error=True),
             daemon=True
         )
         gradio_thread.start()

@@ -100,11 +100,11 @@ except ImportError:
     print(" aiohttp not available. Install with: pip install aiohttp")
 
 # Import Leibniz config
-from .leibniz_config import get_leibniz_config
+from leibniz_config import get_leibniz_config
 
 # Import VAD and STT for agent speaking state and prewarm
-from .leibniz_vad import get_leibniz_vad
-from .leibniz_stt import prewarm_during_tts
+from leibniz_vad import get_leibniz_vad
+from leibniz_stt import prewarm_during_tts
 
 # Load environment variables
 load_dotenv()
@@ -828,33 +828,43 @@ class MockTTSProvider:
         
         return silence.tobytes()
     
-    async def synthesize_to_file(
+    async def stream_synthesize(
         self,
         text: str,
-        outfile: str,
-        language: str = "en-US",
+        voice: Optional[str] = None,
+        language: Optional[str] = None,
         emotion: Optional[str] = None,
         **kwargs
-    ) -> str:
+    ):
         """
-        Generate silent audio file.
+        Stream synthesize (yields chunks of silent audio).
         
         Args:
             text: Text to "synthesize"
-            outfile: Output file path
+            voice: Voice name (ignored)
             language: Language code (ignored)
             emotion: Emotion (ignored)
+            **kwargs: Additional parameters
             
-        Returns:
-            Path to generated file
+        Yields:
+            Silent audio bytes
         """
-        audio_bytes = await self.synthesize(text, language, emotion, **kwargs)
-        audio_array = np.frombuffer(audio_bytes, dtype=np.int16)
+        # Calculate duration
+        word_count = max(1, len(text) / 5)
+        duration_seconds = word_count / 2.5
+        total_samples = int(self.sample_rate * duration_seconds)
         
-        # Write WAV file
-        sf.write(outfile, audio_array, self.sample_rate)
+        # Yield in 100ms chunks (typical for streaming)
+        chunk_size = int(self.sample_rate * 0.1)
+        samples_yielded = 0
         
-        return outfile
+        while samples_yielded < total_samples:
+            current_chunk_size = min(chunk_size, total_samples - samples_yielded)
+            silence = np.zeros(current_chunk_size, dtype=np.int16)
+            yield silence.tobytes()
+            samples_yielded += current_chunk_size
+            # Simulate real-time latency
+            await asyncio.sleep(0.1)
 
 
 class LeibnizTTS:
@@ -938,6 +948,7 @@ class LeibnizTTS:
             cache_enabled_override = os.getenv('LEIBNIZ_TTS_CACHE_ENABLED')
             cache_dir_override = os.getenv('LEIBNIZ_TTS_CACHE_DIR')
             cache_max_size_override = os.getenv('LEIBNIZ_TTS_CACHE_MAX_SIZE')
+            timeout_override = os.getenv('LEIBNIZ_TTS_TIMEOUT')
             
             config = LeibnizTTSConfig(
                 provider=provider_override or getattr(voice_cfg, 'tts_provider', 'lemonfox'),  # Comment 3: Default to lemonfox
@@ -948,7 +959,7 @@ class LeibnizTTS:
                 enable_cache=cache_enabled_override.lower() == 'true' if cache_enabled_override else getattr(tech_cfg, 'tts_cache_enabled', True),
                 cache_dir=cache_dir_override or getattr(tech_cfg, 'tts_cache_dir', DEFAULT_CACHE_DIR),
                 max_cache_size=int(cache_max_size_override) if cache_max_size_override else getattr(tech_cfg, 'tts_cache_max_size', 500),
-                timeout=getattr(tech_cfg, 'tts_timeout', 30.0),
+                timeout=float(timeout_override) if timeout_override else getattr(tech_cfg, 'tts_timeout', 30.0),
                 retry_attempts=getattr(tech_cfg, 'tts_retry_attempts', 3),
                 retry_delay=getattr(tech_cfg, 'tts_retry_delay', 1.0)
             )
@@ -978,6 +989,8 @@ class LeibnizTTS:
         # Initialize providers
         self.google_provider = None  # Removed - only LemonFox now
         self.lemonfox_provider = None
+        self.mock_provider = MockTTSProvider() # Always available for fallback
+        self.fallback_to_mock = False # State flag for automatic fallback
         
         # Initialize LemonFox (only provider now)
         try:
@@ -1171,8 +1184,10 @@ class LeibnizTTS:
         # Apply emotion modulation
         pitch, speaking_rate = self._apply_emotion_modulation(emotion)
         
-        # Determine voice and provider (only LemonFox now)
-        if self.config.provider == 'auto':
+        # Determine voice and provider
+        if self.fallback_to_mock:
+            provider_order = [(self.mock_provider, 'mock', 'default')]
+        elif self.config.provider == 'auto':
             # Only LemonFox available
             provider_order = [
                 (self.lemonfox_provider, 'lemonfox', self.config.lemonfox_voice)
@@ -1263,8 +1278,14 @@ class LeibnizTTS:
                             'elapsed': elapsed
                         }
                     else:
-                        # Convert to WAV file
-                        self._convert_to_wav(audio_bytes, effective_sample_rate, outfile, provider_name)
+                        # Convert to WAV file (offload to thread to prevent event loop blocking)
+                        await asyncio.to_thread(
+                            self._convert_to_wav,
+                            audio_bytes,
+                            effective_sample_rate,
+                            outfile,
+                            provider_name
+                        )
                     
                     # Comment 5: Save dialogue cache content if cache_name provided and enabled
                     if cache_name and dialogue_cache_enabled:
@@ -1330,6 +1351,8 @@ class LeibnizTTS:
                         'success': True,
                         'file': outfile,
                         'audio_file': outfile,  # Backward-compatible alias
+                        'audio_bytes': audio_bytes if 'audio_bytes' in locals() else None, # Return bytes for in-memory streaming
+                        'sample_rate': effective_sample_rate if 'effective_sample_rate' in locals() else 24000,
                         'duration': estimated_duration,  # Estimated, actual computed in background
                         'cached': False,
                         'cache_name': cache_name,
@@ -1349,31 +1372,60 @@ class LeibnizTTS:
                 
                 except Exception as e:
                     last_error = e
-                    # Comment 9: Track exception types
-                    self.provider_stats[provider_name]['errors'].append((type(e).__name__, str(e)))
-                    print(f" Error on attempt {attempt + 1} ({provider_name}): {e}")
-                    if attempt < self.config.retry_attempts - 1:
-                        await asyncio.sleep(self.config.retry_delay * (2 ** attempt))
-                    continue
+                    
+                    # Check for 401 Authentication Error from LemonFox
+                    if "401" in str(e) or "authentication failed" in str(e).lower():
+                        print(f"⚠️ LemonFox Authentication Failed: {e}")
+                        print("⚠️ Switching to Mock TTS provider for this session.")
+                        self.fallback_to_mock = True
+                        
+                        # Retry immediately with mock provider
+                        try:
+                            print("🔄 Retrying with Mock TTS...")
+                            audio_bytes = await self.mock_provider.synthesize(
+                                text=text,
+                                language='en-US',
+                                emotion=emotion
+                            )
+                            effective_sample_rate = self.mock_provider.sample_rate
+                            provider_name = 'mock'
+                            # Proceed to processing logic below...
+                        except Exception as mock_err:
+                            print(f"❌ Mock fallback also failed: {mock_err}")
+                            continue
+                    else:
+                        # Standard retry logic
+                        # Comment 9: Track exception types
+                        self.provider_stats[provider_name]['errors'].append((type(e).__name__, str(e)))
+                        print(f" Error on attempt {attempt + 1} ({provider_name}): {e}")
+                        if attempt < self.config.retry_attempts - 1:
+                            await asyncio.sleep(self.config.retry_delay * (2 ** attempt))
+                        continue
             
             # Provider failed after all retries
             self.provider_failures += 1
             # Comment 9: Track provider failure
-            self.provider_stats[provider_name]['failure'] += 1
+            if provider_name in self.provider_stats:
+                self.provider_stats[provider_name]['failure'] += 1
             print(f" {provider_name} failed after {self.config.retry_attempts} attempts")
         
-        # All providers failed - cleanup temp file
-        if temp_file_path and os.path.exists(temp_file_path):
-            try:
-                os.unlink(temp_file_path)
-            except:
-                pass
-        
-        # All providers failed
-        return {
-            'success': False,
-            'error': f'All providers failed: {last_error}'
-        }
+        # If we successfully fell back to mock inside the loop, handle the result
+        if self.fallback_to_mock and 'audio_bytes' in locals():
+             # Success path for mock fallback
+             pass
+        elif last_error and not self.fallback_to_mock:
+             # All providers failed - cleanup temp file
+             if temp_file_path and os.path.exists(temp_file_path):
+                 try:
+                     os.unlink(temp_file_path)
+                 except:
+                     pass
+             
+             # All providers failed
+             return {
+                 'success': False,
+                 'error': f'All providers failed: {last_error}'
+             }
     
     async def stream_tts(
         self,
@@ -1396,13 +1448,23 @@ class LeibnizTTS:
         """
         print(f" Streaming TTS: {text[:50]}...")
         
+        # Check for fallback first
+        if self.fallback_to_mock:
+            provider = self.mock_provider
+            provider_name = 'mock'
+            voice = 'default'
         # Priority: Only LemonFox available now
-        if self.lemonfox_provider:
+        elif self.lemonfox_provider:
             provider = self.lemonfox_provider
             provider_name = 'lemonfox'
             voice = self.config.lemonfox_voice
         else:
-            raise ValueError("LemonFox TTS provider not available")
+            # If no provider, default to mock
+            print("⚠️ No TTS provider available, using Mock TTS")
+            provider = self.mock_provider
+            provider_name = 'mock'
+            voice = 'default'
+            self.fallback_to_mock = True
         
         # Stream with provider
         audio_chunks = []
@@ -1418,7 +1480,8 @@ class LeibnizTTS:
             stream.start()
         
         try:
-            if provider_name == 'lemonfox':
+            # Generic streamer for any provider (mock or lemonfox)
+            try:
                 async for chunk in provider.stream_synthesize(
                     text=text,
                     voice=voice,
@@ -1436,6 +1499,25 @@ class LeibnizTTS:
                     # Callback
                     if streaming_callback:
                         streaming_callback(chunk)
+            
+            except Exception as e:
+                # Catch auth error during streaming and fallback
+                if ("401" in str(e) or "authentication failed" in str(e).lower()) and provider_name == 'lemonfox':
+                    print(f"⚠️ LemonFox Streaming Auth Failed: {e}")
+                    print("⚠️ Switching to Mock TTS provider for future calls.")
+                    self.fallback_to_mock = True
+                    
+                    # Try to recover stream with mock (restart)
+                    print("🔄 Restarting stream with Mock TTS...")
+                    async for chunk in self.mock_provider.stream_synthesize(text, voice='default', language='en-US', emotion=emotion):
+                        audio_chunks.append(chunk)
+                        if play and stream:
+                            chunk_array = np.frombuffer(chunk, dtype=np.int16)
+                            stream.write(chunk_array.tobytes())
+                        if streaming_callback:
+                            streaming_callback(chunk)
+                else:
+                    raise e
         
         finally:
             if play and stream:

@@ -50,10 +50,11 @@ class FastRTCAudioSource:
         self.sample_rate = sample_rate
         self.audio_queue = asyncio.Queue(maxsize=100)  # Thread-safe audio buffering
         self.is_active = False
+        self._loop = None
 
         logger.info(f"FastRTCAudioSource initialized with sample_rate={sample_rate}Hz")
 
-    async def push_audio_from_fastrtc(self, audio_chunk: np.ndarray) -> None:
+    def push_audio_from_fastrtc(self, audio_chunk: np.ndarray) -> None:
         """
         Inject browser audio from FastRTC into the source queue.
 
@@ -64,13 +65,40 @@ class FastRTCAudioSource:
             audio_chunk: Audio data as float32 numpy array
         """
         try:
-            self.audio_queue.put_nowait(audio_chunk)
+            # Try to get the running event loop first
+            try:
+                loop = asyncio.get_running_loop()
+                # If we're in an async context, schedule the push
+                asyncio.create_task(self._async_push(audio_chunk))
+            except RuntimeError:
+                # No running loop - try to get or create one
+                try:
+                    loop = asyncio.get_event_loop()
+                    if loop.is_running():
+                        asyncio.run_coroutine_threadsafe(self._async_push(audio_chunk), loop)
+                    else:
+                        # Loop exists but not running - store for later
+                        self._loop = loop
+                        if not hasattr(self, '_pending_chunks'):
+                            self._pending_chunks = []
+                        self._pending_chunks.append(audio_chunk)
+                except RuntimeError:
+                    # No loop at all - store for later when get_frames is called
+                    logger.debug("No event loop available, storing audio chunk for later")
+                    if not hasattr(self, '_pending_chunks'):
+                        self._pending_chunks = []
+                    self._pending_chunks.append(audio_chunk)
+        except Exception as e:
+            logger.error(f"Error pushing audio to FastRTC source: {e}")
+
+    async def _async_push(self, audio_chunk: np.ndarray) -> None:
+        """Internal async method to push audio to queue."""
+        try:
+            await self.audio_queue.put(audio_chunk)
             self.is_active = True
             logger.debug(f"Pushed audio chunk of {len(audio_chunk)} samples to VAD queue")
         except asyncio.QueueFull:
             logger.warning("FastRTC audio queue full, dropping audio chunk")
-        except Exception as e:
-            logger.error(f"Error pushing audio to FastRTC source: {e}")
 
     async def get_frames(self, num_samples: int) -> np.ndarray:
         """
@@ -85,6 +113,18 @@ class FastRTCAudioSource:
         Returns:
             Audio data as float32 numpy array, padded/truncated to num_samples
         """
+        # Set the event loop when we're called from async context
+        try:
+            self._loop = asyncio.get_running_loop()
+        except RuntimeError:
+            self._loop = asyncio.get_event_loop()
+        
+        # Process any pending chunks that were queued before the loop was set
+        if hasattr(self, '_pending_chunks') and self._pending_chunks:
+            for chunk in self._pending_chunks:
+                await self._async_push(chunk)
+            self._pending_chunks = []
+        
         try:
             # Wait for audio with short timeout
             audio_chunk = await asyncio.wait_for(
@@ -141,8 +181,7 @@ class FastRTCAudioSink:
             sample_rate: Audio sample rate in Hz (default: 24000 to match TTS output)
         """
         self.sample_rate = sample_rate
-        from queue import Queue
-        self.output_queue = Queue()  # Output audio buffering
+        self.output_queue = asyncio.Queue()  # Output audio buffering (asyncio.Queue for AsyncStreamHandler)
         self.is_streaming = False
 
         logger.info(f"FastRTCAudioSink initialized with sample_rate={sample_rate}Hz")
@@ -153,27 +192,53 @@ class FastRTCAudioSink:
 
         Called by modified speak_friendly() function to provide TTS output.
         Handles format conversion and queues audio for streaming.
+        Stores as int16 to match test_tts_webrtc_stream.py pattern.
 
         Args:
             audio_data: Audio data as numpy array (float32 or int16)
             sample_rate: Sample rate of the audio data
         """
         try:
-            # Convert int16 to float32 if needed
+            # Convert to int16 to match test_tts_webrtc_stream.py pattern
             if audio_data.dtype == np.int16:
-                audio_float = audio_data.astype(np.float32) / 32767.0
+                audio_int16 = audio_data
+            elif audio_data.dtype == np.float32:
+                # Normalize and convert float32 to int16
+                # Clamp to [-1, 1] range first
+                audio_clamped = np.clip(audio_data, -1.0, 1.0)
+                audio_int16 = (audio_clamped * 32767.0).astype(np.int16)
             else:
+                # Convert to float32 first, then to int16
                 audio_float = audio_data.astype(np.float32)
+                audio_clamped = np.clip(audio_float, -1.0, 1.0)
+                audio_int16 = (audio_clamped * 32767.0).astype(np.int16)
 
-            # Ensure we have float32 format
-            if audio_float.dtype != np.float32:
-                audio_float = audio_float.astype(np.float32)
+            # Queue the audio for streaming (store as chunks to match wait_for_item pattern)
+            # Split into FastRTC-compatible chunks (100ms at 24kHz = 2400 samples)
+            chunk_size = 2400
+            total_samples = len(audio_int16)
+            
+            chunks_queued = 0
+            for start_idx in range(0, total_samples, chunk_size):
+                end_idx = min(start_idx + chunk_size, total_samples)
+                chunk = audio_int16[start_idx:end_idx]
+                
+                # Pad if needed
+                if len(chunk) < chunk_size:
+                    padding = np.zeros(chunk_size - len(chunk), dtype=np.int16)
+                    chunk = np.concatenate([chunk, padding])
+                    
+                # Ensure 1D and contiguous
+                if chunk.ndim > 1:
+                    chunk = chunk.flatten()
+                if not chunk.flags['C_CONTIGUOUS']:
+                    chunk = np.ascontiguousarray(chunk, dtype=np.int16)
+                
+                await self.output_queue.put((sample_rate, chunk))
+                chunks_queued += 1
 
-            # Queue the audio for streaming (now sync since we use regular Queue)
-            self.output_queue.put((sample_rate, audio_float))
             self.is_streaming = True
-
-            logger.debug(f"Queued TTS audio: {len(audio_float)} samples at {sample_rate}Hz")
+            logger.debug(f"✅ Queued {chunks_queued} TTS audio chunks to FastRTC sink: {total_samples} total samples at {sample_rate}Hz")
 
         except Exception as e:
             logger.error(f"Error writing audio to FastRTC sink: {e}")
@@ -184,6 +249,7 @@ class FastRTCAudioSink:
 
         Called by FastRTC handler to pull audio for WebSocket transmission to browser.
         Yields audio in FastRTC-compatible chunks (100ms at 24kHz = 2400 samples).
+        Yields silence when no audio is available to keep the stream alive.
 
         Yields:
             Tuple of (sample_rate: int, audio_chunk: np.ndarray)
@@ -191,9 +257,10 @@ class FastRTCAudioSink:
         logger.debug("Starting FastRTC audio streaming")
 
         try:
-            while self.is_streaming or not self.output_queue.empty():
+            # Check if we have audio in queue
+            if not self.output_queue.empty():
                 try:
-                    # Get audio from regular queue
+                    # Get audio from regular queue (non-blocking)
                     sample_rate, audio_data = self.output_queue.get_nowait()
 
                     # Split into FastRTC-compatible chunks (100ms at 24kHz = 2400 samples)
@@ -211,14 +278,22 @@ class FastRTCAudioSink:
 
                         logger.debug(f"Streaming audio chunk: {len(chunk)} samples at {sample_rate}Hz")
                         yield sample_rate, chunk
-
+                        
                 except Exception as e:
-                    logger.error(f"Error during FastRTC streaming: {e}")
-                    break
+                    logger.debug(f"No audio available in queue: {e}")
+                    # Yield silence to keep stream alive
+                    yield (24000, np.zeros(2400, dtype=np.float32))
+            else:
+                # No audio available - yield silence to keep stream alive
+                # FastRTC will call emit() repeatedly, so we'll check again next time
+                yield (24000, np.zeros(2400, dtype=np.float32))
 
-        finally:
-            self.is_streaming = False
-            logger.debug("FastRTC audio streaming completed")
+        except Exception as e:
+            logger.error(f"Error during FastRTC streaming: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            # Yield silence on error
+            yield (24000, np.zeros(2400, dtype=np.float32))
 
     def stop_streaming(self) -> None:
         """Stop the streaming process."""
@@ -228,8 +303,14 @@ class FastRTCAudioSink:
     def clear(self) -> None:
         """Clear all buffered audio from the output queue."""
         try:
+            dropped = 0
             while not self.output_queue.empty():
-                self.output_queue.get_nowait()
-            logger.debug("Cleared FastRTC audio sink queue")
+                try:
+                    self.output_queue.get_nowait()
+                    dropped += 1
+                except asyncio.QueueEmpty:
+                    break
+            if dropped > 0:
+                logger.info(f"🧹 Cleared FastRTC audio sink queue (dropped {dropped} chunks)")
         except Exception as e:
             logger.warning(f"Error clearing FastRTC audio sink: {e}")

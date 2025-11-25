@@ -39,7 +39,7 @@ import warnings
 
 # Emit deprecation warning if continuous VAD is available
 try:
-    from .leibniz_continuous_vad import get_continuous_vad
+    from leibniz_continuous_vad import get_continuous_vad
     warnings.warn(
         "Per-turn VAD pattern is available but continuous VAD is recommended for better performance. "
         "Set LEIBNIZ_ENABLE_CONTINUOUS_VAD=true to enable.",
@@ -69,7 +69,7 @@ except ImportError:
     AudioSource = None  # Fallback if not available
 
 # Import prewarm trigger for speech detection
-from .leibniz_stt import normalize_english_transcript
+from leibniz_stt import normalize_english_transcript
 
 # Load environment variables
 load_dotenv()
@@ -377,7 +377,7 @@ class TranscriptBuffer:
         
         final = " ".join(all_parts).strip()
         
-        logger.info(
+        logger.debug(
             f" TranscriptBuffer stats - "
             f"Fragments: {len(self.fragments)}, "
             f"Received: {self.total_fragments_received}, "
@@ -893,13 +893,13 @@ class LeibnizBidirectionalVAD:
             self.config.silence_before_finalize_s = 2.5  # Increased - be patient even on retries
             logger.debug(f" Applied retry (attempt {attempt_count}): timeout={self.config.start_timeout_s}s, silence={self.config.silence_before_finalize_s}s")
         
-        logger.info(
+        logger.debug(
             f" Leibniz: Dynamic timeout configured - "
             f"timeout: {self.config.start_timeout_s}s, "
             f"silence_finalize: {self.config.silence_before_finalize_s}s "
             f"(attempt: {attempt_count}, context: '{conversation_context}')"
         )
-        logger.info(f" Leibniz: Dynamic timeout configured for {conversation_context} (attempt {attempt_count})")
+        logger.debug(f" Leibniz: Dynamic timeout configured for {conversation_context} (attempt {attempt_count})")
     
     def log_timeout_event(self, elapsed_time: float, expected_timeout: float) -> None:
         """Enhanced timeout event logging"""
@@ -1294,7 +1294,7 @@ class LeibnizBidirectionalVAD:
                                     # Trigger RAG prewarm on first speech (fire-and-forget)
                                     try:
                                         print(" Pre-warming RAG models...")
-                                        from .leibniz_persistent_services import trigger_prewarm_on_speech_detection
+                                        from leibniz_persistent_services import trigger_prewarm_on_speech_detection
                                         await trigger_prewarm_on_speech_detection()
                                         logger.info(" RAG prewarm triggered on speech detection")
                                         print(" RAG models pre-warmed successfully")
@@ -1562,17 +1562,17 @@ async def set_leibniz_agent_speaking(is_speaking: bool, context: str = ""):
 
     # SIMPLE SOLUTION: Turn off mic during TTS to prevent audio feedback
     try:
-        from .leibniz_continuous_vad import get_continuous_vad
+        from leibniz_continuous_vad import get_continuous_vad
         continuous_vad = get_continuous_vad()
 
         if is_speaking:
             # Stop continuous VAD during TTS to prevent audio feedback
             await continuous_vad.stop_continuous_listening()
-            logger.info(" Microphone disabled during TTS (preventing audio feedback)")
+            logger.debug(" Microphone disabled during TTS (preventing audio feedback)")
         else:
             # Restart continuous VAD after TTS
             await continuous_vad.start_continuous_listening()
-            logger.info(" Microphone re-enabled after TTS")
+            logger.debug(" Microphone re-enabled after TTS")
 
     except ImportError:
         # Continuous VAD not available, skip control

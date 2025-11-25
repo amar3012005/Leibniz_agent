@@ -26,7 +26,7 @@ Enhanced Features (v2):
 
 Usage Example - File Transcription:
     ```python
-    from .leibniz_stt import leibniz_transcribe_file, validate_audio_file
+    from leibniz_stt import leibniz_transcribe_file, validate_audio_file
     
     # Validate file first
     validation = validate_audio_file("audio.wav")
@@ -39,7 +39,7 @@ Usage Example - File Transcription:
 
 Usage Example - Streaming Capture:
     ```python
-    from .leibniz_stt import leibniz_capture_audio
+    from leibniz_stt import leibniz_capture_audio
     
     def callback(fragment, is_final):
         print(f"{'FINAL' if is_final else 'Fragment'}: {fragment}")
@@ -50,7 +50,7 @@ Usage Example - Streaming Capture:
 
 Usage Example - VAD-based Transcription:
     ```python
-    from .leibniz_stt import transcribe_with_vad
+    from leibniz_stt import transcribe_with_vad
     
     # Use VAD for better session management
     audio_file, transcript = await transcribe_with_vad(
@@ -60,7 +60,7 @@ Usage Example - VAD-based Transcription:
 
 Usage Example - Performance Monitoring:
     ```python
-    from .leibniz_stt import get_stt_statistics, log_performance_summary
+    from leibniz_stt import get_stt_statistics, log_performance_summary
     
     # Get statistics
     stats = get_stt_statistics()
@@ -135,7 +135,7 @@ from google import genai
 from google.genai import types
 
 # Import Leibniz config
-from .leibniz_config import get_leibniz_config
+from leibniz_config import get_leibniz_config
 
 # Load environment variables
 load_dotenv()
@@ -186,7 +186,7 @@ def _get_vad_function(func_name: str):
 
 # Import prewarm trigger from persistent services
 try:
-    from .leibniz_persistent_services import trigger_prewarm_on_speech_detection
+    from leibniz_persistent_services import trigger_prewarm_on_speech_detection
     _PREWARM_AVAILABLE = True
 except ImportError as e:
     logger.debug(f"Persistent services not available: {e}")
@@ -2169,7 +2169,7 @@ async def prewarm_during_tts(audio_duration: float):
     # Also prewarm RAG/intent services (fire-and-forget)
     async def prewarm_services():
         try:
-            from .leibniz_persistent_services import get_leibniz_services_manager
+            from leibniz_persistent_services import get_leibniz_services_manager
             services = await get_leibniz_services_manager()
             if services and hasattr(services, 'prewarm_rag'):
                 await services.prewarm_rag()

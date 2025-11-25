@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_1",
+  "turn_number": 2,
+  "dialogue_type": "rag",
+  "text": "Joo, näen kyllä. Mitä tarkalleen haluaisit minun tarkistavan tai mistä aiheesta puhut? Kerro tarkemmin, niin autan mielelläni!",
+  "audio_file": "turn_002_Joo_näen_kyllä_Mitä_tarkalleen_haluaisit_minun_t_46c2b5ee.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_1_2_qs6crqwg.wav",
+  "timestamp": 1764059690.8686955,
+  "text_length": 126,
+  "text_hash": "46c2b5ee"
+}
