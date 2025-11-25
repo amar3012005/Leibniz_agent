@@ -414,10 +414,10 @@ except ImportError as e:
 # Paths and Globals
 # ============================================================================
 
-INTRO_AUDIO_PATH = os.path.join("leibniz_agent", "audio", "intro.wav")
-VOICE_DIR = os.path.join("leibniz_agent", "voices")
-DIALOGUE_ARCHIVE_DIR = os.path.join("leibniz_agent", "audio", "dialogues")
-BACKGROUND_AUDIO_PATH = os.path.join("leibniz_agent", "audio", "background.wav")
+INTRO_AUDIO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "audio", "intro.wav")
+VOICE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "voices")
+DIALOGUE_ARCHIVE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "audio", "dialogues")
+BACKGROUND_AUDIO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "audio", "background.wav")
 
 # TARA-style dialogue cache names mapping (now uses dialogue manager)
 def get_dialogue_cache_name(dialogue_key: str) -> Optional[str]:
@@ -1553,10 +1553,10 @@ async def consume_tts_streaming_queue(audio_sink: Optional[object] = None) -> bo
                         # Load audio data with soundfile and play with sounddevice
                         audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_path)
                         _last_sentence_time = time.time()
-                        # await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
-                        # await asyncio.to_thread(sd.wait)  # Wait for playback to complete
+                        await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
+                        await asyncio.to_thread(sd.wait)  # Wait for playback to complete
                         
-                        logger.debug(" TTS streaming playback completed with sounddevice (fastrtc mode)")
+                        logger.debug(" TTS streaming playback completed with sounddevice")
                     
                     finally:
                         # Comment 6 FIX: Always set playing_now=False after unload (even on error)
@@ -1577,10 +1577,10 @@ async def consume_tts_streaming_queue(audio_sink: Optional[object] = None) -> bo
                     audio_data, sample_rate = await asyncio.to_thread(sf.read, audio_path)
                     
                     # Play with sounddevice (blocking call in thread)
-                    # await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
-                    # await asyncio.to_thread(sd.wait)  # Wait for playback to complete
+                    await asyncio.to_thread(sd.play, audio_data, sample_rate, device=12)
+                    await asyncio.to_thread(sd.wait)  # Wait for playback to complete
                     
-                    logger.info(" Sounddevice fallback playback successful (fastrtc mode)")
+                    logger.info(" Sounddevice fallback playback successful")
                     
                 except Exception as sd_error:
                     logger.error(f" Sounddevice fallback also failed: {sd_error}")

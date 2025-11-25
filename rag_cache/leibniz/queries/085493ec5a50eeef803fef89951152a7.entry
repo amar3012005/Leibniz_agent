@@ -1,0 +1,8 @@
+{
+  "answer": "I'm TARA, an AI assistant here to help you with info about Leibniz University. Ask me anything about programs, campus, or services!",
+  "metadata": {
+    "method": "leibniz_rag",
+    "relevance_score": 0.0,
+    "processing_time_ms": 0
+  }
+}
