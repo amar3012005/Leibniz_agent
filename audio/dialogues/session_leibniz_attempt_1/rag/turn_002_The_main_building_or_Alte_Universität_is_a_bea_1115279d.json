@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_1",
+  "turn_number": 2,
+  "dialogue_type": "rag",
+  "text": "The main building, or \"Alte Universität,\" is a beautiful historical landmark. It houses several key administrative offices and lecture halls. You can find it right in the city center!",
+  "audio_file": "turn_002_The_main_building_or_Alte_Universität_is_a_bea_1115279d.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_1_2_2ab9y1b1.wav",
+  "timestamp": 1764065946.1178253,
+  "text_length": 183,
+  "text_hash": "1115279d"
+}

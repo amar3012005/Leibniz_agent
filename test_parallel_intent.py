@@ -28,8 +28,16 @@ except ImportError:
         await asyncio.sleep(1.5) # Simulate latency
         return {"intent": "RAG_QUERY", "confidence": 0.95, "reasoning": "Mock LLM result"}
 
+# Import fast SLM classifier (TinyLlama)
+try:
+    from fast_slm_classifier import HybridFastIntentParser, FastSLMIntentClassifier
+    FAST_SLM_AVAILABLE = True
+except ImportError:
+    logger.warning("fast_slm_classifier.py not found, falling back to Phi-3")
+    FAST_SLM_AVAILABLE = False
+
 # ==================================================================================
-# SLM SETUP (Phi-3 Mini)
+# SLM SETUP (Phi-3 Mini - Fallback)
 # ==================================================================================
 
 class Phi3IntentClassifier:
@@ -106,34 +114,46 @@ class Phi3IntentClassifier:
         if not self.pipe:
             raise RuntimeError("Model not loaded. Call load_model() first.")
             
-        # Prompt engineering for Phi-3
-        # We want strictly JSON output
+        # Prompt engineering for Phi-3 (Optimized for Leibniz University context)
+        # COMPACT PROMPT for lower latency (Prefill Optimization)
         prompt = f"""<|user|>
-You are an intent classifier for a university assistant.
-Classify the following user text into one of these intents:
-1. APPOINTMENT_SCHEDULING (booking meetings)
-2. RAG_QUERY (asking for info/questions)
-3. GREETING (hello/hi only)
-4. EXIT (bye/quit)
+Classify intent:
+1. APPOINTMENT_SCHEDULING ("book", "schedule")
+2. RAG_QUERY (info, facts)
+3. GREETING (hello, hi)
+4. EXIT (bye, quit)
 5. UNCLEAR
 
-Text: "{text}"
+Input: "{text}"
 
-Return ONLY a JSON object with "intent" and "confidence" (0.0-1.0).
-Example: {{"intent": "RAG_QUERY", "confidence": 0.98}}
+JSON only: {{"intent": "...", "confidence": 0.9}}
 <|end|>
 <|assistant|>"""
 
+        # Log token count for profiling
+        if self.tokenizer:
+            input_tokens = self.tokenizer(prompt, return_tensors="pt")
+            token_count = input_tokens.input_ids.shape[1]
+            logger.info(f"Prompt tokens: {token_count}")
+
         # Run blocking inference in a separate thread to avoid blocking the event loop
         # Using asyncio.to_thread (Python 3.9+)
+        start_gen = time.time()
         result = await asyncio.to_thread(
             self.pipe,
             prompt, 
-            max_new_tokens=50, 
+            max_new_tokens=15, 
             return_full_text=False,
             do_sample=False, # Greedy for determinism and speed
             temperature=0.0
         )
+        gen_time = time.time() - start_gen
+        
+        # Estimate TTFT (Time To First Token) if possible or just log total generation time
+        # With `pipeline`, we get the full result at once, so we track total time.
+        # Assuming linear generation, TTFT ~= (Total Time / Tokens) * Prefill Overhead
+        # But for accurate profiling, we just log the total time here.
+        logger.info(f"SLM Generation Time: {gen_time*1000:.2f}ms for input '{text[:20]}...'")
         
         generated_text = result[0]['generated_text'].strip()
         
@@ -162,19 +182,48 @@ Example: {{"intent": "RAG_QUERY", "confidence": 0.98}}
 # ==================================================================================
 
 class HybridIntentParser:
-    def __init__(self):
-        self.slm = Phi3IntentClassifier()
-        self.slm_threshold = 0.85
-        # Timeout for SLM fast path (e.g. 200-500ms)
-        self.slm_timeout = 0.5
+    def __init__(self, use_fast_slm: bool = True):
+        """
+        Initialize hybrid parser.
+        
+        Args:
+            use_fast_slm: If True and available, use TinyLlama (fast). Otherwise use Phi-3.
+        """
+        self.use_fast_slm = use_fast_slm and FAST_SLM_AVAILABLE
+        
+        if self.use_fast_slm:
+            logger.info("Using FAST SLM (TinyLlama) for <100ms latency")
+            self.fast_slm_parser = HybridFastIntentParser()
+            self.slm = None  # Will use fast_slm_parser instead
+        else:
+            logger.info("Using Phi-3 Mini SLM (fallback)")
+            self.slm = Phi3IntentClassifier()
+            self.fast_slm_parser = None
+        
+        self.slm_threshold = 0.75 if self.use_fast_slm else 0.85
+        # Timeout for SLM fast path
+        self.slm_timeout = 0.1 if self.use_fast_slm else 0.5  # 100ms for TinyLlama, 500ms for Phi-3
 
     def load_models_sync(self):
         """Load models synchronously before async loop starts"""
-        self.slm.load_model()
+        if self.use_fast_slm:
+            self.fast_slm_parser.load_models()
+        else:
+            self.slm.load_model()
 
     async def classify_intent_slm_only(self, transcript: str):
         """Test SLM in isolation"""
-        return await self.slm.classify(transcript)
+        if self.use_fast_slm:
+            result = await self.fast_slm_parser.classify(transcript)
+            # Normalize format to match Phi-3 output
+            return {
+                "intent": result.get("intent", "UNCLEAR"),
+                "confidence": result.get("confidence", 0.5),
+                "source": "SLM_TinyLlama",
+                "latency_ms": result.get("latency_ms", 0)
+            }
+        else:
+            return await self.slm.classify(transcript)
 
     async def classify_intent_llm_only(self, transcript: str):
         """Test LLM in isolation"""
@@ -184,8 +233,12 @@ class HybridIntentParser:
         """Parallel execution with SLM fast-path"""
         start_time = time.time()
         
-        # Create tasks
-        slm_task = asyncio.create_task(self.slm.classify(transcript))
+        # Create tasks - use fast SLM if available, otherwise Phi-3
+        if self.use_fast_slm:
+            slm_task = asyncio.create_task(self.fast_slm_parser.classify(transcript))
+        else:
+            slm_task = asyncio.create_task(self.slm.classify(transcript))
+        
         llm_task = asyncio.create_task(classify_leibniz_intent(transcript))
         
         final_result = None
@@ -195,6 +248,14 @@ class HybridIntentParser:
             # Wait for SLM with timeout
             # If SLM finishes within timeout, we check confidence
             slm_result = await asyncio.wait_for(slm_task, timeout=self.slm_timeout)
+            
+            # Normalize fast SLM result format
+            if self.use_fast_slm:
+                slm_result = {
+                    "intent": slm_result.get("intent", "UNCLEAR"),
+                    "confidence": slm_result.get("confidence", 0.5),
+                    "source": "SLM_TinyLlama"
+                }
             
             if slm_result["confidence"] > self.slm_threshold:
                 # SLM is confident! Cancel LLM
@@ -269,8 +330,9 @@ async def run_tests_logic(parser: HybridIntentParser):
     ]
     
     # --- PHASE 1: SLM ONLY ---
+    slm_name = "TinyLlama (Fast)" if parser.use_fast_slm else "Phi-3 Mini"
     print("\n" + "="*80)
-    print("PHASE 1: TESTING SLM ONLY (Phi-3)")
+    print(f"PHASE 1: TESTING SLM ONLY ({slm_name})")
     print("="*80)
     
     slm_latencies = []
@@ -279,16 +341,26 @@ async def run_tests_logic(parser: HybridIntentParser):
         start = time.time()
         result = await parser.classify_intent_slm_only(text)
         latency = time.time() - start
+        # Use latency_ms from result if available (more accurate for fast SLM)
+        if "latency_ms" in result:
+            latency = result["latency_ms"] / 1000.0
         slm_latencies.append(latency)
         
         intent = result.get("intent")
         conf = result.get("confidence")
+        source = result.get("source", "SLM")
         is_correct = (intent == expected)
         status = "[PASS]" if is_correct else f"[FAIL] (Got {intent})"
-        print(f"{status} | Latency: {latency*1000:.1f}ms | Conf: {conf:.2f}")
+        print(f"{status} | Latency: {latency*1000:.1f}ms | Conf: {conf:.2f} | Source: {source}")
 
     avg_slm = sum(slm_latencies) / len(slm_latencies)
     print(f"\nAvg SLM Latency: {avg_slm*1000:.1f}ms")
+    if avg_slm < 0.1:
+        print("[SUCCESS] SLM is FAST (<100ms) - Fast path viable!")
+    elif avg_slm < 0.5:
+        print("[WARNING] SLM is moderate (100-500ms) - May win race sometimes")
+    else:
+        print("[SLOW] SLM is SLOW (>500ms) - Will timeout, LLM fallback always used")
 
     # --- PHASE 2: LLM ONLY ---
     print("\n" + "="*80)

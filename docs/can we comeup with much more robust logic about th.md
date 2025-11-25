@@ -602,6 +602,38 @@ Total:      <1.5 seconds (50% improvement)
 ```
 
 
+### **Optimization 1: Parallel SLM + LLM Intent Classification**
+
+```python
+async def classify_intent_hybrid(transcript: str):
+    """
+    Parallel SLM + LLM classification with early exit.
+    
+    Based on WebRTC Ventures latency reduction research[source:6].
+    """
+    # Launch both in parallel
+    slm_task = asyncio.create_task(
+        classify_with_slm(transcript)  # Fast: Phi-3-mini, ~50ms
+    )
+    llm_task = asyncio.create_task(
+        classify_with_llm(transcript)  # Accurate: Gemini, ~500ms
+    )
+    
+    # Wait for SLM first (100ms timeout)
+    try:
+        slm_result = await asyncio.wait_for(slm_task, timeout=0.1)
+        
+        if slm_result.confidence > 0.9:
+            # High confidence SLM result - cancel LLM
+            llm_task.cancel()
+            return slm_result
+    except asyncio.TimeoutError:
+        pass  # SLM took too long, wait for LLM
+    
+    # Wait for LLM result
+    return await llm_task
+```
+
 
 ### **Optimization 2: Speculative RAG Execution**
 

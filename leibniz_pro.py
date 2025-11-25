@@ -342,9 +342,56 @@ except Exception as e:
     logger.warning(f"Leibniz dialogue manager import failed: {e}")
     get_leibniz_dialogue_manager = None
 
+try:
+    from leibniz_state_machine import (
+        get_state_machine,
+        ConversationState,
+        AudioState
+    )
+except Exception as e:
+    logger.warning(f"Leibniz state machine import failed: {e}")
+    get_state_machine = None
+    ConversationState = None
+    AudioState = None
+
 # ============================================================================
 # Dialogue Management Helpers
 # ============================================================================
+
+async def wait_for_browser_playback_complete(timeout: float = 10.0) -> bool:
+    """
+    Wait for browser audio playback to complete before accepting user input.
+    
+    This prevents the terminal from transitioning to listening state while
+    the browser is still playing agent audio, which causes echo loops and
+    missed user speech.
+    
+    Args:
+        timeout: Maximum time to wait (seconds)
+    
+    Returns:
+        True if playback completed, False if timeout
+    """
+    try:
+        state_machine = get_state_machine()
+        if not state_machine:
+            return True  # No state machine, assume ready
+        
+        start_time = time.time()
+        while state_machine.is_agent_speaking_in_browser():
+            elapsed = time.time() - start_time
+            if elapsed > timeout:
+                logger.warning(f"Browser playback wait timeout after {timeout}s")
+                return False
+            await asyncio.sleep(0.1)  # Check every 100ms
+        
+        elapsed = time.time() - start_time
+        if elapsed > 0.1:  # Only log if we actually waited
+            logger.debug(f"Browser playback complete after {elapsed:.2f}s")
+        return True
+    except Exception as e:
+        logger.debug(f"Browser playback wait error: {e}")
+        return True  # On error, assume ready to proceed
 
 def get_dialogue_text(dialogue_key: str, fallback_text: str = "") -> str:
     """
@@ -513,6 +560,7 @@ _continuous_vad_instance = None  # Singleton instance
 _user_speech_ready = asyncio.Event()  # Event to signal main loop
 _current_user_transcript = None  # Latest transcript from background listener
 _current_user_intent = None  # Latest intent from callback
+_speculative_rag_task_continuous = None  # Speculative RAG task for continuous VAD mode
 
 
 async def cancel_continuous_vad():
@@ -1202,6 +1250,8 @@ async def consume_tts_streaming_queue(audio_sink: Optional[object] = None) -> bo
     """
     global _streaming_active, _sentinel_sent, _sentinels_received_count, _last_sentence_time
     
+    state_machine = get_state_machine()
+    
     # Prevent multiple concurrent consumers
     if _streaming_active:
         return False
@@ -1215,6 +1265,7 @@ async def consume_tts_streaming_queue(audio_sink: Optional[object] = None) -> bo
     sentences_played = 0
     sentences_failed = 0
     agent_speaking_set = False  # Comment 9: Track if we've set speaking state
+    prewarm_started = False  # Persistent services prewarm guard
     
     # Comment 1 & 2: Staging buffer for non-destructive peek
     stage = deque()
@@ -1331,11 +1382,17 @@ async def consume_tts_streaming_queue(audio_sink: Optional[object] = None) -> bo
             # Extract sentence and pace from tuple format
             sentence, pace = current_item
             
+            # Update state: SYNTHESIZING
+            await state_machine.set_audio_state(AudioState.SYNTHESIZING, reason=f"Synthesizing: {sentence[:20]}...")
+            
             sentence_count += 1
             sentences_queued += 1
             
             # Log full sentence when playback is about to start
             logger.info(f" PLAYING: {sentence}")
+            
+            # Update state: BUFFERING (ready to emit/play)
+            await state_machine.set_audio_state(AudioState.BUFFERING, reason="Audio ready for playback")
             
             # Comment 1 (NEW): Reset filler guard ONLY when real content starts playing
             # Do NOT reset when playing the filler itself (would cause infinite loop)
@@ -1459,6 +1516,12 @@ async def consume_tts_streaming_queue(audio_sink: Optional[object] = None) -> bo
                         # TTSMessage object format
                         audio_path = result.audio_path
                         duration_ms = result.duration_ms if hasattr(result, 'duration_ms') else 0.0
+                
+                # Kick off persistent-service prewarm (best guess duration)
+                if not prewarm_started and prewarm_leibniz_during_tts:
+                    estimated_duration = duration_ms / 1000.0 if duration_ms else max(len(sentence) * 0.06, 1.0)
+                    asyncio.create_task(prewarm_leibniz_during_tts(estimated_duration))
+                    prewarm_started = True
                 
                 # FASTRTC MODE: Route to audio sink if provided
                 if audio_sink is not None:
@@ -1600,6 +1663,9 @@ async def consume_tts_streaming_queue(audio_sink: Optional[object] = None) -> bo
         traceback.print_exc()
     finally:
         _streaming_active = False
+        
+        # Reset audio state to IDLE
+        await state_machine.set_audio_state(AudioState.IDLE, reason="TTS finished")
         
         # Comment 5 & 9: Clear agent speaking state in finally block (always executed)
         if agent_speaking_set:
@@ -1872,6 +1938,16 @@ async def speak_friendly(
         # Check config flags (Comment 7)
         streaming_enabled = os.getenv("LEIBNIZ_ENABLE_STREAMING_TTS", "true").lower() == "true"
         barge_in_enabled = os.getenv("LEIBNIZ_ENABLE_BARGE_IN", "true").lower() == "true"
+
+        def schedule_persistent_prewarm(duration_estimate: float):
+            """Kick off persistent service prewarm during TTS playback."""
+            if not prewarm_leibniz_during_tts:
+                return
+            safe_duration = duration_estimate if duration_estimate and duration_estimate > 0 else 1.0
+            try:
+                asyncio.create_task(prewarm_leibniz_during_tts(safe_duration))
+            except Exception as prewarm_err:
+                logger.debug(f" Persistent prewarm scheduling skipped: {prewarm_err}")
         
         # Override enable_streaming if disabled in config
         if not streaming_enabled:
@@ -1946,6 +2022,7 @@ async def speak_friendly(
                 audio_files = []
                 total_duration = 0.0
                 barge_in_occurred = False
+                streaming_prewarm_started = False
                 
                 try:
                     for sentence in sentences:
@@ -1966,6 +2043,10 @@ async def speak_friendly(
                         if result and result.get("success"):
                             audio_file = result.get('audio_file') or result.get('file')
                             duration = result.get("duration", 0.0)
+                            
+                            if not streaming_prewarm_started:
+                                schedule_persistent_prewarm(max(duration, len(sentence) * 0.06))
+                                streaming_prewarm_started = True
                             
                             audio_files.append(audio_file)
                             total_duration += duration
@@ -2082,6 +2163,7 @@ async def speak_friendly(
                     # Handle both file-based and raw bytes results
                     audio_file = result.get('audio_file') or result.get('file')
                     duration = result.get("duration", 0.0)
+                    schedule_persistent_prewarm(max(duration, len(text) * 0.06))
                     audio_bytes = result.get('audio_bytes')
                     sample_rate = result.get('sample_rate', 24000)
                     is_temporary = result.get('is_temporary', False)
@@ -2667,6 +2749,32 @@ async def handle_continuous_user_speech(transcript: str):
         
         logger.debug(f" Intent classified (continuous): {intent_result['intent']} (conf: {intent_result.get('confidence', 0.0):.2f})")
         
+        # OPTIMIZATION 2: Start speculative RAG execution for RAG_QUERY intents
+        # This allows RAG to start processing while main loop is still waiting
+        if intent_result.get('intent') == 'RAG_QUERY' and len(transcript.split()) >= 5:
+            try:
+                # Start speculative RAG in background
+                enriched_context = {
+                    'semantic_context': semantic_context,
+                    'user_goal': semantic_context['user_goal'],
+                    'key_entities': semantic_context['key_entities'],
+                    'extracted_meaning': semantic_context['extracted_meaning'],
+                    'last_intent': intent_result
+                }
+                
+                # Store speculative task globally so main loop can check it
+                global _speculative_rag_task_continuous
+                _speculative_rag_task_continuous = asyncio.create_task(
+                    _speculative_rag_execution(
+                        partial_transcript=user_context_transcript or transcript,
+                        context=enriched_context,
+                        audio_sink=_current_audio_sink
+                    )
+                )
+                logger.info(f"⚡ Speculative RAG started (continuous VAD): '{transcript[:50]}...'")
+            except Exception as e:
+                logger.debug(f"Speculative RAG failed (continuous): {e}")
+        
         # Store results in global variables
         _current_user_transcript = transcript
         _current_user_intent = intent_result.get('intent', 'UNCLEAR')
@@ -2716,6 +2824,50 @@ async def handle_continuous_user_speech(transcript: str):
 # ============================================================================
 # RAG Query Handling
 # ============================================================================
+
+async def _speculative_rag_execution(
+    partial_transcript: str,
+    context: Dict[str, Any],
+    audio_sink: Optional[object] = None
+) -> Optional[RAGMessage]:
+    """
+    OPTIMIZATION 2: Speculative RAG Execution
+    
+    Start RAG query as soon as user starts speaking (speculative execution).
+    Based on concurrent pipeline patterns for reduced latency.
+    
+    Note: Does NOT start TTS consumer - that's handled by handle_rag_query() to avoid duplicates.
+    
+    Args:
+        partial_transcript: Partial transcript from streaming VAD (5+ words)
+        context: Conversation context
+        audio_sink: Optional audio sink for streaming TTS
+        
+    Returns:
+        RAGMessage if successful, None if failed or cancelled
+    """
+    try:
+        logger.debug(f"⚡ Starting speculative RAG for: '{partial_transcript[:50]}...'")
+        
+        # Execute RAG query with streaming enabled
+        # handle_rag_query() will start TTS consumer if needed
+        rag_msg = await handle_rag_query(
+            text=partial_transcript,
+            context=context,
+            enable_streaming=True,  # Enable streaming for immediate audio
+            audio_sink=audio_sink
+        )
+        
+        logger.info(f"⚡ Speculative RAG completed: {len(rag_msg.answer)} chars")
+        return rag_msg
+        
+    except asyncio.CancelledError:
+        logger.debug("Speculative RAG cancelled")
+        return None
+    except Exception as e:
+        logger.warning(f"Speculative RAG failed: {e}")
+        return None
+
 
 def compute_rag_confidence(timing_breakdown: Optional[Dict[str, float]] = None, method: str = 'default') -> float:
     """
@@ -2907,11 +3059,12 @@ async def handle_rag_query(
     async with query_lock:
         logger.debug(f" Acquired RAG deduplication lock for query hash: {query_hash}")
         
-        # PHASE 3 CHANGE 3.1: Use shared consumer task instead of creating duplicate
+        # OPTIMIZATION 3: Start TTS consumer IMMEDIATELY (before RAG starts) for faster first audio
         consumer_task = None
         if enable_streaming:
+            # Start consumer BEFORE RAG query to minimize latency
             consumer_task = await start_tts_consumer(audio_sink=audio_sink)
-            logger.debug(" TTS consumer task started for progressive playback")
+            logger.info("⚡ TTS consumer started IMMEDIATELY (before RAG) for faster first audio")
         
         # === 1. Context Extraction ===
         intent_data = context.get('last_intent', {})
@@ -3151,6 +3304,9 @@ async def handle_rag_query(
                             # Queue sentence string only if non-empty
                             if partial_text.strip():
                                 _tts_streaming_queue.put_nowait((partial_text, 1.0))
+                                # OPTIMIZATION: Log first sentence immediately for visibility
+                                if _tts_streaming_queue.qsize() == 1:
+                                    logger.info(f"⚡ First sentence queued for TTS: '{partial_text[:50]}...'")
                                 # DIAGNOSTIC: Log enqueued sentences with queue size
                                 logger.debug(f" Enqueued: '{partial_text[:50]}...' (queue size: {_tts_streaming_queue.qsize()})")
                             
@@ -3388,6 +3544,7 @@ async def handle_appointment_booking(
         
         # Speak FSM response
         await speak_friendly(result['response'], emotion="helpful", audio_sink=audio_sink)
+        await wait_for_browser_playback_complete()
         
         # Enter FSM loop
         while True:
@@ -3404,6 +3561,7 @@ async def handle_appointment_booking(
                     emotion="excited",
                     audio_sink=audio_sink
                 )
+                await wait_for_browser_playback_complete()
                 
                 return booking_data
             
@@ -3430,6 +3588,7 @@ async def handle_appointment_booking(
                         emotion="calm",
                         audio_sink=audio_sink
                     )
+                    await wait_for_browser_playback_complete()
                     continue
             
             # MULTILINGUAL SUPPORT: Generate semantic context with translation
@@ -3474,6 +3633,7 @@ async def handle_appointment_booking(
             
             # Speak FSM response
             await speak_friendly(result['response'], emotion="helpful", audio_sink=audio_sink)
+            await wait_for_browser_playback_complete()
         
     except Exception as e:
         logger.error(f"Appointment booking error: {e}", exc_info=True)
@@ -3484,6 +3644,7 @@ async def handle_appointment_booking(
             emotion="calm",
             audio_sink=audio_sink
         )
+        await wait_for_browser_playback_complete()
         
         return None
     finally:
@@ -3543,6 +3704,8 @@ async def play_natural_intro(audio_sink: Optional[object] = None):
                     emotion="helpful",
                     audio_sink=audio_sink
                 )
+                # Wait for browser playback to complete before listening
+                await wait_for_browser_playback_complete()
                 print(" AGENT LISTENING...")
                 return
             except Exception as speak_error:
@@ -3565,6 +3728,8 @@ async def play_natural_intro(audio_sink: Optional[object] = None):
         emotion="helpful",
         audio_sink=audio_sink
     )
+    # Wait for browser playback to complete before listening
+    await wait_for_browser_playback_complete()
     print(" AGENT LISTENING...")
 
 
@@ -3851,6 +4016,7 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
     """
     global conversation_active
     global _current_user_intent
+    global _speculative_rag_task_continuous
     
     try:
         # Session initialization
@@ -3975,6 +4141,13 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                 # Start timing for capture duration
                 capture_start_time = time.time()
                 
+                state_machine = get_state_machine()
+                speculative_rag_task = [None]  # Track speculative task even if per-turn mode is skipped
+                speculative_query_text = [None]
+                
+                # STATE TRANSITION: IDLE → USER_SPEAKING (on speech detect)
+                await state_machine.transition_to(ConversationState.USER_SPEAKING, reason="Waiting for user speech")
+                
                 # Check if continuous VAD is enabled
                 if _continuous_vad_enabled and _continuous_vad_instance:
                     # CONTINUOUS MODE: Wait for background listener event
@@ -3994,6 +4167,9 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                     transcript = await wait_for_leibniz_speech(timeout=timeout)
                     
                     if transcript:
+                        # STATE TRANSITION: USER_SPEAKING → PROCESSING (start of pipeline)
+                        await state_machine.transition_to(ConversationState.PROCESSING, reason="User speech detected, starting pipeline")
+                        
                         # User spoke - wait for intent classification to complete
                         logger.debug("⏳ Waiting for intent classification to complete...")
                         
@@ -4035,6 +4211,8 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                     
                     # Define streaming callback for real-time transcript display (SINDH clean pattern)
                     speech_detected = [False]  # Mutable flag for closure
+                    speculative_rag_task = [None]  # Track speculative RAG task (list for closure)
+                    speculative_query_text = [None]  # Track speculative query (list for closure)
                     
                     def display_streaming_transcript(fragment: str, is_final: bool):
                         """Display partial transcripts in real-time during capture (clean output)"""
@@ -4043,6 +4221,25 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                             if not speech_detected[0]:
                                 print("\n    Speech detected!")
                                 speech_detected[0] = True
+                                # STATE TRANSITION: USER_SPEAKING → PROCESSING (on first speech fragment)
+                                asyncio.create_task(state_machine.transition_to(ConversationState.PROCESSING, reason="Speech detected in per-turn mode"))
+                            
+                            # OPTIMIZATION 2: Speculative RAG Execution - Start RAG as soon as user speaks (5+ words)
+                            word_count = len(fragment.split())
+                            if word_count >= 5 and speculative_rag_task[0] is None:
+                                try:
+                                    # Start speculative RAG query in background
+                                    speculative_query_text[0] = fragment
+                                    speculative_rag_task[0] = asyncio.create_task(
+                                        _speculative_rag_execution(
+                                            partial_transcript=fragment,
+                                            context=vad_context,
+                                            audio_sink=audio_sink
+                                        )
+                                    )
+                                    logger.info(f"⚡ Speculative RAG started: '{fragment[:50]}...' ({word_count} words)")
+                                except Exception as e:
+                                    logger.debug(f"Speculative RAG failed: {e}")
                     
                     # Construct context dict for VAD
                     # Comment 4: Use attempt for conversation attempt count
@@ -4118,6 +4315,7 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                             emotion="professional",
                             audio_sink=audio_sink
                         )
+                        await wait_for_browser_playback_complete()
                         break  # Exit conversation loop
                     
                     # Forced VAD reset after 2 consecutive timeouts (TARA pattern)
@@ -4136,6 +4334,7 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                             emotion="calm",
                             audio_sink=audio_sink
                         )
+                        await wait_for_browser_playback_complete()
                         last_interaction_type = "fallback"
                         # No blocking sleep - VAD's configured timeout (20-30s) handles the waiting period
                         # Return to loop immediately to start listening
@@ -4147,6 +4346,7 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                             emotion="calm",
                             audio_sink=audio_sink
                         )
+                        await wait_for_browser_playback_complete()
                         last_interaction_type = "fallback"
                         # No blocking sleep - VAD's configured timeout handles the waiting period
                         # Return to loop immediately to start listening
@@ -4158,6 +4358,7 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                             emotion="calm",
                             audio_sink=audio_sink
                         )
+                        await wait_for_browser_playback_complete()
                         last_interaction_type = "fallback"
                         # No blocking sleep - VAD's configured timeout handles the waiting period
                         # Return to loop immediately to start listening
@@ -4182,8 +4383,12 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                         emotion="calm",
                         audio_sink=audio_sink
                     )
+                    await wait_for_browser_playback_complete()
                     conversation_active = False
                     break
+                
+                # STATE TRANSITION: PROCESSING → AGENT_SPEAKING (when response ready)
+                await state_machine.transition_to(ConversationState.AGENT_SPEAKING, reason="Response ready, starting agent turn")
                 
                 # Step 8: Route based on intent and track interaction type
                 if intent == "APPOINTMENT_SCHEDULING":
@@ -4201,6 +4406,7 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                             emotion="helpful",
                             audio_sink=audio_sink
                         )
+                        await wait_for_browser_playback_complete()
                     
                     last_interaction_type = "appointment"
                 
@@ -4224,12 +4430,55 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                         print(f" RAG processing (raw transcript): '{query_text}'")
                         logger.info(f" Using raw transcript for RAG (no semantic context): '{query_text}'")
                     
-                    rag_msg = await handle_rag_query(
-                        text=query_text,
-                        context=context,
-                        enable_streaming=False,  # Use non-streaming for complete responses
-                        audio_sink=audio_sink
-                    )
+                    # OPTIMIZATION 2: Check for speculative RAG result first (per-turn mode)
+                    rag_msg = None
+                    if speculative_rag_task[0] and not speculative_rag_task[0].done():
+                        try:
+                            # Check if speculative task matches current query
+                            if speculative_query_text[0] and speculative_query_text[0].lower() in query_text.lower():
+                                logger.info(f"⚡ Checking speculative RAG result (per-turn)...")
+                                speculative_result = await asyncio.wait_for(speculative_rag_task[0], timeout=0.1)
+                                if speculative_result:
+                                    rag_msg = speculative_result
+                                    elapsed = time.time() - rag_start
+                                    logger.info(f"⚡ Using speculative RAG result (saved {elapsed:.2f}s)")
+                        except (asyncio.TimeoutError, Exception) as e:
+                            logger.debug(f"Speculative RAG not ready or failed: {e}")
+                            # Cancel speculative task if it doesn't match
+                            if speculative_rag_task[0] and not speculative_rag_task[0].done():
+                                speculative_rag_task[0].cancel()
+                    
+                    # OPTIMIZATION 2: Check for speculative RAG result (continuous VAD mode)
+                    if not rag_msg and _speculative_rag_task_continuous and not _speculative_rag_task_continuous.done():
+                        try:
+                            # Check if speculative task matches current query
+                            if query_text.lower() in transcript.lower() or transcript.lower() in query_text.lower():
+                                logger.info(f"⚡ Checking speculative RAG result (continuous VAD)...")
+                                speculative_result = await asyncio.wait_for(_speculative_rag_task_continuous, timeout=0.1)
+                                if speculative_result:
+                                    rag_msg = speculative_result
+                                    elapsed = time.time() - rag_start
+                                    logger.info(f"⚡ Using speculative RAG result from continuous VAD (saved {elapsed:.2f}s)")
+                        except (asyncio.TimeoutError, Exception) as e:
+                            logger.debug(f"Speculative RAG (continuous) not ready or failed: {e}")
+                            # Cancel speculative task if it doesn't match
+                            if _speculative_rag_task_continuous and not _speculative_rag_task_continuous.done():
+                                _speculative_rag_task_continuous.cancel()
+                    
+                    # If no speculative result, execute fresh query with STREAMING enabled
+                    if not rag_msg:
+                        rag_msg = await handle_rag_query(
+                            text=query_text,
+                            context=context,
+                            enable_streaming=True,  # OPTIMIZATION 4: Enable streaming for faster first audio
+                            audio_sink=audio_sink
+                        )
+                    
+                    # Clear speculative task after use
+                    if speculative_rag_task[0]:
+                        speculative_rag_task[0] = None
+                    if _speculative_rag_task_continuous:
+                        _speculative_rag_task_continuous = None
                     
                     # Guard against None rag_msg (Comment 2)
                     if not rag_msg:
@@ -4238,14 +4487,16 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                         fallback_text = get_dialogue_text('error', "I'm sorry, I had trouble processing that question. Could you try rephrasing it?")
                         print(f" Speaking fallback response: {len(fallback_text)} chars")
                         print("\n AGENT SPEAKING...")
-                        await speak_friendly(
-                            dialogue_key='errors.general',
-                            emotion="apologetic",
-                            audio_sink=audio_sink
-                        )
-                        print(" AGENT LISTENING...")
-                        last_interaction_type = "fallback"
-                        continue
+                    await speak_friendly(
+                        dialogue_key='errors.general',
+                        emotion="apologetic",
+                        audio_sink=audio_sink
+                    )
+                    # Wait for browser playback to complete before listening
+                    await wait_for_browser_playback_complete()
+                    print(" AGENT LISTENING...")
+                    last_interaction_type = "fallback"
+                    continue
                     
                     rag_elapsed = time.time() - rag_start
                     
@@ -4292,6 +4543,8 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                         enable_streaming=False,
                         audio_sink=audio_sink
                     )
+                    # Wait for browser playback to complete before listening
+                    await wait_for_browser_playback_complete()
                     print(" AGENT LISTENING...")
                     
                     # Archive dialogue audio if enabled
@@ -4319,6 +4572,8 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                         emotion="helpful",
                         audio_sink=audio_sink
                     )
+                    # Wait for browser playback to complete before listening
+                    await wait_for_browser_playback_complete()
                     print(" AGENT LISTENING...")
                     last_interaction_type = "greeting"
                 
@@ -4333,6 +4588,7 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                         emotion="calm",
                         audio_sink=audio_sink
                     )
+                    await wait_for_browser_playback_complete()
                     
                     conversation_active = False
                     break
@@ -4348,6 +4604,8 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                         emotion="helpful",
                         audio_sink=audio_sink
                     )
+                    # Wait for browser playback to complete before listening
+                    await wait_for_browser_playback_complete()
                     print(" AGENT LISTENING...")
                     last_interaction_type = "fallback"
                 
@@ -4371,6 +4629,8 @@ async def run_conversation_session(audio_source=None, audio_sink=None, skip_intr
                     emotion="calm",
                     audio_sink=audio_sink
                 )
+                # Wait for browser playback to complete before listening
+                await wait_for_browser_playback_complete()
                 print(" AGENT LISTENING...")
                 last_interaction_type = "fallback"
                 

@@ -1,0 +1,11 @@
+{
+  "session_id": "leibniz_attempt_0",
+  "turn_number": 1,
+  "dialogue_type": "rag",
+  "text": "That's usually referred to as the \"Hauptgebäude.\" It's located on the main campus, near the Opera House. You can find directions on the university's campus map online.",
+  "audio_file": "turn_001_Thats_usually_referred_to_as_the_Hauptgebäude_c2111a14.wav",
+  "original_audio_path": "C:\\Users\\AMAR\\AppData\\Local\\Temp\\archive_leibniz_attempt_0_1_9z75y0ft.wav",
+  "timestamp": 1764068127.9195318,
+  "text_length": 167,
+  "text_hash": "c2111a14"
+}

@@ -44,6 +44,7 @@ from fastrtc.utils import wait_for_item as wait_for_item_utils
 import gradio as gr
 
 # Import Leibniz components
+from leibniz_state_machine import get_state_machine, AudioState
 from leibniz_fastrtc_adapters import FastRTCAudioSource, FastRTCAudioSink
 from leibniz_pro import (
     initialize_leibniz_services,
@@ -252,6 +253,11 @@ class LeibnizFastRTCStreamHandler(AsyncStreamHandler):
                     self._audio_emission_active = False
                     self._audio_emission_end_time = time.time()
                     logger.debug(f"🎵 Audio emission to browser completed at {self._audio_emission_end_time}")
+                    
+                    # Transition to PLAYING state (buffered audio still playing)
+                    state_machine = get_state_machine()
+                    await state_machine.set_audio_state(AudioState.PLAYING, reason="Emission complete, playback continuing")
+                    
                 await asyncio.sleep(0.02)  # Prevent busy loop
                 return (24000, np.zeros((1, 2400), dtype=np.int16))
 
@@ -277,18 +283,18 @@ class LeibnizFastRTCStreamHandler(AsyncStreamHandler):
             num_samples = chunk.shape[1]
             chunk_duration_seconds = num_samples / sample_rate
             
-            # Get current predicted end time or use current time if expired
-            current_end_time = max(time.time(), get_agent_speech_end_time())
+            # ROBUST TIMING: Update State Machine
+            state_machine = get_state_machine()
             
-            # Add network buffer (0.5s) to the FIRST chunk in a sequence to account for transmission
-            if not self._audio_emission_active: # Just started
-                current_end_time += 0.5
-                
-            # Accumulate duration
-            new_end_time = current_end_time + chunk_duration_seconds
-            
-            # Update global state for VAD locking
-            update_agent_speech_end_time(new_end_time)
+            # Update state to EMITTING if not already
+            # We do this here because this is where the chunks actually leave to the browser
+            if state_machine.audio_state != AudioState.EMITTING:
+                await state_machine.set_audio_state(AudioState.EMITTING, reason="Emitting to browser")
+
+            # Update browser playback timing
+            # This is the critical piece for echo cancellation
+            await state_machine.update_browser_playback_end_time(chunk_duration_seconds)
+            new_end_time = state_machine._agent_playback_end_time
             
             if self._chunk_count <= 5 or self._chunk_count % 10 == 0:
                 logger.debug(f"📤 Emitting chunk {self._chunk_count}: {num_samples} samples ({chunk_duration_seconds*1000:.0f}ms) | VAD Locked until: {new_end_time:.2f}")

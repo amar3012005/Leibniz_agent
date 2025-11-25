@@ -68,6 +68,7 @@ from leibniz_vad import (
     LeibnizPersistentSession,
     TranscriptBuffer
 )
+from leibniz_state_machine import get_state_machine, ConversationState
 from leibniz_stt import normalize_english_transcript
 try:
     from leibniz_persistent_services import trigger_prewarm_on_speech_detection
@@ -326,11 +327,21 @@ class LeibnizContinuousVAD:
                                     
                                     final_text = response.server_content.input_transcription.text
                                     if final_text:
-                                        # CRITICAL FIX: Check if agent is currently speaking before processing transcript
-                                        # This prevents the agent from transcribing its own TTS output
-                                        if self.vad.is_agent_speaking:
-                                            logger.debug(f" Ignoring transcript during agent speech: '{final_text[:50]}...'")
-                                            continue  # Skip processing this transcript
+                                        # CRITICAL FIX: Use State Machine for Robust Echo Prevention & Barge-in
+                                        state_machine = get_state_machine()
+                                        
+                                        # 1. Strict Echo Prevention: Block if agent is speaking in browser
+                                        if state_machine.is_agent_speaking_in_browser():
+                                            logger.debug(f"🔇 Echo blocked (Agent speaking): '{final_text[:50]}...'")
+                                            continue
+                                            
+                                        # 2. Barge-in Detection: If in AGENT_SPEAKING but not playing (e.g. gaps/generating), it's barge-in
+                                        if state_machine.conversation_state == ConversationState.AGENT_SPEAKING:
+                                            logger.info(f"⚡ Barge-in detected: '{final_text}'")
+                                            await state_machine.transition_to(
+                                                ConversationState.BARGE_IN, 
+                                                reason="User speech during agent turn"
+                                            )
                                         
                                         transcript_buffer.add_fragment(final_text.strip())
                                         
@@ -444,6 +455,26 @@ class LeibnizContinuousVAD:
         Returns:
             User transcript if received, None on timeout
         """
+        # CRITICAL: Wait for browser playback to complete before accepting speech
+        # This prevents echo loops and ensures terminal/browser synchronization
+        try:
+            state_machine = get_state_machine()
+            if state_machine:
+                wait_start = time.time()
+                max_wait = 5.0  # Maximum wait for browser playback (5 seconds)
+                elapsed = 0.0
+                while state_machine.is_agent_speaking_in_browser():
+                    elapsed = time.time() - wait_start
+                    if elapsed > max_wait:
+                        logger.warning(f"Browser playback wait timeout after {max_wait}s")
+                        break
+                    await asyncio.sleep(0.1)  # Check every 100ms
+                if elapsed > 0.1:
+                    logger.debug(f"Browser playback complete before speech wait ({elapsed:.2f}s)")
+        except Exception as e:
+            logger.debug(f"Browser playback check error: {e}")
+            # Continue even if check fails
+        
         # Clear event and transcript
         self.user_transcript_event.clear()
         self.current_transcript = None
